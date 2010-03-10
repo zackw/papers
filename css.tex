@@ -1,0 +1,142 @@
+\documentclass{acm_proc_article-sp}
+
+\begin{document}
+
+\title{Protecting Browsers from Cross-Origin CSS Attacks}
+
+\numberofauthors{3}
+\author{
+\alignauthor
+Author 1\\
+       \email{a@b}
+\alignauthor
+Author 2\\
+       \email{a@b}
+\alignauthor
+Author 3\\
+       \email{a@b}
+}
+
+\maketitle
+\begin{abstract}
+The cross-origin CSS attack is a newly exploited browser vulnerability that allows the attacker to steal the user's secret content on an honest web site from a different domain. In this paper, we expose the cross-origin CSS attack, in which the attacker injects CSS strings into the target document that contains the secret content, instructs the user's browser to import the document as a remote stylesheet, and then exports the secret content from the loaded stylesheet. This attack is constructed upon the lenient checking of content types and lax parsing of CSS in modern browsers. We detail existing server-side and client-side defense techniques and find shortcomings with each technique. We propose that browsers implement a stricter CSS parsing when the content type is broken, which can provide robust defense for cross-origin CSS attacks while addressing web site compatibility concerns.
+\end{abstract}
+
+\category{K.6.5}{Management of Computing and Information Systems}{Security and Protection}
+
+\terms{Security}
+
+\keywords{Content-Sniffing, CSS, Same-Origin Policy}
+
+\section{Introduction}
+This is the introduction.
+
+\section{Threat Model}
+We define a precise threat model, the web attacker, for reasoning the cross-origin CSS attack. We assume that the attacker's goal is to steal the user's secret content on an honest web site from another domain and access the stolen content in the user's browser.
+
+\subsection*{Web Attacker}
+A web attacker is a malicious principal who owns a domain name, e.g. attacker.com, and operates a web server. To study the browser's defense mechanisms, we assume that the user's browser renders content from the attacker's web site. In addition, the web attacker is given the ability to inject arbitrary strings into the target domain.
+
+\begin{itemize}
+
+\item{Attacker Abilities:}
+The web attacker can send and receive network messages over network protocols of the attacker's choice, but only from its own machines. Typically, the web attacker operates at least one machine as an HTTP server, which we refer to as attacker.com. The web attacker has no control over the user's network connections. In particular, the web attacker cannot eavesdrop on unencrypted connections and steal session identifiers to hijack the user's session. Neither can the web attacker spoof network frames and impersonate the user to an honest web site.
+
+\item{User Behavior:}
+We assume that the user visits the attacker's web site in a popular browser. In practice, this assumption can be supported by several techniques for attacting users, e.g. buying web advertisements or sending bulk e-mail to encourage visitors. By rendering the attacker's content, the attacker can instruct the user's browser to fetch remote stylesheets and also export data to remote servers. As long as the user's session with an honest web site haven't expired, the attacker can instruct the user's browser to issue requests with the user's cookies.
+
+\item{Web Site Behavior:}
+We assume that the attacker can inject arbitrary strings into a target document that contains the secret content if the attacker can induce the user into taking arbitrary actions. The ability of injecting strings into a target domain is weaker than injecting scripts for common XSS attacks, because scripts may be blocked by client-side XSS filters.
+
+\end{itemize}
+There are a number of related threats that we do not consider in this paper, such as phishing, DNS rebinding, and XSS. The web attacker is incapable of installing malicious software on the user's machine, otherwise, the malmare could replace the browser and bypass any browser-based defenses.
+
+\section{Attacks}
+In this section, we study cross-origin CSS attacks. First, we provide some background information. Next, we introduce cross-origin CSS attacks. Then, we discuss the restrictions for constructing this attack and suggest general areas that are exploitable. Finally, we construct an attack against a popular web site.
+
+\subsection{Background}
+In this section, we provide background information about Cascading Style Sheets (CSS), the same-origin policy (SOP), and content sniffing.
+
+\subsubsection{Cascading Style Sheets}
+Cascading Syle Sheets\cite{css} is a mechanism that lets web developers control the visual appearance of web documents using style sheet language. The design of CSS enables separation of document content from the visual appearance, including layouts, colors, and fonts. This allows web sites to preserve document structure while adjusting its appearance, e.g. switching on-screen views to printable views. Furthermore, documents are allowed to import remote stylesheets using <link re="stylesheet" href=".."> tags and let third parties to control a subset of the CSS rules.
+
+In modern browsers, the CSS parser is actually very lax. The CSS parser will skip over any amount of invalid syntax in the stylesheet until it finds the next valid rule. This is unlike the JavaScript parser that will abort on the first syntax error. A lax CSS parser gives the browser better compatiblity for rendering misconfigured web sites, but actually opens opportunities for attackers and enables the cross-origin CSS attack in this paper.
+
+\subsubsection{Same-Origin Policy}
+The same-origin policy\cite{mozillasameorigin} is the main security mechanism in modern browsers that provides isolation of contents between unrelated web sites. The same-origin policy restricts contents to access resources only from the same origin, which applies to Document Object Model (DOM)\cite{dom} access, XMLHttpRequest, and cookies. In SOP, the origin is defined as the protocol, host, and port. The same-origin policy does not apply to fetching remote scripts or stylesheets from a different origin.
+
+\subsubsection{Content-Sniffing}
+The HTTP Content-Type header indicates the type of the content that is transmitted using Multipurpose Internet Mail Extensions (MIME)\cite{mime} types such as text/html or image/jpeg. Browsers use this MIME type to determine how to handle the contents of HTTP responses. Some web servers fail to provide the correct MIME type in the Content-Type header, therefore browsers use content-sniffing algorithms to guess the correct MIME type by inspecting the contents of HTTP responses and override the server's MIME type. 
+
+\subsection{Cross-Origin CSS Attack}
+Steal CSRF token or secret content
+
+\subsubsection{Inject String}
+Inject CSS string on target website;
+user controlled string
+
+\subsubsection{Import Target}
+Visit attacker.com
+
+\subsubsection{Export Data}
+JavaScript read currentStyle (IE), getComputedStyle;
+cssText;
+Send URL to evil server (No JavaScript)
+
+\subsection{Restrictions}
+
+\subsubsection{Single Line}
+Newlines break CSS parse (except IE);
+
+\subsubsection{Quotes Not Escaped}
+Quotes not escaped (except IE, sometimes FF);
+
+\subsubsection{Two Injection Points}
+Need 2 injection points (..except FF?)
+
+\paragraph{Exploitation Areas}
+JSON and XML,  XHTML / HTML
+
+\subsection{Concrete Attacks}
+An example.
+
+\section{Defenses}
+
+\subsection{Server-side Defenses}
+\subsubsection{Newlines}
+Newlines within quoted strings;
+\subsubsection{Escaping Quotes}
+Escaping quotes;
+\subsubsection{Nosniff}
+Nosniff
+
+\subsection{Client-side Defenses}
+\subsubsection{Disable Cookies}
+Prevent sending cookies when importing CSS;
+\subsubsection{Disable Content-Sniffing}
+Strict MIME; file extension
+\subsubsection{DOM SOP}
+DOM same-origin policy;
+\subsubsection{Strict CSS Parsing}
+Strict CSS parsing;
+\subsubsection{Strict CSS Parsing for Broken MIME}
+Proposal: For cross-origin CSS loading, stricter CSS parsing for Broken MIME;
+-Conservative approach;
+-Blocks most attacks;
+Implementation;
+-Chrome/Webkit patch
+
+\section{Related Work}
+
+\subsection{Opera}
+
+\subsection{Secure Content Sniffing}
+secure content sniffing\cite{securecontentsniffing}
+
+\section{Conclusions}
+
+
+\bibliographystyle{abbrv}
+\bibliography{css}
+
+\end{document}
