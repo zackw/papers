@@ -63,33 +63,38 @@ Cascading Syle Sheets\cite{css} is a mechanism that lets web developers control 
 In modern browsers, the CSS parser is actually very lax. The CSS parser will skip over any amount of invalid syntax in the stylesheet until it finds the next valid rule. This is unlike the JavaScript parser that will abort on the first syntax error. A lax CSS parser gives the browser better compatiblity for rendering misconfigured web sites, but actually opens opportunities for attackers and enables the cross-origin CSS attack in this paper.
 
 \subsubsection{Same-Origin Policy}
-The same-origin policy\cite{mozillasameorigin} is the main security mechanism in modern browsers that provides isolation of contents between unrelated web sites. The same-origin policy restricts contents to access resources only from the same origin, which applies to Document Object Model (DOM)\cite{dom} access, XMLHttpRequest, and cookies. In SOP, the origin is defined as the protocol, host, and port. The same-origin policy does not apply to fetching remote scripts or stylesheets from a different origin.
+The same-origin policy\cite{mozillasameorigin} is the main security mechanism in modern browsers that provides isolation of contents between unrelated web sites. The same-origin policy restricts contents to access resources only from the same origin, which applies to scripting interactions, i.e. XMLHttpRequest and Document Object Model (DOM)\cite{dom} access. In SOP, the origin is defined as the protocol, host, and port. The same-origin policy does not apply to fetching remote scripts or stylesheets from a different origin.
 
 \subsubsection{Content-Sniffing}
 The HTTP Content-Type header indicates the type of the content that is transmitted using Multipurpose Internet Mail Extensions (MIME)\cite{mime} types such as text/html or image/jpeg. Browsers use this MIME type to determine how to handle the contents of HTTP responses. Some web servers fail to provide the correct MIME type in the Content-Type header, therefore browsers use content-sniffing algorithms to guess the correct MIME type by inspecting the contents of HTTP responses and override the server's MIME type. 
 
 \subsection{Cross-Origin CSS Attack}
-Steal CSRF token or secret content
+Steal anti-CSRF token or secret content
 
-\subsubsection{Inject String}
+\subsubsection{Inject CSS String}
 Inject CSS string on target website;
 user controlled string
+url params or reflection of attacker data
+font-family
+background-image
 
-\subsubsection{Import Target}
+\subsubsection{Import Target Document}
 Visit attacker.com
 
-\subsubsection{Export Data}
+\subsubsection{Export Data to Attacker}
 JavaScript read currentStyle (IE), getComputedStyle;
 cssText;
 Send URL to evil server (No JavaScript)
 
 \subsection{Restrictions}
+There are restrictions on the format of cross-domain data which can be stolen.
 
 \subsubsection{Single Line}
 Newlines break CSS parse (except IE);
 
 \subsubsection{Quotes Not Escaped}
 Quotes not escaped (except IE, sometimes FF);
+charsets?
 
 \subsubsection{Two Injection Points}
 Need 2 injection points (..except FF?)
@@ -109,16 +114,23 @@ Newlines within quoted strings;
 Escaping quotes;
 \subsubsection{Nosniff}
 Nosniff
+burden on developers
 
 \subsection{Client-side Defenses}
 \subsubsection{Disable Cookies}
-Prevent sending cookies when importing CSS;
+Prevent sending cookies when importing cross-origin CSS;
+login status check
+adjust mobile account, printable view..
+
 \subsubsection{Disable Content-Sniffing}
-Strict MIME; file extension
+Require valid MIME for CSS; if not globally at least for cross-origin loads
+
 \subsubsection{DOM SOP}
 DOM same-origin policy;
+
 \subsubsection{Strict CSS Parsing}
 Strict CSS parsing;
+
 \subsubsection{Strict CSS Parsing for Broken MIME}
 Proposal: For cross-origin CSS loading, stricter CSS parsing for Broken MIME;
 -Conservative approach;
