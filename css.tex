@@ -138,27 +138,28 @@ The cross-origin CSS attack is less serious than it could be, because there are 
 \item{Newlines:}
 Any newline in the stolen string will break CSS parsing.
 
-\item{Escaping Characters:}
-Although Different browser behaviors
-Escaping Characters
-Quotes not escaped (except IE);
-header meta
+\item{Character Escapes:}
+single/double quote,
+paranthesis, semicolon
+url(..)
 
-Injection Points
+\item{Injection Points:}
 Need 2 injection points
 \end{itemize}
-
-\paragraph{IE}
-allows newlines
-allows single/double quotes
-
-\paragraph{UTF-7}
-UTF7 charset (FF, Safari)
 
 \paragraph{Exploitation Areas}
 rich-functionality sites
 cookie-authenticated URLs
 e.g. AJAX APIs, JSON responses, XML responses -- and in particular -- mobile HTML UIs.
+
+\paragraph{IE}
+fully-patched IE
+allows newlines
+allows single/double quotes
+
+\paragraph{UTF-7}
+UTF7 charset (FF, Safari)
+header /meta tag http-equiv
 
 \subsection{Concrete Attack}
 Example: Yahoo! Mail
