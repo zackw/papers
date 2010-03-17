@@ -82,9 +82,7 @@ The HTTP Content-Type header indicates the type of the content that is transmitt
 (mention meta tag?)
 
 \subsection{Cross-Origin CSS Attack}
-In a cross-origin CSS attack, the attacker's main objective is to steal the user's secret content on an honest web site from a different domain. The attacker is most likely interested in stealing any sensitive information in a cookie-authenticated web page, or preferrably a secret CSRF token hidden in the document that may allow the attacker to hijack the user's session. 
-(reference for csrf token?)
-To describe the cross-origin CSS attack, we decompose the attack into three main steps: string injection, style sheet import, and data export.
+In a cross-origin CSS attack, the attacker's main objective is to steal the user's secret content on an honest web site from a different domain. The attacker is most likely interested in stealing any sensitive information in a cookie-authenticated web page, or preferrably a secret CSRF token\cite{csrf} hidden in the document that may allow the attacker to hijack the user's session. To describe the cross-origin CSS attack, we decompose the attack into three main steps: string injection, style sheet import, and data export.
 
 \subsubsection{String Injection}
 In order to steal content from a different domain, the attacker leverages the fact that browsers allows web pages to import style sheets from cross-origin. Given the ability to inject strings into the target domain which contains the secret content, the attacker may fool the user's browser into loading a carefully crafted non-CSS (e.g. HTML or XML) document as a valid style sheet resource. In practice, there are several methods that may allow a web attacker to inject strings into the target domain, e.g. reflection of user controlled strings or via URL parameters. Normally, random text in a non-CSS document contains syntax errors to the CSS parser and would break the parsing. However, due to the overly lax CSS parsers in modern browsers, portions of a non-CSS document with valid CSS syntax can still be successfully parsed and recognized as style sheet rules.
@@ -105,10 +103,10 @@ When the user visits attacker.com, the next step for the attacker is to instruct
 \begin{verbatim}
 <HTML>
 <HEAD>
-  <STYLE TYPE="text/css">
+  <STYLE>
     @import url(http://victim.com);
   </STYLE>
-  <LINK REL="stylesheet" HREF="http://victim.com">
+  <LINK REL="stylesheet"HREF="http://victim.com">
 </HEAD>
 </HTML>
 \end{verbatim}
@@ -138,10 +136,20 @@ The cross-origin CSS attack is less serious than it could be, because there are 
 \item{Newlines:}
 Any newline in the stolen string will break CSS parsing.
 
+fully-patched IE
+allows newlines
+allows single/double quotes
+
+
 \item{Character Escapes:}
 single/double quote,
 paranthesis, semicolon
 url(..)
+
+UTF7 charset (FF, Safari)
+header /meta tag http-equiv
+\cite{cssxss}
+
 
 \item{Injection Points:}
 Need 2 injection points
@@ -152,29 +160,26 @@ rich-functionality sites
 cookie-authenticated URLs
 e.g. AJAX APIs, JSON responses, XML responses -- and in particular -- mobile HTML UIs.
 
-\paragraph{IE}
-fully-patched IE
-allows newlines
-allows single/double quotes
-
-\paragraph{UTF-7}
-UTF7 charset (FF, Safari)
-header /meta tag http-equiv
 
 \subsection{Concrete Attack}
 Example: Yahoo! Mail
 
 \section{Defenses}
 
-\subsection{Server-side Defenses}
-\subsubsection{Newlines}
+\subsection{Server-side Mitigations}
+Blah
+\begin{itemize}
+\item{Newlines}
 Newlines;
-\subsubsection{Escaping Quotes}
+\item{Escaping Quotes}
 Escaping quotes;
-\subsubsection{Nosniff}
+\item{Don't Use Cookies}
+capabilities?
+\item{Nosniff}
 Nosniff
 Content type header (charset)
 burden on developers
+\end{itemize}
 
 \subsection{Client-side Defenses}
 \subsubsection{Disable Cookies}
