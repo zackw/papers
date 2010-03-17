@@ -34,7 +34,7 @@ This is the introduction.
 \section{Threat Model}
 We define a precise threat model, the web attacker, for reasoning the cross-origin CSS attack. We assume that the attacker's goal is to steal the user's secret content on an honest web site from another domain.
 
-\subsection*{Web Attacker (Data Theft?)}
+\subsection*{Web Attacker (or Data Theft?)}
 A web attacker is a malicious principal who owns a domain name, e.g. attacker.com, and operates a web server. To study the browser's defense mechanisms, we assume that the user's browser renders content from the attacker's web site. In addition, the web attacker is given the ability to inject arbitrary strings into the target domain.
 
 \begin{itemize}
@@ -51,7 +51,7 @@ We assume that the attacker can inject arbitrary strings into a target domain th
 \end{itemize}
 
 There are a number of related threats that we do not consider in this paper, such as phishing, DNS rebinding, and XSS.
-...
+(more description...?)
 The web attacker is incapable of installing malicious software on the user's machine, otherwise, the malmare could replace the browser and bypass any browser-based defenses.
 
 \section{Attacks}
@@ -105,10 +105,17 @@ When the user visits attacker.com, the next step for the attacker is to instruct
 According to the standards, the browser always sends the user's cookie on any load of CSS, including cross-origin. This behavior exploits cookie-authenticated web sites and potentially leaks the user's sensitive information in the server's response.
 
 \subsubsection{Data Export}
-The final step for the attacker is to access the loaded style sheet and export the user's secret content hidden in the style properties to the attacker. There are various methods to export data to other origins, in this specific attack we are interested in approaches where no user involvement is required. One method is using JavaScript to read the data from applied styles and send cross-origin POST requests via hidden forms. All major browsers support reading styles in JavaScript, i.e. through DOM access by calling the getComputedStyle method, or retrieving the currentStyle object in Internet Explorer. Some browsers (Internet Explorer, Firefox and Safari) even grant read access to the styles loaded from cross-origin CSS. One of the WebKit-based browsers (Safari) surrendered the full CSS text of style sheets, thankfully without comments, even if they were loaded from cross-origin. In our Safari tests, we could read the raw text of cross-origin CSS via both document.styleSheets[].cssRules[] and window.getMatchedCSSRules(). This behavior violates the same-origin policy and potentially leaks data in pages with semi-valid CSS constructs. We observed that some browsers permit read access of cross-origin CSS text only in restricted conditions. Internet Explorer allows access to cross-origin CSS raw text with document.styleSheets[].rules[] if the file extension is correct. Chrome allows access to cross-origin CSS raw text with window.getMatchedCSSRules() if the external file is well-formed. Firefox only allow access to same-origin CSS raw text with document.styleSheets[].rules[]. Chrome and Opera blocks DOM access to styles loaded from cross-origin unless the CSS is "well-formed".
+The final step for the attacker is to access the loaded style sheet and export the user's secret content hidden in the style properties to the attacker. There are various methods to export data to other origins, in this specific attack we are interested in approaches where no user involvement is required. The cross-origin CSS attack is possible by just rendering one evil ad in the user's browser. 
+
+One method is using JavaScript to process the data from loaded styles and send cross-origin POST requests via hidden forms. All major browsers support reading styles in JavaScript, i.e. through DOM access by calling the getComputedStyle method, or retrieving the currentStyle object in Internet Explorer. Some browsers (Chrome and Opera) cautiously block DOM access to styles loaded from cross-origin unless the CSS is "well-formed". Other browsers (Internet Explorer, Firefox and Safari) still grant read access to the styles loaded from cross-origin CSS. One of the WebKit-based browsers (Safari) even surrendered the full CSS text of style sheets, including CSS rules loaded from cross-origin (without comments, thankfully). For Safari users, the attacker could read the raw text of cross-origin CSS via document.styleSheets[].cssRules[] or window.getMatchedCSSRules(). This behavior violates the same-origin policy and potentially leaks data in pages with semi-valid CSS constructs. Some browsers only permit read access of cross-origin CSS text under restricted conditions. Internet Explorer allows access to cross-origin CSS raw text with document.styleSheets[].rules[] only if the file extension is correct. Chrome and Opera allows access to cross-origin CSS raw text with document.styleSheets[].rules[] only if the external file is well-formed. Chrome allows access to cross-origin CSS raw text with window.getMatchedCSSRules() only if the external file is well-formed.
 (show a table?)
 
-Even if the user's browser disabled JavaScript, the attacker would still be able to send URL to evil server.
+To attack user that have disabled JavaScript in their browsers, another method is available by simply injecting the CSS string with background-image as the following:
+\begin{verbatim}
+<HTML>..{}BODY{background-image:url(http://attacker
+.com/?SECRET);}..</HTML>
+\end{verbatim}
+In this method, the secret string will be appended to the path or query string of the attacker's server URL. So, the background of the attacker's page will be styled with a background image loaded from an URL, the path of which contains stolen data. One important characteristic of the CSS property background-image, which is an URL, is that it will be automatically fetched even if JavaScript is turned off. The stolen data is then harvested by the attacker from their web server logs.
 
 \subsection{Restrictions}
 There are restrictions on the format of cross-domain data which can be stolen.
@@ -120,9 +127,7 @@ Although Different browser behaviors
 Escaping Characters
 Quotes not escaped (except IE, sometimes FF);
 UTF7 charset
-\begin{verbatim}
-<HTML>..{}BODY{background-image:url(SECRET);}..</HTML>
-\end{verbatim}
+
 header meta
 
 Injection Points
