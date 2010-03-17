@@ -61,25 +61,26 @@ In this section, we study cross-origin CSS attacks. First, we provide some backg
 In this section, we provide background information about Cascading Style Sheets (CSS), the same-origin policy (SOP), and content sniffing.
 
 \subsubsection{Cascading Style Sheets}
-Cascading Syle Sheets\cite{css} is a mechanism that lets web developers control the visual appearance of web documents using style sheet language. The design of CSS enables separation of document content from the visual appearance, including layouts, colors, and fonts. This allows web sites to preserve document structure while adjusting its appearance, e.g. switching on-screen views to printable views. Furthermore, documents are allowed to import external style sheets and let third parties to control a subset of the CSS rules.
+Cascading Syle Sheets\cite{css} is a mechanism that lets web developers control the visual appearance of web documents using style sheet language. The design of CSS enables separation of document content from the visual appearance, including layouts, colors, and fonts. This allows web sites to adjusting its appearance, e.g. switching on-screen views to printable views, without requiring modifications to the document. Furthermore, documents are allowed to import external style sheets and let third parties to control a subset of the CSS rules. This feature allows web sites to share style sheets across a number of documents.
 
-In modern browsers, the CSS parser is actually very lax. The CSS parser will skip over any amount of invalid syntax in the style sheet until it finds the next valid rule. This is unlike the JavaScript parser that will abort on the first syntax error. A lax CSS parser gives the browser better compatiblity for supporting misconfigured web sites, but unfortunately opens opportunities for attackers and enables the cross-origin CSS attack in this paper.
+In modern browsers, the CSS parser is actually very lax. The CSS parser will skip over any amount of invalid syntax in the style sheet until it finds the next valid rule. This is unlike the JavaScript parser that will abort on the first syntax error. A lax CSS parser gives the browser better compatiblity for supporting misconfigured web sites, but unfortunately opens opportunities to attackers and enables the cross-origin CSS attack in this paper.
 
 \subsubsection{Same-Origin Policy}
-The same-origin policy\cite{mozillasameorigin} is the main security mechanism in modern browsers that provides isolation of contents between unrelated web sites. The same-origin policy restricts contents to access resources only from the same origin, which applies to scripting interactions, i.e. XMLHttpRequest and Document Object Model (DOM)\cite{dom} access. In SOP, the origin is defined as the protocol, host, and port. The same-origin policy does not apply to fetching remote scripts or style sheets from a different origin.
+The same-origin policy\cite{mozillasameorigin} is the main security mechanism in modern browsers that provides isolation of contents between unrelated web sites. The same-origin policy restricts contents to access resources only from the same origin, which applies to scripting interactions, i.e. XMLHttpRequest and Document Object Model (DOM)\cite{dom} access. In SOP, the origin is defined as the protocol, host, and port. The same-origin policy does not apply to fetching and executing remote scripts or style sheets from a different origin.
 
 \subsubsection{Content-Sniffing}
-The HTTP Content-Type header indicates the type of the content that is transmitted using Multipurpose Internet Mail Extensions (MIME)\cite{mime} types such as text/html or image/jpeg. Browsers use this MIME type to determine how to handle the contents of HTTP responses. Some web servers fail to provide the correct MIME type in the Content-Type header, therefore browsers use content-sniffing algorithms to guess the correct MIME type by inspecting the contents of HTTP responses and override the server's MIME type. 
+The HTTP Content-Type header indicates the type of the content that is transmitted using Multipurpose Internet Mail Extensions (MIME)\cite{mime} types such as text/html or image/jpeg. Browsers use this MIME type to determine how to handle the contents of HTTP responses. Some web servers fail to provide the correct MIME type in the Content-Type header, therefore browsers use content-sniffing algorithms to guess the correct MIME type by inspecting the contents of HTTP responses and override the server's MIME type.
+(mention meta tag?)
 
 \subsection{Cross-Origin CSS Attack}
-In a cross-origin CSS attack, the main objective is to steal the user's secret content on an honest web site from a different domain. The attacker is particularly interested in stealing any sensitive information of the user, or preferrably a secret CSRF token hidden in the document that may allow the attacker to hijack the user's session. 
+In a cross-origin CSS attack, the main objective is to steal the user's secret content on an honest web site from a different domain. The attacker is most likely interested in stealing any sensitive information in a cookie-authenticated web page, or preferrably a secret CSRF token hidden in the document that may allow the attacker to hijack the user's session. 
 (reference for csrf token?)
 To describe the cross-origin CSS attack, we decompose the attack into three main steps: string injection, style sheet import, and data export.
 
 \subsubsection{String Injection}
-In order to steal content from a different domain, first of all, the attacker leverages the fact that browsers allows web sites to import style sheets. Given the ability to inject strings into the target domain which contains the secret content, the attacker may fool the user's browser to loading a carefully crafted non-CSS (e.g. HTML or XML) document as a valid style sheet resource. Normally, random text in a non-CSS document contains syntax errors and would not be parsed as valid CSS rules by the CSS parser. However, due to the overly lax parsing of CSS in modern browsers, portions of a non-CSS document with valid CSS syntax may still be successfully parsed and loaded as style sheet rules.
+In order to steal content from a different domain, the attacker leverages the fact that browsers allows web pages to import style sheets from cross-origin. Given the ability to inject strings into the target domain which contains the secret content, the attacker may fool the user's browser into loading a carefully crafted non-CSS (e.g. HTML or XML) document as a valid style sheet resource. Normally, random text in a non-CSS document contains syntax errors to the CSS parser and would not be parsed as valid CSS rules. However, due to the overly lax CSS parsers in modern browsers, portions of a non-CSS document with valid CSS syntax can still be successfully parsed and loaded as style sheet rules.
 
-As an example, the attacker's injection string can be constructed based on common CSS properties that corresponds to string values, i.e. font-family, background-image, and list-style-image. If the attacker can control the text preceding and succeeding the sensitive content, suppose there is a sensitive string "SECRET", the target document can be crafted as the following:
+We present an example as proof of concept. Suppose there is a sensitive string "SECRET" in the target document on an honest web site. If the attacker can control the text preceding and succeeding the sensitive content, we can constructing the attacker's injection string based on common CSS properties that corresponds to string values, i.e. font-family, background-image, and list-style-image. The target document can be crafted as the following:
 \begin{verbatim}
 Original:
 <HTML>..SECRET..</HTML>
@@ -87,10 +88,10 @@ Original:
 After injection:
 <HTML>..{}BODY{font-family:"SECRET"}..</HTML>
 \end{verbatim}
-After injection, the crafted document appears to the user's browser as containing a valid CSS rule that declares the secret string as the font-family value for the "BODY" element. Once the user's browser loads the crafted document to the style sheet, the attacker can easily steal the secret string from the font-family style of the "BODY" element. Note that the seemingly redundant pair of brackets in the injection string resyncs the CSS parser to make sure that the evil CSS rule parses properly. In practice, there are several methods that may allow a web attacker to inject strings into the target domain, e.g. reflection of user controlled strings or via URL parameters.
+After injection, the crafted document appears to the user's browser as containing a valid CSS rule that declares the secret string as the value of font-family for the "BODY" element. Once the user's browser loads the crafted document as an imported style sheet, the attacker can easily steal the secret string from the font-family style of the "BODY" element. Note that the seemingly redundant pair of brackets in the injection string resyncs the CSS parser to make sure that the evil CSS rule parses properly. In practice, there are several methods that may allow a web attacker to inject strings into the target domain, e.g. reflection of user controlled strings or via URL parameters.
 
 \subsubsection{Style Sheet Import}
-When the user visits attacker.com, the next step for the attacker is to instruct the user's browser to fetch the crafted document and load as a style sheet. In HTML, documents can import external style sheets from remote servers either using the CSS "@import" notation, or using the "LINK" element inside the "HEAD" element as the following: .
+When the user visits attacker.com, the next step for the attacker is to instruct the user's browser to fetch the crafted document and load as a style sheet. In HTML specifications\cite{html}, documents can import external style sheets from remote servers by using the CSS "@import" notation, or using the "LINK" element inside the "HEAD" element as the following: .
 \begin{verbatim}
 <HTML>
 <HEAD>
@@ -101,14 +102,13 @@ When the user visits attacker.com, the next step for the attacker is to instruct
 </HEAD>
 </HTML>
 \end{verbatim}
+According to the standards, the browser always sends the user's cookie on any load of CSS, including cross-origin. This behavior exploits cookie-authenticated web sites and potentially leaks the user's sensitive information in the server's response.
 
 \subsubsection{Data Export}
-The attacker can then access the user's content that are hidden in the style properties imported from the remote style sheet.
-The user's browser exports the secret content hidden in the loaded style sheets to the attacker.
-JavaScript read currentStyle (IE), getComputedStyle;
-cssText;
-TABLE?
-Send URL to evil server (No JavaScript)
+The final step for the attacker is to access the loaded style sheet and export the user's secret content hidden in the style properties to the attacker. There are various methods to export data to other origins, in this specific attack we are interested in approaches where no user involvement is required. One method is using JavaScript to read the data from applied styles and send cross-origin POST requests via hidden forms. All major browsers support reading styles in JavaScript, i.e. through DOM access by calling the getComputedStyle method, or retrieving the currentStyle object in Internet Explorer. Some browsers (Internet Explorer, Firefox and Safari) even grant read access to the styles loaded from cross-origin CSS. One of the WebKit-based browsers (Safari) surrendered the full CSS text of style sheets, thankfully without comments, even if they were loaded from cross-origin. In our Safari tests, we could read the raw text of cross-origin CSS via both document.styleSheets[].cssRules[] and window.getMatchedCSSRules(). This behavior violates the same-origin policy and potentially leaks data in pages with semi-valid CSS constructs. We observed that some browsers permit read access of cross-origin CSS text only in restricted conditions. Internet Explorer allows access to cross-origin CSS raw text with document.styleSheets[].rules[] if the file extension is correct. Chrome allows access to cross-origin CSS raw text with window.getMatchedCSSRules() if the external file is well-formed. Firefox only allow access to same-origin CSS raw text with document.styleSheets[].rules[]. Chrome and Opera blocks DOM access to styles loaded from cross-origin unless the CSS is "well-formed".
+(show a table?)
+
+Even if the user's browser disabled JavaScript, the attacker would still be able to send URL to evil server.
 
 \subsection{Restrictions}
 There are restrictions on the format of cross-domain data which can be stolen.
