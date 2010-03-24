@@ -93,7 +93,7 @@ In a cross-origin CSS attack, the attacker's main objective is to steal the user
 \subsubsection{CSS String Injection}
 Due to lenient MIME type requirement of CSS parsers, the attacker may fool the user's browser into loading a carefully crafted non-CSS (e.g. HTML or XML) document as a valid style sheet resource. In practice, there are several methods that may allow a web attacker to inject strings into the target domain, e.g. reflection of user controlled strings or via URL parameters. Normally, random text in a non-CSS document contains syntax errors to the CSS parser and would break the parsing. However, due to the overly lax CSS parsers in modern browsers, portions of a non-CSS document with valid CSS syntax can still be successfully parsed and recognized as style sheet rules.
 
-To give an example of a CSS string injection, suppose that there is s sensitive content, represented with the string "SECRET", in an HTML document on an honest web site that the attacker wants to steal. Assuming that the attacker has sufficient influence over the web page to control the text preceding and succeeding the secret string, the CSS string injection can be constructed based on common CSS properties that corresponds to string values, i.e. font-family, background-image, and list-style-image. Given the ability to inject arbitrary strings into the target domain, the HTML document can be crafted to contain a CSS font-family property as the following:
+To give an example of a CSS string injection, suppose that there is s sensitive content, represented with the string `SECRET', in an HTML document on an honest web site that the attacker wants to steal. Assuming that the attacker has sufficient influence over the web page to control the text preceding and succeeding the secret string, the CSS string injection can be constructed based on common CSS properties that corresponds to string values, i.e. font-family, background-image, and list-style-image. Given the ability to inject arbitrary strings into the target domain, the HTML document can be crafted to contain a CSS font-family property as the following:
 \begin{verbatim}
 Original:
 <HTML>..SECRET..</HTML>
@@ -101,10 +101,10 @@ Original:
 After injection:
 <HTML>..{} BODY { font-family: "SECRET" }..</HTML>
 \end{verbatim}
-The injected HTML document will appear to the CSS parser as containing a valid CSS rule. The fonts of the attacker's page will be styled with a font-family specified as the stolen string "SECRET". Note that the seemingly redundant pair of brackets in the injection string re-syncs the CSS parser to make sure that the evil CSS rule parses properly. All the other non-CSS text in the document are skipped by the CSS parser, thus will not effect the user's browser parsing of the evil CSS rule. Once the crafted document is loaded, the attacker can easily steal the secret string from the font-family style of the attacker's page.
+The injected HTML document will appear to the CSS parser as containing a valid CSS rule. The fonts of the attacker's page will be styled with a font-family specified as the stolen string `SECRET'. Note that the seemingly redundant pair of brackets in the injection string re-syncs the CSS parser to make sure that the evil CSS rule parses properly. All the other non-CSS text in the document are skipped by the CSS parser, thus will not effect the user's browser parsing of the evil CSS rule. Once the crafted document is loaded, the attacker can easily steal the secret string from the font-family style of the attacker's page.
 
 \subsubsection{Style Sheet Import}
-When the user visits attacker.com, the attacker's malicious page instructs the user's browser to fetch and load the crafted document as a style sheet. In HTML specifications\cite{html}, documents can import external style sheets from remote servers by using the CSS "@import" notation, or using the link tag inside the head element as the following: .
+When the user visits attacker.com, the attacker's malicious page instructs the user's browser to fetch and load the crafted document as a style sheet. In HTML specifications\cite{html}, documents can import external style sheets from remote servers by using the CSS '@import' notation, or using the link tag inside the head element as the following: .
 \begin{verbatim}
 <HTML>
 <HEAD>
@@ -122,7 +122,8 @@ According to the standards, the browser always sends the user's cookie when it l
 The final step for the attacker is to read the loaded style sheets and export the secret content hidden in the style properties to the attacker. There are various methods to export data to other origins, in this specific attack we are interested in approaches where no user involvement is required. The cross-origin CSS attack is possible by just rendering one evil ad in the user's browser. 
 
 \paragraph{JavaScript}
-One method is using JavaScript to access the loaded styles and then send the stolen data to attacker.com using the XMLHttpRequest API. All major browsers support reading styles in JavaScript, i.e. through DOM access by calling the window.getComputedStyle method, or retrieving the currentStyle object in Internet Explorer. Some browsers (Chrome and Opera) cautiously block DOM access to styles loaded from cross-origin unless the CSS is "well-formed". Other browsers (Internet Explorer, Firefox and Safari) still grant read access to the styles loaded from cross-origin CSS. One of the WebKit-based browsers (Safari) even surrendered the full CSS text of style sheets, including CSS rules loaded from cross-origin (without comments, thankfully). For the Safari browser, the attacker could read the raw text of cross-origin CSS via document.styleSheets[].cssRules[] or window.getMatchedCSSRules(). This behavior violates the same-origin policy and potentially leaks data in pages with semi-valid CSS constructs. Some browsers only permit read access for cross-origin CSS text under restricted conditions. Internet Explorer allows access to cross-origin CSS raw text with document.styleSheets[].rules[] only if the file extension is correct. Chrome and Opera allows access to cross-origin CSS raw text with document.styleSheets[].rules[] only if the external file is well-formed. Chrome also allows access to cross-origin CSS raw text with window.getMatchedCSSRules() if the external file is well-formed.
+One method is using JavaScript to access the loaded styles and then send the stolen data to attacker.com using the XMLHttpRequest API. All major browsers support reading styles in JavaScript, i.e. through DOM access by calling the window.getComputedStyle method, or retrieving the currentStyle object in Internet Explorer. Some browsers (Chrome and Opera) cautiously block DOM access to styles loaded from cross-origin unless the CSS is well-formed. Other browsers (Internet Explorer, Firefox and Safari) still grant read access to the styles loaded from cross-origin CSS. One of the WebKit-based browsers (Safari) even surrendered the full CSS text of style sheets, including CSS rules loaded from cross-origin (without comments, thankfully). For the Safari browser, the attacker could read the raw text of cross-origin CSS via document.styleSheets[].cssRules[] or window.getMatchedCSSRules(). This behavior violates the same-origin policy and potentially leaks data in pages with semi-valid CSS constructs. Some browsers only permit read access for cross-origin CSS text under restricted conditions. Internet Explorer allows access to cross-origin CSS raw text with document.styleSheets[].rules[] only if the file extension is correct. Chrome and Opera allows access to cross-origin CSS raw text with document.styleSheets[].rules[] only if the external file is well-formed. Chrome also allows access to cross-origin CSS raw text with window.getMatchedCSSRules() if the external file is well-formed.
+(describe behavior before patch?)
 
 \begin{table}
 \centering
@@ -160,7 +161,7 @@ The requirement for quotes to not get escaped can sometimes be bypassed in brows
 <LINK REL="stylesheet" HREF="http://victim.com" 
 CHARSET="utf-7">
 \end{verbatim}
-By forcing UTF7, either a single or double quote may be injected by rendering it in the UTF-7 character set, i.e. "+ACc-" for single quote and "+ACI-" for double quote. This will cause the injection to survive any output escaping of the web application. A significant number of web sites actually do not specify character sets in their HTTP responses (We found that 23 out of the top 100 web sites via Alexa\cite{alexa} did not specify character sets). Some web sites specify the Content-Type information using meta tags with the http-equiv attribute in the HTML head element as the following:
+By forcing UTF7, either a single or double quote may be injected by rendering it in the UTF-7 character set, i.e. `+ACc-' for single quote and `+ACI-' for double quote. This will cause the injection to survive any output escaping of the web application. A significant number of web sites actually do not specify character sets in their HTTP responses (We found that 23 out of the top 100 web sites via Alexa\cite{alexa} did not specify character sets). Some web sites specify the Content-Type information using meta tags with the http-equiv attribute in the HTML head element as the following:
 \begin{verbatim}
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; 
 charset=utf-8">
@@ -196,7 +197,7 @@ Compatibility evaluation
 (GRAPHS!!)
 
 \subsubsection{Adoption}
-Deployment of Webkit patch (chrome 4, safari 4.0.5)
+Deployment of Webkit r52784 patch (chrome 4.0.249.78, safari 4.0.5)
 Same heuristic in Opera 10.10
 
 ?? Firefox
@@ -217,7 +218,8 @@ Strict CSS parsing;
 crash hard on error;
 
 \paragraph{Strict MIME Type:}
-No sniffing. Require valid MIME for CSS; if not globally at least for cross-origin loads
+No sniffing. Require valid MIME for CSS; if not globally at least for cross-origin loads;
+burden on developers
 
 \subsubsection{Server-side Mitigations}
 Blah
@@ -233,11 +235,6 @@ Escaping quotes;
 Sending session cookies enables web sites to provide user-specific styles by controlling the response of each uer's request.
 adjust to mobile account, printable view..;
 capabilities? web key
-
-\paragraph{Correct MIME}
-Content type header (charset)
-burden on developers
-Strict mode
 
 
 \section{Related Work}
