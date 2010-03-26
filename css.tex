@@ -22,7 +22,7 @@ Collin Jackson\\
 
 \maketitle
 \begin{abstract}
-The cross-origin CSS attack is a newly exploited browser vulnerability that allows the attacker to steal the user's secret content on an honest web site from a different domain. In this paper, we expose the cross-origin CSS attack, in which the attacker injects CSS strings into the target domain that contains the secret content, instructs the user's browser to import and parse the document as a style sheet, and then exports the secret string hidden in the imported style sheet to the attacker. This attack is constructed upon the lenient requirement of content type and lax parsing of CSS in modern browsers. We detail existing server-side and client-side defense techniques and find shortcomings with each technique. We propose that browsers implement a stricter CSS parsing when the content type is broken, which can provide robust defense for cross-origin CSS attacks while addressing web site compatibility concerns.
+The cross-origin CSS attack is a newly exploited browser vulnerability that allows the attacker to steal the user's secret content on an honest web site from a different domain. In this paper, we expose the cross-origin CSS attack, in which the attacker injects CSS strings into the target domain that contains the secret content, instructs the user's browser to import and parse the document as a style sheet, and then exports the secret string hidden in the imported style sheet to the attacker. This attack is constructed upon the lenient requirement of content type and lax parsing of CSS in modern browsers. We detail existing client-side and server-side mitigation techniques and find shortcomings with each technique. We propose that browsers implement a stricter CSS parsing for cross-origin loads when the content type is broken, which can provide robust defense for cross-origin CSS attacks while addressing web site compatibility concerns.
 \end{abstract}
 
 \category{K.6.5}{Management of Computing and Information Systems}{Security and Protection}
@@ -55,7 +55,7 @@ The web attacker can send and receive network messages over network protocols of
 We assume that the user visits the attacker's web site with a popular browser. In practice, this assumption can be supported by several techniques for attacking users, e.g. buying web advertisements or sending bulk e-mail to encourage visitors. By visiting attacker.com, the attacker can instruct the user's browser to fetch external style sheets and also export data to remote servers. As long as the user's session with an honest web site haven't expired, the attacker can instruct the user's browser to issue requests with the user's cookies.
 
 \item{Web Site Behavior:}
-We assume that the attacker can inject arbitrary strings into a target domain that contains the secret content, which we refer to as victim.com. In practice, there are various methods to inject strings into the target domain, e.g. reflection of user controlled strings or via URL parameters. The ability of injecting CSS strings is considered weaker than injecting scripts into a target domain as in common XSS attacks, because scripts may be detected and blocked by client-side XSS filters.
+We assume that the attacker can inject semi-arbitrary strings into a target domain that contains the secret content, which we refer to as victim.com. We define the term semi-arbitrary strings as a subset of strings that may conform to CSS syntax as opposed to fully arbitrary strings that conforms to HTML. The ability of injecting CSS strings is considered weaker than injecting HTML strings into the target domain, as in common XSS attacks, because scripts may be detected and blocked by client-side XSS filters. In practice, there are various methods to inject strings into the target domain, e.g. reflection of user controlled strings or via URL parameters.
 
 \end{itemize}
 
@@ -75,6 +75,9 @@ Cascading Style Sheets\cite{css} is a mechanism that lets web developers control
 \paragraph{Lax Parsing}
 In modern browsers, the CSS parser is actually very lax. The CSS parser will skip over any amount of invalid syntax in the style sheet until it finds the next valid rule. This is unlike the JavaScript parser that will abort on the first syntax error. A lax CSS parser gives the browser better compatibility for supporting misconfigured web sites, but unfortunately opens opportunities to attackers and enables the cross-origin CSS attack in this paper.
 
+(Chris: I think they are intending to be forward-compatible with brand new CSS syntax too.
+There is some small interpretation of invalid syntax: careful track seems to be kept regarding opened brackets. I think this includes { ( and [ -- but of course may be browser dependent. Any CSS injection point may have to close an arbitrary number of these brackets: of the correct type in the correct order!)
+
 \subsubsection{Same-Origin Policy}
 The same-origin policy\cite{mozillasameorigin} is the main security mechanism in modern browsers that provides isolation of contents between unrelated web sites. The same-origin policy restricts contents to access resources only from the same origin, which applies to scripting interactions, i.e. XMLHttpRequest and Document Object Model (DOM)\cite{dom} access. In SOP, the origin of a resource is defined as the protocol, host, and port. The same-origin policy does not apply to fetching and executing remote libraries, including scripts and style sheets, from a different origin.
 
@@ -88,7 +91,17 @@ Browsers use MIME types to determine how to handle the contents of HTTP response
 \subsection{Cross-Origin CSS Attack}
 In a cross-origin CSS attack, the attacker's main objective is to steal the user's secret content on an honest web site from a different domain. The attacker is most likely interested in stealing any sensitive information in a cookie-authenticated web page, or preferably a secret CSRF token\cite{csrf} hidden in the document that may allow the attacker to hijack the user's session. In order to steal content from a different domain, the attacker leverages the fact that the browser's security policy allows external style sheets to be imported from cross-origin. The target document on an honest web site is injected such that portions of the document conform to CSS rules. As soon as the user visits the attacker's malicious page, the cross-origin data is imported as style sheets and stolen. To describe the cross-origin CSS attack in detail, we decompose the attack into three main steps: CSS string injection, style sheet import, and data export.
 
-(draw an attack scenario figure?)
+\begin{figure}
+\centering
+\epsfig{file=fig1.eps, width=\linewidth}
+\caption{}
+\end{figure}
+
+\begin{figure}
+\centering
+\epsfig{file=fig2.eps, width=\linewidth}
+\caption{}
+\end{figure}
 
 \subsubsection{CSS String Injection}
 Due to lenient MIME type requirement of CSS parsers, the attacker may fool the user's browser into loading a carefully crafted non-CSS (e.g. HTML or XML) document as a valid style sheet resource. In practice, there are several methods that may allow a web attacker to inject strings into the target domain, e.g. reflection of user controlled strings or via URL parameters. Normally, random text in a non-CSS document contains syntax errors to the CSS parser and would break the parsing. However, due to the overly lax CSS parsers in modern browsers, portions of a non-CSS document with valid CSS syntax can still be successfully parsed and recognized as style sheet rules.
@@ -122,20 +135,22 @@ According to the standards, the browser always sends the user's cookie when it l
 The final step for the attacker is to read the loaded style sheets and export the secret content hidden in the style properties to the attacker. There are various methods to export data to other origins, in this specific attack we are interested in approaches where no user involvement is required. The cross-origin CSS attack is possible by just rendering one evil ad in the user's browser. 
 
 \paragraph{JavaScript}
-One method is using JavaScript to access the loaded styles and then send the stolen data to attacker.com using the XMLHttpRequest API. All major browsers support reading styles in JavaScript, i.e. through DOM access by calling the window.getComputedStyle method, or retrieving the currentStyle object in Internet Explorer. Some browsers (Chrome and Opera) cautiously block DOM access to styles loaded from cross-origin unless the CSS is well-formed. Other browsers (Internet Explorer, Firefox and Safari) still grant read access to the styles loaded from cross-origin CSS. One of the WebKit-based browsers (Safari) even surrendered the full CSS text of style sheets, including CSS rules loaded from cross-origin (without comments, thankfully). For the Safari browser, the attacker could read the raw text of cross-origin CSS via document.styleSheets[].cssRules[] or window.getMatchedCSSRules(). This behavior violates the same-origin policy and potentially leaks data in pages with semi-valid CSS constructs. Some browsers only permit read access for cross-origin CSS text under restricted conditions. Internet Explorer allows access to cross-origin CSS raw text with document.styleSheets[].rules[] only if the file extension is correct. Chrome and Opera allows access to cross-origin CSS raw text with document.styleSheets[].rules[] only if the external file is well-formed. Chrome also allows access to cross-origin CSS raw text with window.getMatchedCSSRules() if the external file is well-formed.
-(describe behavior before patch?)
+One method is using JavaScript to access the loaded styles and then send the stolen data to attacker.com using the XMLHttpRequest API. All major browsers support reading styles in JavaScript, e.g. through DOM access by calling the window.getComputedStyle method, or retrieving the currentStyle object in Internet Explorer. WebKit-based browsers, i.e. Safari and Chrome, even surrendered the full CSS text of style sheets, including CSS rules loaded from cross-origin (without comments, thankfully). The attacker could read the raw text of cross-origin CSS via document.styleSheets[].cssRules[].cssText and also window.getMatchedCSSRules().cssText. This behavior violates the same-origin policy and potentially leaks data in pages with semi-valid CSS constructs. Other browsers only permit read access for raw CSS text under restricted conditions. Internet Explorer allows access to cross-origin CSS raw text with document.styleSheets[].rules[].style.cssText only if the MIME type is correct. Firefox and Opera only allows access to CSS raw text for style sheets loaded from same-origin.
+Even if access to raw CSS text is blocked, the ability to read cross-origin loaded CSS styles is enough to construct serious attacks.
+
+%raw CSS text without comments, thankfully
+%Some browsers (Chrome and Opera) cautiously block DOM access to styles loaded from cross-origin unless the CSS is well-formed. Other browsers (Internet Explorer, Firefox and Safari) still grant read access to the styles loaded from cross-origin CSS.  Chrome and Opera allows access to cross-origin CSS raw text with document.styleSheets[].rules[] only if the external file is well-formed. Chrome also allows access to cross-origin CSS raw text with window.getMatchedCSSRules() if the external file is well-formed.
 
 \begin{table}
 \centering
-\caption{Cross-Origin CSS Access}
+\caption{Cross-Origin CSS DOM Vulnerability}
 \begin{tabular}{|c|c|c|c|c|c|} \hline
 Methods&IE&FF&OP&Safari&Chrome\\ \hline
-currentStyle&o&x&o?&x&x\\ \hline
-getComputedStyle&x&o&o?&o&o?\\ \hline
-rules[].style.cssText&.ext&x&x&o&o?\\ \hline
-cssRules[].cssText&x&x&o?&o&o?\\
+currentStyle&v&&v&&\\ \hline
+getComputedStyle&&v&v&v&v\\ \hline
+rules[].style.cssText&v&&&v&v\\ \hline
+cssRules[].cssText&&&&v&v\\
 \hline\end{tabular}
-(comparison of versions before the patch? or current?)
 \end{table}
 
 \paragraph{Background-image}
@@ -171,7 +186,7 @@ Browsers may use meta tags to refine the information provided by the actual head
 \subsubsection{Avoid Newlines}
 In CSS, a string cannot directly contain a newline. To include a newline in a string, the line feed character must be escaped. Therefore, another barrier of this attack is that any un-escaped newline in the stolen string will break the CSS parsing. This is a very common condition in many web pages, which avoids potentially serious attacks. However, many rich-functionality web sites are often exploitable due to serving subtle cookie-authenticated URLs with JSON or XML responses that commonly lack newlines. Some web sites even allow users to control the formatting of server responses, e.g. disable pretty printing, which may be extremely dangerous.
 \paragraph{Internet Explorer}
-Catastrophically, the CSS parser in the Internet Explorer accepts both newlines in CSS strings and newlines in unquoted URL strings, regardless of whether escaped or not. Unfortunately, even a fully-patched browser can exploit its users to a cross-origin CSS data theft and potentially serious session hijacking.
+Catastrophically, the CSS parser in the Internet Explorer accepts both newlines in CSS strings and newlines in unquoted URL strings, regardless of whether escaped or not. Unfortunately, even a fully-patched browser can expose its users to a cross-origin CSS data theft and potentially serious session hijacking.
 
 \subsection{Concrete Attacks}
 ?? mixi.jp post\_key theft\cite{cssxss}
@@ -179,9 +194,16 @@ Catastrophically, the CSS parser in the Internet Explorer accepts both newlines 
 Example: Yahoo! Mail
 
 \section{Defenses}
+In this section, we describe defenses against cross-orgin CSS attacks. First, we propose modifying browsers to stricten CSS loading. Second, we present our evaluation of web site compatibility for the proposed defenses. Then we discuss other approaches including client-side and server-side mitigations.
 
 \subsection{Proposal: Stricter CSS Loading}
-\subsubsection{Heuristic}
+To prevent cross-origin CSS attacks, we propose modifying browsers to stricten CSS loading for cross-origin references. The initial approach is to enforce strict MIME type checking for CSS loads. We also provide a conservative approach to minimize breaking web sites.
+
+\subsubsection{Strict MIME Type}
+Require valid MIME for CSS; if not globally at least for cross-origin loads;
+burden on developers?
+
+\subsubsection{Conservative Approach}
 For cross-origin CSS loads, stricter CSS parsing if MIME is broken;
 Blocks most attacks;
 Conservative approach;
@@ -216,10 +238,6 @@ background-image bypass
 \paragraph{Strict CSS Parsing:}
 Strict CSS parsing;
 crash hard on error;
-
-\paragraph{Strict MIME Type:}
-No sniffing. Require valid MIME for CSS; if not globally at least for cross-origin loads;
-burden on developers
 
 \subsubsection{Server-side Mitigations}
 Blah
