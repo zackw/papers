@@ -94,13 +94,13 @@ In a cross-origin CSS attack, the attacker's main objective is to steal the user
 \begin{figure}
 \centering
 \epsfig{file=fig1.eps, width=\linewidth}
-\caption{}
+\caption{Attack Scenario}
 \end{figure}
 
 \begin{figure}
 \centering
 \epsfig{file=fig2.eps, width=\linewidth}
-\caption{}
+\caption{Three Steps of the Attack}
 \end{figure}
 
 \subsubsection{CSS String Injection}
@@ -168,7 +168,7 @@ The cross-origin CSS attack is less serious than it could be, because there are 
 The first and most crucial step of the cross-origin CSS attack is to contain the secret data into a CSS property string. In order for the CSS parser to properly parse the evil CSS rule, certain symbols must be inserted at the beginning and at the end of the stolen string. In general, the attacker must have sufficient influence over the target document to control two injection points, pre-string and post-string, to insert the starting symbols and termination symbols, respectively. Typically, socially-related web sites are relatively more susceptible to this attack since the pages often contain user-controlled strings such as comments on photos. For some web sites, a second injection is not required because the termination symbols happens to exist later in the document. This is possible since the termination symbols can be as short as just a quotation mark and an ending bracket. 
 
 \subsubsection{Avoid Character Escapes}
-In CSS specifications\cite{css}, strings can either be written with double quotes or with single quotes. Double quotes cannot occur inside double quotes, analogously for single quotes. Therefore, the attacker has the choice to inject either single or double quotes depending on the occurance of quotes in the secret data. In a context where both quotes are escaped, it becomes more difficult to inject a CSS string. However, a variation of the attack  can bypass this restriction by injecting the background-image property. For the background-image property, the URL value is written with the functional notation url(), which does not require the use of single or double quotes around the URL string itself. The CSS specification does define that certain characters must be escaped in an unquoted URL, e.g. parentheses, commas, white spaces, single quotes and double quotes. However, in Internet Explorer, the CSS parser does not require any of these characters to be escaped in an unquoted URL and will parse until it encounters a closing parentheses and a semicolon.
+In CSS specifications\cite{css}, strings can either be written with double quotes or with single quotes. Double quotes cannot occur inside double quotes, analogously for single quotes. Therefore, the attacker has the choice to inject either single or double quotes depending on the occurrence of quotes in the secret data. In a context where both quotes are escaped, it becomes more difficult to inject a CSS string. However, a variation of the attack  can bypass this restriction by injecting the background-image property. For the background-image property, the URL value is written with the functional notation url(), which does not require the use of single or double quotes around the URL string itself. The CSS specification does define that certain characters must be escaped in an unquoted URL, e.g. parentheses, commas, white spaces, single quotes and double quotes. However, in Internet Explorer, the CSS parser does not require any of these characters to be escaped in an unquoted URL and will parse until it encounters a closing parentheses and a semicolon.
 
 \paragraph{Force UTF-7}
 The requirement for quotes to not get escaped can sometimes be bypassed in browsers that support UTF-7 encoding, including Firefox and Safari. If the victim web sites fails to specify a character set in the HTTP  Content-Type header, the attacker's malicious page can force the remote resource to be parsed as UTF-7 encoding as the following:
@@ -194,24 +194,24 @@ Catastrophically, the CSS parser in the Internet Explorer accepts both newlines 
 Example: Yahoo! Mail
 
 \section{Defenses}
-In this section, we describe defenses against cross-orgin CSS attacks. First, we propose modifying browsers to stricten CSS loading. Second, we present our evaluation of web site compatibility for the proposed defenses. Then we discuss other approaches including client-side and server-side mitigations.
+In this section, we describe the defenses against cross-orgin CSS attacks. First, we propose modifying browsers to stricten CSS loading. Second, we present an evaluation of web site compatibility for our proposal. Then, we discuss the shortcomings of other approaches including client-side and server-side mitigations.
 
 \subsection{Proposal: Stricter CSS Loading}
-To prevent cross-origin CSS attacks, we propose modifying browsers to stricten CSS loading for cross-origin references. The initial approach is to enforce strict MIME type checking for CSS loads. We also provide a conservative approach to minimize breaking web sites.
+To prevent cross-origin CSS attacks, we propose modifying browsers to apply stricter CSS loading for cross-origin references. The initial approach is to enforce strict MIME type checking for CSS loads. We also provide a conservative approach to minimize breaking web sites.
 
 \subsubsection{Strict MIME Type}
-Require valid MIME for CSS; if not globally at least for cross-origin loads;
-burden on developers?
+In the cross-origin CSS attack, the attacker's malicious web page confuses the user's browser to parse an injected non-CSS document as a style sheet. If browsers strictly required external style sheets to specify a valid MIME type, which is text/css, the malicious web page would not be able to reference any crafted document. Thus, we propose that browsers always check the MIME type of external CSS references and block any CSS load with an invalid MIME type. When strict MIME type checking is enforced, if not globally at least for cross-origin loads, browsers would be able to prevent cross-origin data from being stolen. 
+
+A major concern of strict MIME type checking is that any misconfigured web site that fail to provide correct MIME types would be blocked. Strict MIME type checking relies on web developers to correctly deploy their web sites and provide valid MIME types. Unless every web developer correctly configures the served MIME type, this approach will inevitably detect false positives and cause web site breakage. Unsurprisingly, browser vendors would tend to resist changes that would cause web site breakage and lose its users.
 
 \subsubsection{Conservative Approach}
-For cross-origin CSS loads, stricter CSS parsing if MIME is broken;
-Blocks most attacks;
-Conservative approach;
+To address web site compatibility concerns, we propose a conservative approach that blocks most attacks while tolerating MIME type misconfiguration. In order to reduce false positives in the strict MIME type approach, an additional level of checking is applied to cross-origin CSS loads that have invalid MIME types. When a valid MIME type is not provided, the browser will try to parse the cross-origin CSS but bailing on first syntax error. This sniffing mechanism is to guess whether the imported CSS file is actually an injected victim document. Therefore, the devised solution blocks a CSS load when all the following conditions are met:
 \begin{itemize}
-\item{cross-origin load}
-\item{incorrect MIME}
-\item{malformed CSS}
+\item{The alleged CSS is a cross-origin load.}
+\item{The alleged CSS does not have a valid MIME type, i.e. text/css, application/x-unknown-content-type, or empty.}
+\item{The alleged CSS does not start with a syntactically valid CSS construct.}
 \end{itemize}
+The above rules will block the attack because non-CSS documents always have headers, e.g. HTML or XML header, that will cause a broken first CSS descriptor. We assume that an untampered CSS file will unlikely have a syntax error at the beginning of the file. Only a cross-origin CSS with invalid MIME type that starts with malformed syntax is considered as an injected document and rejected.
 
 \subsubsection{Experiment}
 Compatibility evaluation
@@ -219,6 +219,7 @@ Compatibility evaluation
 (GRAPHS!!)
 
 \subsubsection{Adoption}
+Then, we state the progress of adoption for our proposal in major browsers. 
 Deployment of Webkit r52784 patch (chrome 4.0.249.78, safari 4.0.5)
 Same heuristic in Opera 10.10
 
