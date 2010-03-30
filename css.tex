@@ -93,13 +93,13 @@ In a cross-origin CSS attack, the attacker's main objective is to steal the user
 
 \begin{figure}
 \centering
-\epsfig{file=scenario.eps, width=\linewidth}
+\includegraphics[width=\linewidth]{scenario.jpg}
 \caption{Attack Scenario}
 \end{figure}
 
 \begin{figure}
 \centering
-\epsfig{file=steps.eps, width=\linewidth}
+\includegraphics[width=\linewidth]{steps.jpg}
 \caption{Three Steps of the Attack}
 \end{figure}
 
@@ -135,7 +135,7 @@ According to the standards, the browser always sends the user's cookie when it l
 The final step for the attacker is to read the loaded style sheets and export the secret content hidden in the style properties to the attacker. There are various methods to export data to other origins, in this specific attack we are interested in approaches where no user involvement is required. The cross-origin CSS attack is possible by just rendering one evil ad in the user's browser. 
 
 \paragraph{JavaScript}
-One method is using JavaScript to access the loaded styles and then send the stolen data to attacker.com using the XMLHttpRequest API. All major browsers support reading styles in JavaScript, e.g. through DOM access by calling the window.getComputedStyle method, or retrieving the currentStyle object in Internet Explorer. WebKit-based browsers, i.e. Safari and Chrome, even surrendered the full CSS text of style sheets, including CSS rules loaded from cross-origin (without comments, thankfully). The attacker could read the raw text of cross-origin CSS via document.styleSheets[].cssRules[].cssText and also window.getMatchedCSSRules().cssText. This behavior violates the same-origin policy and potentially leaks data in pages with semi-valid CSS constructs. Other browsers only permit read access for raw CSS text under restricted conditions. Internet Explorer allows access to cross-origin CSS raw text with document.styleSheets[].rules[].style.cssText only if the MIME type is correct. Firefox and Opera only allows access to CSS raw text for style sheets loaded from same-origin.
+One method is using JavaScript to access the loaded styles and then send the stolen data to attacker.com using the XMLHttpRequest API. All major browsers support reading styles in JavaScript, e.g. through DOM access by calling the window.getComputedStyle method, or retrieving the currentStyle object in Internet Explorer. WebKit-based browsers, i.e. Safari and Google Chrome, even surrendered the full CSS text of style sheets, including CSS rules loaded from cross-origin (without comments, thankfully). The attacker could read the raw text of cross-origin CSS via document.styleSheets[].cssRules[].cssText and also window.getMatchedCSSRules().cssText. This behavior violates the same-origin policy and potentially leaks data in pages with semi-valid CSS constructs. Other browsers only permit read access for raw CSS text under restricted conditions. Internet Explorer allows access to cross-origin CSS raw text with document.styleSheets[].rules[].style.cssText only if the MIME type is correct. Firefox and Opera only allows access to CSS raw text for style sheets loaded from same-origin.
 Even if access to raw CSS text is blocked, the ability to read cross-origin loaded CSS styles is enough to construct serious attacks.
 
 %raw CSS text without comments, thankfully
@@ -176,7 +176,7 @@ The requirement for quotes to not get escaped can sometimes be bypassed in brows
 <LINK REL="stylesheet" HREF="http://victim.com" 
 CHARSET="utf-7">
 \end{verbatim}
-By forcing UTF7, either a single or double quote may be injected by rendering it in the UTF-7 character set, i.e. `+ACc-' for single quote and `+ACI-' for double quote. This will cause the injection to survive any output escaping of the web application. A significant number of web sites actually do not specify character sets in their HTTP responses (We found that 23 out of the top 100 web sites via Alexa\cite{alexa} did not specify character sets). Some web sites specify the Content-Type information using meta tags with the http-equiv attribute in the HTML head element as the following:
+By forcing UTF7, either a single or double quote may be injected by rendering it in the UTF-7 character set, i.e. `+ACc-' for single quote and `+ACI-' for double quote. This will cause the injection to survive any output escaping of the web application. A significant number of web sites actually do not specify character sets in their HTTP responses (We found that 22 out of the top 100 web sites via Alexa\cite{alexa} did not specify character sets). Some web sites specify the Content-Type information using meta tags with the http-equiv attribute in the HTML head element as the following:
 \begin{verbatim}
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; 
 charset=utf-8">
@@ -194,7 +194,7 @@ Catastrophically, the CSS parser in the Internet Explorer accepts both newlines 
 Example: Yahoo! Mail
 
 \section{Defenses}
-In this section, we describe the defenses against cross-orgin CSS attacks. First, we propose modifying browsers to stricten CSS loading. Second, we present an evaluation of web site compatibility for our proposal. Then, we discuss the shortcomings of other approaches including client-side and server-side mitigations.
+In this section, we describe the defenses against cross-orgin CSS attacks. First, we propose modifying browsers to stricten CSS loading. Second, we present an evaluation of web site compatibility for our proposal. Then, we state the progress of adoption for our proposal in major browsers. Finally, we discuss the shortcomings of other approaches including client-side and server-side mitigations.
 
 \subsection{Proposal: Stricter CSS Loading}
 To prevent cross-origin CSS attacks, we propose modifying browsers to apply stricter CSS loading for cross-origin references. The initial approach is to enforce strict MIME type checking for CSS loads. We also provide a conservative approach that maximizes web site compatibility while blocking most attacks.
@@ -216,26 +216,28 @@ To address web site compatibility concerns, we propose a conservative approach t
 The above rules will block the attack because non-CSS documents always have headers, e.g. HTML or XML header, that will cause a broken first CSS descriptor. We assume that an untampered CSS file will unlikely have a syntax error at the beginning of the file. Only a cross-origin CSS with invalid MIME type that starts with malformed syntax is considered as an injected document and rejected.
 
 \subsubsection{Experiment}
-To evaluate the compatibility of strict MIME type checking, we conducted an experiment to measure how often web sites fails to provide a valid MIME type for cross-origin CSS files.
+To evaluate the compatibility of strict MIME type checking, we conducted an experiment to measure how often web sites fail to provide a valid MIME type for cross-origin CSS files.
 
-We ran a scan across the top 500,000 URLs looking for cross-origin loads of CSS with an invalid MIME type. Valid MIME types are defined as text/css, application/x-unknown-content-type, and empty. There were a total of 140 URLs detected that referenced cross-origin CSS with broken MIME types. We found that 80 of them were non-serious conditions, in which the site loaded a CSS file which is missing and redirected to a 404 html page. The remaining broken URLs consisted of 13 with text/plain, 15 with text/html, 31 with application/css, and 1 with application/x-pointplus.
+We ran a scan across the top 500,000 URLs looking for cross-origin loads of CSS with an invalid MIME type. Valid MIME types are defined as text/css, application/x-unknown-content-type, and empty. There were a total of 140 URLs detected that referenced cross-origin CSS with broken MIME types. We found that some of them were non-serious conditions, in which the site loaded a CSS file which is missing and redirected to a 404 html page. There were 60 URLs that would be considered as broken, including 13 with text/plain, 15 with text/html, 31 with application/css, and 1 with application/x-pointplus.
 
-(other MIME?: application/octet-stream, application/x-unknown-content-type, empty)
+(more details..)
 
-Most prominently, configure.dell.com was loading cross-origin CSS with text/plain MIME type, but it was well formed CSS.
+(stats other MIME?: application/octet-stream, application/x-unknown-content-type, empty)
+
+Due to practical limitations, all of the tested links were unauthenticated. It is possible that more sites will be broken after logging in. Although only 0.012\% of the URLs were broken, if any popular web site crashed due to stricter CSS loading, browser vendors would possibly resist to deploy this change in risk of losing its users. Most prominently, configure.dell.com was loading cross-origin CSS with text/plain MIME type, but it was well formed CSS.
+
+If we apply the heuristics of the conservative approach, only one URL that served text/html MIME would fail to load, which was severely broken because it had valid CSS rules after a <style> tag.
 
 \begin{figure}
 \centering
-\epsfig{file=mime.eps, width=\linewidth}
+\includegraphics[width=\linewidth]{mime.jpg}
 \caption{Invalid MIME Types for Cross-Origin CSS}
 \end{figure}
 
 \subsubsection{Adoption}
-Then, we state the progress of adoption for our proposal in major browsers. 
-Deployment of Webkit r52784 patch (chrome 4.0.249.78, safari 4.0.5)
-Same heuristic in Opera 10.10
+The conservative approach of stricter CSS loading was implemented in a patch to WebKit, an open source component of Safari and Google Chrome. The WebKit patch was first deployed in Google Chrome 4.0.249.78, and also accepted in Safari 4.0.5. Inspired by our WebKit patch, the exact same heuristic was deployed in Opera 10.10.
 
-?? Firefox
+Mozilla proposes to deploy strict MIME type checking in Firefox 3.6 (version undetermined).
 
 \subsection{Other Approaches}
 
