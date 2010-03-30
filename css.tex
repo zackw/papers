@@ -93,13 +93,13 @@ In a cross-origin CSS attack, the attacker's main objective is to steal the user
 
 \begin{figure}
 \centering
-\epsfig{file=fig1.eps, width=\linewidth}
+\epsfig{file=scenario.eps, width=\linewidth}
 \caption{Attack Scenario}
 \end{figure}
 
 \begin{figure}
 \centering
-\epsfig{file=fig2.eps, width=\linewidth}
+\epsfig{file=steps.eps, width=\linewidth}
 \caption{Three Steps of the Attack}
 \end{figure}
 
@@ -197,26 +197,38 @@ Example: Yahoo! Mail
 In this section, we describe the defenses against cross-orgin CSS attacks. First, we propose modifying browsers to stricten CSS loading. Second, we present an evaluation of web site compatibility for our proposal. Then, we discuss the shortcomings of other approaches including client-side and server-side mitigations.
 
 \subsection{Proposal: Stricter CSS Loading}
-To prevent cross-origin CSS attacks, we propose modifying browsers to apply stricter CSS loading for cross-origin references. The initial approach is to enforce strict MIME type checking for CSS loads. We also provide a conservative approach to minimize breaking web sites.
+To prevent cross-origin CSS attacks, we propose modifying browsers to apply stricter CSS loading for cross-origin references. The initial approach is to enforce strict MIME type checking for CSS loads. We also provide a conservative approach that maximizes web site compatibility while blocking most attacks.
 
 \subsubsection{Strict MIME Type}
 In the cross-origin CSS attack, the attacker's malicious web page confuses the user's browser to parse an injected non-CSS document as a style sheet. If browsers strictly required external style sheets to specify a valid MIME type, which is text/css, the malicious web page would not be able to reference any crafted document. Thus, we propose that browsers always check the MIME type of external CSS references and block any CSS load with an invalid MIME type. When strict MIME type checking is enforced, if not globally at least for cross-origin loads, browsers would be able to prevent cross-origin data from being stolen. 
 
-A major concern of strict MIME type checking is that any misconfigured web site that fail to provide correct MIME types would be blocked. Strict MIME type checking relies on web developers to correctly deploy their web sites and provide valid MIME types. Unless every web developer correctly configures the served MIME type, this approach will inevitably detect false positives and cause web site breakage. Unsurprisingly, browser vendors would tend to resist changes that would cause web site breakage and lose its users.
+A major concern of strict MIME type checking is that any misconfigured web site that fail to provide valid MIME types would be blocked. Strict MIME type checking relies on web developers to correctly deploy their web sites and provide valid MIME types. Unless every web developer correctly configures the served MIME type, this approach will inevitably detect false positives and cause web site breakage. Unsurprisingly, browser vendors would tend to resist changes that would cause web site breakage and lose its users.
+
+The Internet Explorer's proposal of the X-Content-Type-Options header \cite{nosniff} allows opting out of MIME sniffing by specifying the nosniff directive in the HTTP response header. For browsers that support this feature, web developers can configure their servers to specify the nosniff directive and defend against chameleon documents. However, the nosniff directive does not trigger strict MIME type checking for style sheets.
 
 \subsubsection{Conservative Approach}
 To address web site compatibility concerns, we propose a conservative approach that blocks most attacks while tolerating MIME type misconfiguration. In order to reduce false positives in the strict MIME type approach, an additional level of checking is applied to cross-origin CSS loads that have invalid MIME types. When a valid MIME type is not provided, the browser will try to parse the cross-origin CSS but bailing on first syntax error. This sniffing mechanism is to guess whether the imported CSS file is actually an injected victim document. Therefore, the devised solution blocks a CSS load when all the following conditions are met:
 \begin{itemize}
-\item{The alleged CSS is a cross-origin load.}
-\item{The alleged CSS does not have a valid MIME type, i.e. text/css, application/x-unknown-content-type, or empty.}
+\item{The CSS load is a cross-origin.}
+\item{The CSS load has an invalid MIME type. Valid MIME types are text/css, application/x-unknown-content-type, and empty.}
 \item{The alleged CSS does not start with a syntactically valid CSS construct.}
 \end{itemize}
 The above rules will block the attack because non-CSS documents always have headers, e.g. HTML or XML header, that will cause a broken first CSS descriptor. We assume that an untampered CSS file will unlikely have a syntax error at the beginning of the file. Only a cross-origin CSS with invalid MIME type that starts with malformed syntax is considered as an injected document and rejected.
 
 \subsubsection{Experiment}
-Compatibility evaluation
+To evaluate the compatibility of strict MIME type checking, we conducted an experiment to measure how often web sites fails to provide a valid MIME type for cross-origin CSS files.
 
-(GRAPHS!!)
+We ran a scan across the top 500,000 URLs looking for cross-origin loads of CSS with an invalid MIME type. Valid MIME types are defined as text/css, application/x-unknown-content-type, and empty. There were a total of 140 URLs detected that referenced cross-origin CSS with broken MIME types. We found that 80 of them were non-serious conditions, in which the site loaded a CSS file which is missing and redirected to a 404 html page. The remaining broken URLs consisted of 13 with text/plain, 15 with text/html, 31 with application/css, and 1 with application/x-pointplus.
+
+(other MIME?: application/octet-stream, application/x-unknown-content-type, empty)
+
+Most prominently, configure.dell.com was loading cross-origin CSS with text/plain MIME type, but it was well formed CSS.
+
+\begin{figure}
+\centering
+\epsfig{file=mime.eps, width=\linewidth}
+\caption{Invalid MIME Types for Cross-Origin CSS}
+\end{figure}
 
 \subsubsection{Adoption}
 Then, we state the progress of adoption for our proposal in major browsers. 
@@ -260,7 +272,6 @@ capabilities? web key
 
 \subsection{Secure Content Sniffing}
 secure content sniffing\cite{securecontentsniffing}
-however nosniff not applied on CSS loads
 
 \subsection{JavaScript Hijacking Defenses}
 JavaScript hijacking\cite{jshijacking}
