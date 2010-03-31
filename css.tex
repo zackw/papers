@@ -55,7 +55,7 @@ The web attacker can send and receive network messages over network protocols of
 We assume that the user visits the attacker's web site with a popular browser. In practice, this assumption can be supported by several techniques for attacking users, e.g. buying web advertisements or sending bulk e-mail to encourage visitors. By visiting attacker.com, the attacker can instruct the user's browser to fetch external style sheets and also export data to remote servers. As long as the user's session with an honest web site haven't expired, the attacker can instruct the user's browser to issue requests with the user's cookies.
 
 \item{Web Site Behavior:}
-We assume that the attacker can inject semi-arbitrary strings into a target domain that contains the secret content, which we refer to as victim.com. We define the term semi-arbitrary strings as a subset of strings that may conform to CSS syntax as opposed to fully arbitrary strings that conforms to HTML. The ability of injecting CSS strings is considered weaker than injecting HTML strings into the target domain, as in common XSS attacks, because scripts may be detected and blocked by client-side XSS filters. In practice, there are various methods to inject strings into the target domain, e.g. reflection of user controlled strings or via URL parameters.
+We assume that the attacker can inject semi-arbitrary strings into a target domain that contains the secret content, which we refer to as target.com. We define the term semi-arbitrary strings as a subset of strings that may conform to CSS syntax as opposed to fully arbitrary strings that conforms to HTML. The ability of injecting CSS strings is considered weaker than injecting HTML strings into the target domain, as in common XSS attacks, because scripts may be detected and blocked by client-side XSS filters. In practice, there are various methods to inject strings into the target domain, e.g. reflection of user controlled strings or via URL parameters.
 
 \end{itemize}
 
@@ -99,8 +99,8 @@ In a cross-origin CSS attack, the attacker's main objective is to steal the user
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{steps.jpg}
-\caption{Three Steps of the Attack}
+\includegraphics[width=\linewidth]{injection.jpg}
+\caption{CSS String Injection}
 \end{figure}
 
 \subsubsection{CSS String Injection}
@@ -122,14 +122,14 @@ When the user visits attacker.com, the attacker's malicious page instructs the u
 <HTML>
 <HEAD>
   <STYLE>
-    @import url(http://victim.com);
+    @import url(http://target.com);
   </STYLE>
-  <LINK REL="stylesheet" HREF="http://victim.com">
+  <LINK REL="stylesheet" HREF="http://target.com">
 </HEAD>
 </HTML>
 \end{verbatim}
 \paragraph{Cookies}
-The HTTP cookie mechanism enables web sites to authenticate clients and maintain client states, allowing web sites to not only serve static content but customize the content and appearance for each session user. According to the standards, the browser always sends the user's cookie when it loads any referenced style sheets, including cross-origin CSS. If the user was logged into the victim.com while visiting the malicious page, the browser would send the user's authentication cookie on all requests to victim.com and be considered as valid authenticated requests. This behavior exploits cookie-authenticated web sites and potentially leaks the user's sensitive information in the server's response. 
+The HTTP cookie mechanism enables web sites to authenticate clients and maintain client states, allowing web sites to not only serve static content but customize the content and appearance for each session user. According to the standards, the browser always sends the user's cookie when it loads any referenced style sheets, including cross-origin CSS. If the user was logged into the target.com while visiting the malicious page, the browser would send the user's authentication cookie on all requests to target.com and be considered as valid authenticated requests. This behavior exploits cookie-authenticated web sites and potentially leaks the user's sensitive information in the server's response. 
 
 \subsubsection{Data Export}
 The final step for the attacker is to read the loaded style sheets and export the secret content hidden in the style properties to the attacker. There are various methods to export data to other origins, in this specific attack we are interested in approaches where no user involvement is required. The cross-origin CSS attack is possible by just rendering one evil ad in the user's browser. 
@@ -168,9 +168,9 @@ The first and most crucial step of the cross-origin CSS attack is to contain the
 In CSS specifications\cite{css}, strings can either be written with double quotes or with single quotes. Double quotes cannot occur inside double quotes, analogously for single quotes. Therefore, the attacker has the choice to inject either single or double quotes depending on the occurrence of quotes in the secret data. In a context where both quotes are escaped, it becomes more difficult to inject a CSS string. However, a variation of the attack  can bypass this restriction by injecting the background-image property. For the background-image property, the URL value is written with the functional notation url(), which does not require the use of single or double quotes around the URL string itself. The CSS specification does define that certain characters must be escaped in an unquoted URL, e.g. parentheses, commas, white spaces, single quotes and double quotes. However, in Internet Explorer, the CSS parser does not require any of these characters to be escaped in an unquoted URL and will parse until it encounters a closing parentheses and a semicolon.
 
 \paragraph{Force UTF-7}
-The requirement for quotes to not get escaped can sometimes be bypassed in browsers that support UTF-7 encoding, including Firefox and Safari. If the victim web sites fails to specify a character set in the HTTP  Content-Type header, the attacker's malicious page can force the remote resource to be parsed as UTF-7 encoding as the following:
+The requirement for quotes to not get escaped can sometimes be bypassed in browsers that support UTF-7 encoding, including Firefox and Safari. If the target web sites fails to specify a character set in the HTTP  Content-Type header, the attacker's malicious page can force the remote resource to be parsed as UTF-7 encoding as the following:
 \begin{verbatim}
-<LINK REL="stylesheet" HREF="http://victim.com" 
+<LINK REL="stylesheet" HREF="http://target.com" 
 CHARSET="utf-7">
 \end{verbatim}
 By forcing UTF7, either a single or double quote may be injected by rendering it in the UTF-7 character set, i.e. `+ACc-' for single quote and `+ACI-' for double quote. This will cause the injection to survive any output escaping of the web application. A significant number of web sites actually do not specify character sets in their HTTP responses (We found that 22 out of the top 100 web sites via Alexa\cite{alexa} did not specify character sets). Some web sites specify the Content-Type information using meta tags with the http-equiv attribute in the HTML head element as the following:
@@ -204,7 +204,7 @@ A major concern of strict MIME type checking is that any misconfigured web site 
 The Internet Explorer's proposal of the X-Content-Type-Options header \cite{nosniff} allows opting out of MIME sniffing by specifying the nosniff directive in the HTTP response header. For browsers that support this feature, web developers can configure their servers to specify the nosniff directive and defend against chameleon documents. However, the nosniff directive does not trigger strict MIME type checking for style sheets.
 
 \subsubsection{Conservative Approach}
-To address web site compatibility concerns, we propose a conservative approach that blocks most attacks while tolerating MIME type misconfiguration. In order to reduce false positives in the strict MIME type approach, an additional level of checking is applied to cross-origin CSS loads that have invalid MIME types. When a valid MIME type is not provided, the browser will try to parse the cross-origin CSS but bailing on first syntax error. This sniffing mechanism is to guess whether the imported CSS file is actually an injected victim document. Therefore, the devised solution blocks a CSS load when all the following conditions are met:
+To address web site compatibility concerns, we propose a conservative approach that blocks most attacks while tolerating MIME type misconfiguration. In order to reduce false positives in the strict MIME type approach, an additional level of checking is applied to cross-origin CSS loads that have invalid MIME types. When a valid MIME type is not provided, the browser will try to parse the cross-origin CSS but bailing on first syntax error. This sniffing mechanism is to guess whether the imported CSS file is actually an injected target document. Therefore, the devised solution blocks a CSS load when all the following conditions are met:
 \begin{itemize}
 \item{The CSS load is a cross-origin.}
 \item{The CSS load has an invalid MIME type. Valid MIME types are text/css, application/x-unknown-content-type, and empty.}
