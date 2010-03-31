@@ -261,12 +261,7 @@ In CSS specification, strings cannot directly contain newlines. Thus, a mitigati
 The CSS specification specifies that strings should be enclosed within either single quotes or double quotes. A mitigation at web applications could be to force escaping quotes in any reflected user-controlled content. The CSS parsing for a string would break if it was not written in un-escaped quotes. However, the attacker could bypass this limitation again by injecting the background-image property which allows embedding strings within url() notation without using quotes.
 
 \paragraph{Don't Use Cookies}
-As discussed in one of the client-side defenses, using session cookies enables web sites to controlling the response of each user's request and provide user-specific styles, e.g. adjust to mobile account or printable view. The cross-origin CSS attack could be blocked if web sites do not use cookies. The web-key authentication scheme \cite{webkey} explicitly embeds user permissions in URLs without using cookies for authentication. This approach can mitigate the 
-attacker does not know URL
-only GET
-<link> tag always uses HTTP GET requests to load style sheets from external sources
-
-
+As discussed in one of the client-side defenses, using session cookies enables web sites to controlling the response of each user's request and provide user-specific styles, e.g. adjust to mobile account or printable view. The cross-origin CSS attack could be blocked if web sites do not use cookies. The web-key authentication scheme \cite{webkey} explicitly embeds user permissions in URLs without using cookies for authentication. This approach can mitigate the attack since the attacker does not know the unguessable URL.
 
 \section{Related Work}
 
