@@ -129,27 +129,24 @@ When the user visits attacker.com, the attacker's malicious page instructs the u
 </HTML>
 \end{verbatim}
 \paragraph{Cookies}
-According to the standards, the browser always sends the user's cookie when it loads any referenced style sheets, including cross-origin. If the user was logged into the victim.com while visiting the malicious page, the browser would send the user's authentication cookie on all requests to victim.com and be considered as valid authenticated requests. This behavior exploits cookie-authenticated web sites and potentially leaks the user's sensitive information in the server's response. 
+The HTTP cookie mechanism enables web sites to authenticate clients and maintain client states, allowing web sites to not only serve static content but customize the content and appearance for each session user. According to the standards, the browser always sends the user's cookie when it loads any referenced style sheets, including cross-origin CSS. If the user was logged into the victim.com while visiting the malicious page, the browser would send the user's authentication cookie on all requests to victim.com and be considered as valid authenticated requests. This behavior exploits cookie-authenticated web sites and potentially leaks the user's sensitive information in the server's response. 
 
 \subsubsection{Data Export}
 The final step for the attacker is to read the loaded style sheets and export the secret content hidden in the style properties to the attacker. There are various methods to export data to other origins, in this specific attack we are interested in approaches where no user involvement is required. The cross-origin CSS attack is possible by just rendering one evil ad in the user's browser. 
 
 \paragraph{JavaScript}
-One method is using JavaScript to access the loaded styles and then send the stolen data to attacker.com using the XMLHttpRequest API. All major browsers support reading styles in JavaScript, e.g. through DOM access by calling the window.getComputedStyle method, or retrieving the currentStyle object in Internet Explorer. WebKit-based browsers, i.e. Safari and Google Chrome, even surrendered the full CSS text of style sheets, including CSS rules loaded from cross-origin (without comments, thankfully). The attacker could read the raw text of cross-origin CSS via document.styleSheets[].cssRules[].cssText and also window.getMatchedCSSRules().cssText. This behavior violates the same-origin policy and potentially leaks data in pages with semi-valid CSS constructs. Other browsers only permit read access for raw CSS text under restricted conditions. Internet Explorer allows access to cross-origin CSS raw text with document.styleSheets[].rules[].style.cssText only if the MIME type is correct. Firefox and Opera only allows access to CSS raw text for style sheets loaded from same-origin.
+One method is using JavaScript to access the loaded styles and then send the stolen data to attacker.com using the XMLHttpRequest API. All major browsers support reading computed styles of external style sheets in JavaScript through DOM access by calling the window.getComputedStyle method or retrieving the currentStyle object in Internet Explorer, given that the style name and property name is known by the attacker. WebKit-based browsers, i.e. Safari and Google Chrome, even surrendered the full CSS text of style sheets, including CSS rules loaded from cross-origin (without comments, thankfully). The attacker could read the raw text of cross-origin CSS via document.styleSheets[].cssRules[].cssText and also window.getMatchedCSSRules().cssText. This behavior violates the same-origin policy and potentially leaks data in pages with semi-valid CSS constructs. Other browsers only permit read access to the raw text of style sheets under restricted conditions. Internet Explorer allows access to cross-origin CSS raw text with document.styleSheets[].rules[].style.cssText only if the MIME type is correct. Firefox and Opera only allows access to CSS raw text for style sheets loaded from same-origin.
 Even if access to raw CSS text is blocked, the ability to read cross-origin loaded CSS styles is enough to construct serious attacks.
-
-%raw CSS text without comments, thankfully
-%Some browsers (Chrome and Opera) cautiously block DOM access to styles loaded from cross-origin unless the CSS is well-formed. Other browsers (Internet Explorer, Firefox and Safari) still grant read access to the styles loaded from cross-origin CSS.  Chrome and Opera allows access to cross-origin CSS raw text with document.styleSheets[].rules[] only if the external file is well-formed. Chrome also allows access to cross-origin CSS raw text with window.getMatchedCSSRules() if the external file is well-formed.
 
 \begin{table}
 \centering
-\caption{Cross-Origin CSS DOM Vulnerability}
+\caption{Cross-Origin CSS DOM Vulnerabilities}
 \begin{tabular}{|c|c|c|c|c|c|} \hline
 Methods&IE&FF&OP&Safari&Chrome\\ \hline
-currentStyle&v&&v&&\\ \hline
-getComputedStyle&&v&v&v&v\\ \hline
-rules[].style.cssText&v&&&v&v\\ \hline
-cssRules[].cssText&&&&v&v\\
+currentStyle&\checkmark&&\checkmark&&\\ \hline
+getComputedStyle&&\checkmark&\checkmark&\checkmark&\checkmark\\ \hline
+rules[].style.cssText&\checkmark&&&\checkmark&\checkmark\\ \hline
+cssRules[].cssText&&&&\checkmark&\checkmark\\
 \hline\end{tabular}
 \end{table}
 
@@ -181,7 +178,7 @@ By forcing UTF7, either a single or double quote may be injected by rendering it
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; 
 charset=utf-8">
 \end{verbatim}
-Browsers may use meta tags to refine the information provided by the actual headers, but can also ignore it. Thus, using the equivalent HTTP header to specify the MIME type and character set is recommended for security reasons.
+Browsers may use meta tags to refine the information provided by the actual headers, but can also ignore it. If a character set is not provided in the response header but specified in the parent link tag, this meta tag will be ignored. Thus, using the equivalent HTTP header to specify the MIME type and character set is always recommended.
 
 \subsubsection{Avoid Newlines}
 In CSS, a string cannot directly contain a newline. To include a newline in a string, the line feed character must be escaped. Therefore, another barrier of this attack is that any un-escaped newline in the stolen string will break the CSS parsing. This is a very common condition in many web pages, which avoids potentially serious attacks. However, many rich-functionality web sites are often exploitable due to serving subtle cookie-authenticated URLs with JSON or XML responses that commonly lack newlines. Some web sites even allow users to control the formatting of server responses, e.g. disable pretty printing, which may be extremely dangerous.
@@ -235,52 +232,55 @@ If we apply the heuristics of the conservative approach, only one URL that serve
 \end{figure}
 
 \subsubsection{Adoption}
-The conservative approach of stricter CSS loading was implemented in a patch to WebKit, an open source component of Safari and Google Chrome. The WebKit patch was first deployed in Google Chrome 4.0.249.78, and also accepted in Safari 4.0.5. Inspired by our WebKit patch, the exact same heuristic was deployed in Opera 10.10.
+Our proposal requires no changes to existing web servers and only modifies the browser. We implemented the conservative approach of stricter CSS loading in a patch to WebKit, the open source web browser engine component integrated in Safari and Google Chrome. The WebKit patch was first deployed in Google Chrome 4.0.249.78, and also accepted in Safari 4.0.5. Note that the cross-origin CSS raw text leak would be tightened by this patch because read access to cross-origin CSS raw text is limited to well-formed imports. Inspired by our WebKit patch, the exact same heuristic was adopted in Opera 10.10.
 
-Mozilla proposes to deploy strict MIME type checking in Firefox 3.6 (version undetermined).
+(Mozilla proposes to deploy strict MIME type checking in Firefox 3.6 (version undetermined).)
 
 \subsection{Other Approaches}
+In this section, we further discuss some possible solutions to defend against the cross-origin CSS attack that we have considered. We argue that all of these approaches could either be circumvented or are too difficult to deploy in practice.
 
 \subsubsection{Client-side Defenses}
-\paragraph{Disable Cookies:}
-Prevent sending cookies when importing cross-origin CSS;
-login status check;
+Client-side defenses are approaches that can be applied in browsers without modifying web servers.
+
+\paragraph{Block Cookies:}
+Browsers give users the option of disabling cookies and always send anonymous requests, thus can prevent web attackers from stealing content on any cookie-authenticated URLs. However, disabling cookies would literally break a huge amount of sites that requires logging in. A more conservative approach would be to prevent sending cookies when sending requests for cross-origin CSS. However, that would still crash legitimate web sites that provide user-specific styles using external style sheets.
 
 \paragraph{Restrict DOM Access:}
-DOM same-origin policy;
-background-image bypass
+The same-origin policy for DOM access restricts the ability for JavaScript to access DOM properties and methods across domains. To prevent the cross-origin CSS attack, browsers should cautiously block DOM access to style sheets loaded from cross-origin, at least when the CSS file is malformed or has incorrect MIME type. However, all major browsers grant read access to computed styles loaded from cross-origin using either window.getComputedStyle or currentStyle, violating the same-origin policy. Even if browsers restricted the read access to computed styles for cross-origin loads, the attacker could bypass this limitation with background-image property injection that could automatically export data in requests to cross-origin servers.
 
-\paragraph{Strict CSS Parsing:}
-Strict CSS parsing;
-crash hard on error;
+\paragraph{Stricter CSS Parsing:}
+CSS parsers are tolerant of syntax errors and will resume parsing after syntax errors. The cross-origin CSS attack could be mitigated if the browser's CSS parser always crashed hard on the first syntax error, like JavaScript parsers. However, this approach would require all web developers to strictly write well formed CSS, and would immediately break many existing web sites.
 
 \subsubsection{Server-side Mitigations}
-Blah
+There are also a few mitigations that can be deployed on web servers with no changes to current browsers.
+
+\paragraph{Newlines}
+In CSS specification, strings cannot directly contain newlines. Thus, a mitigation to the cross-origin CSS attack is to use newlines in sensitive web content. In conforming browsers, newlines will break CSS parsing and fail to load the cross-origin data. However, the Internet Explorer allows newlines within CSS property strings. Web sites will not be able to prevent its content with newlinese from being stolen.
+
+\paragraph{Escaping Quotes}
+The CSS specification specifies that strings should be enclosed within either single quotes or double quotes. A mitigation at web applications could be to force escaping quotes in any reflected user-controlled content. The CSS parsing for a string would break if it was not written in un-escaped quotes. However, the attacker could bypass this limitation again by injecting the background-image property which allows embedding strings within url() notation without using quotes.
+
+\paragraph{Don't Use Cookies}
+As discussed in one of the client-side defenses, using session cookies enables web sites to controlling the response of each user's request and provide user-specific styles, e.g. adjust to mobile account or printable view. The cross-origin CSS attack could be blocked if web sites do not use cookies. The web-key authentication scheme \cite{webkey} explicitly embeds user permissions in URLs without using cookies for authentication. This approach can mitigate the 
+attacker does not know URL
 only GET
 <link> tag always uses HTTP GET requests to load style sheets from external sources
 
-\paragraph{Newlines}
-Newlines;
-\paragraph{Escaping Quotes}
-Escaping quotes;
-
-\paragraph{Don't Use Cookies}
-Sending session cookies enables web sites to provide user-specific styles by controlling the response of each uer's request.
-adjust to mobile account, printable view..;
-capabilities? web key
 
 
 \section{Related Work}
 
-\subsection{Secure Content Sniffing}
-secure content sniffing\cite{securecontentsniffing}
+\subsection{Content-Sniffing XSS Defenses}
+secure content sniffing\cite{securecontentsniffing};
+nosniff\cite{nosniff}
 
 \subsection{JavaScript Hijacking Defenses}
 JavaScript hijacking\cite{jshijacking}
 
-\subsection{Gazelle}
-gazelle\cite{gazelle}
-strict mode
+\subsection{Browser Strict Modes}
+gazelle\cite{gazelle};
+strict modes
+doctype
 
 \section{Conclusions}
 (This is the conclusion.)
