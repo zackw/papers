@@ -228,13 +228,29 @@ If we apply the heuristics of the conservative approach, only one URL that serve
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{mime.jpg}
-\caption{Invalid MIME Types for Cross-Origin CSS}
+\caption{Cross-Origin CSS MIME Errors}
 \end{figure}
 
 \subsubsection{Adoption}
 Our proposal requires no changes to existing web servers and only modifies the browser. We implemented the conservative approach of stricter CSS loading in a patch to WebKit, the open source web browser engine component integrated in Safari and Google Chrome. The WebKit patch was first deployed in Google Chrome 4.0.249.78, and also accepted in Safari 4.0.5. Note that the cross-origin CSS raw text leak would be tightened by this patch because read access to cross-origin CSS raw text is limited to well-formed imports. Inspired by our WebKit patch, the exact same heuristic was adopted in Opera 10.10.
 
-(Mozilla proposes to deploy strict MIME type checking in Firefox 3.6 (version undetermined).)
+(?Mozilla proposes to deploy strict MIME type checking in Firefox 3.6 (version undetermined).)
+
+The definition of valid MIME types on each browser implementation slightly differs.
+
+\begin{table}
+\centering
+\caption{Valid MIME Types for Cross-Origin CSS}
+\begin{tabular}{|c|c|c|c|c|} \hline
+Content-Type&FF&OP&Safari&Chrome\\ \hline
+text/css&\checkmark&\checkmark&\checkmark&\checkmark\\ \hline
+Missing&\checkmark&&\checkmark&\checkmark\\ \hline
+application/&\checkmark&&\checkmark&\checkmark\\ 
+x-unknown-content-type&&&&\\ \hline
+Bogus&\checkmark&&&\\ \hline
+*/*&\checkmark&&& \\
+\hline\end{tabular}
+\end{table}
 
 \subsection{Other Approaches}
 In this section, we further discuss some possible solutions to defend against the cross-origin CSS attack that we have considered. We argue that all of these approaches could either be circumvented or are too difficult to deploy in practice.
