@@ -99,12 +99,6 @@ In a cross-origin CSS attack, the attacker's main objective is to steal the vict
 \caption{Attack Scenario}
 \end{figure}
 
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{injection.jpg}
-\caption{CSS String Injection}
-\end{figure}
-
 \subsubsection{CSS String Injection}
 Due to lenient MIME type requirement of CSS parsers, the attacker may fool the victim's browser into loading a carefully crafted non-CSS (e.g. HTML or XML) document as a valid style sheet resource. In practice, there are several methods that may allow a web attacker to inject strings into the target domain, e.g. reflection of user-controlled strings or via URL parameters. Normally, random text in a non-CSS document contains syntax errors to the CSS parser and would break the parsing. However, due to the overly lax CSS parsers in modern browsers, portions of a non-CSS document with valid CSS syntax can still be successfully parsed and recognized as style sheet rules.
 
@@ -117,6 +111,12 @@ After injection:
 <HTML>..{} BODY { font-family: "SECRET" }..</HTML>
 \end{verbatim}
 The injected HTML document will appear to the CSS parser as containing a valid CSS rule. The fonts of the attacker's page will be styled with a font-family specified as the stolen string `SECRET'. Note that the seemingly redundant pair of brackets in the injection string re-syncs the CSS parser to make sure that the evil CSS rule parses properly. All the other non-CSS text in the document are skipped by the CSS parser, thus will not effect the parsing of the evil CSS rule. Once the crafted document is loaded, the attacker can easily steal the secret string from the computed \texttt{font-family} style of the attacker's page.
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{injection.jpg}
+\caption{CSS String Injection}
+\end{figure}
 
 \subsubsection{Style Sheet Import?}
 When the user visits \texttt{attacker.com}, the attacker's malicious page instructs the victim's browser to fetch and load the crafted document as a style sheet. In HTML specifications\cite{html}, documents can import external style sheets from remote servers by using the CSS \texttt{@import} notation, or using the link tag inside the head element as the following: .
@@ -141,7 +141,6 @@ One method is using JavaScript to access the loaded styles and then send the sto
 
 \begin{table}
 \centering
-\caption{Cross-Origin CSS DOM Vulnerabilities}
 \begin{tabular}{|c|c|c|c|c|c|} \hline
 Methods&IE&FF&OP&Safari&Chrome\\ \hline
 currentStyle&\checkmark&&\checkmark&&\\ \hline
@@ -149,6 +148,7 @@ getComputedStyle&&\checkmark&\checkmark&\checkmark&\checkmark\\ \hline
 %rules[].style.cssText&\checkmark&&&\checkmark&\checkmark\\ \hline
 cssRules[].cssText&&&&\checkmark&\checkmark\\
 \hline\end{tabular}
+\caption{Cross-Origin CSS DOM Vulnerabilities}
 \end{table}
 
 \paragraph{Background-image}
@@ -232,6 +232,18 @@ From the top 10,000 web sites, we fetched a total of 27532 CSS references, inclu
 
 We found that as many as 172 CSS references on these popular sites did not provide the correct \texttt{Content-Type} response header. In most cases, we found that misconfigured servers provided the \texttt{text/html} MIME type for CSS files, which is for normal HTML documents. Some CSS files did not specify the \texttt{Content-Type} header in the response at all, thus had an empty MIME type. Our browser collected a list of various incorrect MIME types for CSS files, including \texttt{text/html}, \texttt{text/plain}, \texttt{text}, \texttt{application/octet-stream}, \texttt{application/x-pointplus}, \texttt{image/gif}, \texttt{Content-Type:text/css} and empty MIME type.
 
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|} \hline
+Content-Type&Percentage\\ \hline
+text/html&87.78\%\\ \hline
+Empty&7.56\%\\ \hline
+text/plain&1.74\%\\ \hline
+Other&2.90\%\\
+\hline\end{tabular}
+\caption{Misconfigured MIME Types for CSS}
+\end{table}
+
 According to the CSS parser of WebKit, our browser reported that 93 CSS files were mal-formed, which fail to have a syntactically valid CSS construct at the beginning to the file. There were three CSS files that were mal-formed and also have a broken MIME type, however none of these CSS files were cross-origin loads.
 
 Within a total of 8352 cross-origin CSS loads, there were 40 of them that had a broken MIME type. Blocking these loads would cause CSS failure on 29 of the 10000 most popular web sites. However, we also observed that none of the cross-origin CSS files with broken MIME types were mal-formed.
@@ -245,23 +257,11 @@ In our observations, the conservative approach did not break any CSS references 
 
 Due to practical limitations of our automated scanning, all of the tested links were unauthenticated. It is possible that more sites will be broken after logging in.
 
-\begin{table}
+\begin{figure}
 \centering
-\caption{Misconfigured MIME Types for CSS}
-\begin{tabular}{|c|c|c|} \hline
-Content-Type&Percentage\\ \hline
-text/html&87.78\%\\ \hline
-Empty&7.56\%\\ \hline
-text/plain&1.74\%\\ \hline
-Other&2.90\%\\
-\hline\end{tabular}
-\end{table}
-
-%\begin{figure}
-%\centering
-%\includegraphics[width=\linewidth]{mime.jpg}
-%\caption{Incorrect MIME Types for CSS}
-%\end{figure}
+\includegraphics[width=\linewidth]{mime.jpg}
+\caption{CSS Files with Incorrect MIME}
+\end{figure}
 
 \subsubsection{Adoption}
 Our proposal requires no changes to existing web servers and only modifies the browser. We implemented the conservative approach of stricter CSS loading in a patch to WebKit, the open source web browser engine component integrated in Safari and Google Chrome. The WebKit patch was first deployed in Google Chrome 4.0.249.78, and also accepted in Safari 4.0.5. Note that the cross-origin CSS raw text leak is tightened by this patch because read access to cross-origin CSS raw text is limited to well-formed imports. Inspired by our WebKit patch, the exact same heuristic was adopted in Opera 10.10. Mozilla proposes (undetermined) to deploy a stricter MIME type checking for loading cross-origin CSS files in Firefox 3.6 quirks mode.
