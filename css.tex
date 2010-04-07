@@ -219,7 +219,7 @@ In this example, the victim's browser will popup an alert message that contains 
 In this section, we describe the defenses against cross-orgin CSS attacks. First, we propose to stricten the requirements for loading cross-origin CSS references. Next, we present an evaluation of web site compatibility for our proposal. Then, we state the progress of adoption for our proposal in major browsers. Finally, we discuss the shortcomings of other defensive approaches, including client-side and server-side mitigations.
 
 \subsection{Proposal: Cross-Origin CSS Checking}
-To prevent cross-origin CSS attacks, we propose that browsers should apply stricter checking when loading cross-origin CSS files. Our initial approach is to enforce strict MIME type checking for loading cross-origin CSS files, referred as the strict approach. We devise a conservative approach with additional CSS parser testing that maximizes web site compatibility while blocking most attacks.
+To prevent cross-origin CSS attacks, we propose that browsers should apply stricter checking when loading cross-origin CSS files. Our initial approach is to enforce strict MIME type checking for loading cross-origin CSS files, we refer as the strict approach. We devise a conservative approach with additional CSS parser testing that maximizes web site compatibility while blocking most attacks.
 
 \subsubsection{Strict Approach}
 In the cross-origin CSS attack, the attacker's evil web page confuses the victim's browser to parse an injected non-CSS document as a style sheet. If browsers strictly required external style sheets to specify the correct MIME type, which is \texttt{text/css}, the evil web page would not be able to load any crafted document. One effective solution is to let browsers always check the MIME type of external CSS references and block any CSS load with an invalid MIME type. When strict MIME type checking is enforced, at least for cross-origin CSS loads (if not globally), browsers would be able to protect target non-CSS docuemnts from being stolen.
@@ -282,7 +282,7 @@ Due to practical limitations of our automated scanning, all of the tested links 
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{mime.jpg}
-\caption{CSS Files with Incorrect MIME}
+\caption{CSS Files with Misconfigured MIME}
 \end{figure}
 
 \subsubsection{Adoption}
@@ -292,7 +292,6 @@ The interpretation of valid MIME types for cross-origin CSS on each browser slig
 
 \begin{table}
 \centering
-\caption{Always? Valid MIME Types for CSS}
 \begin{tabular}{|c|c|c|c|c|} \hline
 Content-Type&FF&OP&Safari&Chrome\\ \hline
 text/css&\checkmark&\checkmark&\checkmark&\checkmark\\ \hline
@@ -303,6 +302,7 @@ Bogus&\checkmark&&&\\ \hline
 */*&\checkmark&&& \\
 \hline\end{tabular}
 (should we include FF 3.7 dev results??)
+\caption{Valid MIME Types for CSS?}
 \end{table}
 
 \subsection{Other Approaches}
