@@ -267,9 +267,9 @@ We found that as many as 172 CSS references on these popular sites did not provi
 \centering
 \begin{tabular}{|c|c|c|} \hline
 Content-Type&Percentage\\ \hline
-text/html&87.78\%\\ \hline
+\texttt{text/html}&87.78\%\\ \hline
 Empty&7.56\%\\ \hline
-text/plain&1.74\%\\ \hline
+\texttt{text/plain}&1.74\%\\ \hline
 Other&2.90\%\\
 \hline\end{tabular}
 \caption{Common Misconfigured MIME Types in Top 10,000 Sites}
@@ -278,12 +278,12 @@ Other&2.90\%\\
 
 According to the CSS parser of WebKit, our browser reported that 93 CSS files were mal-formed, which fail to have a syntactically valid CSS construct at the beginning to the file. There were three CSS files that were mal-formed and also have a broken MIME type, however none of these CSS files were cross-origin loads.
 
-Within a total of 8352 cross-origin CSS loads, there were 40 of them that had a broken MIME type. Blocking these loads would cause CSS failure on 29 of the 10000 most popular web sites. However, we also observed that none of the cross-origin CSS files with broken MIME types were mal-formed.
+Within a total of 8352 cross-origin CSS loads, there were 40 of them that had a broken MIME type. Blocking these loads would cause CSS failure on 32 of the 10000 most popular web sites. However, we also observed that none of the cross-origin CSS files with broken MIME types were mal-formed.
 
 %We ran a scan across the top 500,000 URLs looking for cross-origin loads of CSS with an invalid MIME type. Valid MIME types are defined as text/css, application/x-unknown-content-type, and empty. There were a total of 140 URLs detected that referenced cross-origin CSS with broken MIME types. We found that some of them were non-serious conditions, in which the site loaded a CSS file which is missing and redirected to a 404 html page. There were 60 URLs that would be considered as broken, including 13 with text/plain, 15 with text/html, 31 with application/css, and 1 with application/x-pointplus. If we apply the heuristics of the conservative approach, only one URL that served text/html MIME would fail to load, which was severely broken because it had valid CSS rules after a style tag.
 
 \paragraph{Discussion}
-Based on our results, deploying the strict approach would break CSS references on 0.29\% of the top web sites. Although not prominent, we expect that if any popular web site did not render properly due to stricter CSS loading, browser vendors would possibly resist to deploy this change in risk of losing its users. Our data also suggests that misconfigured servers commonly send the \texttt{text/html} MIME type regardless of the served content type.
+Based on our results, deploying the strict approach would break CSS references on 0.32\% of the top web sites. Although not prominent, we expect that if any popular web site did not render properly due to stricter CSS loading, browser vendors would possibly resist to deploy this change in risk of losing its users. Our data also suggests that misconfigured servers commonly send the \texttt{text/html} MIME type regardless of the served content type.
 
 In our observations, the conservative approach did not break a single CSS reference in the top 10000 web sites. The conservative approach is an appealing defense because it maximizes web site compatibility while blocking the cross-origin CSS attack.
 
@@ -298,18 +298,26 @@ Due to practical limitations of our automated scanning, all of the tested links 
 \subsubsection{Adoption}
 Our proposal has been adopted by several major browsers, as shown in Table~\ref{table:adoption}. Our proposal requires no changes to existing web servers and only modifies the browser. We implemented the conservative approach of stricter CSS loading in a patch to WebKit, the open source web browser engine component integrated in Safari and Google Chrome. The WebKit patch was first deployed in Google Chrome 4.0.249.78, and also accepted in Safari 4.0.5. Note that the cross-origin CSS raw text leak is tightened by this patch because read access to cross-origin CSS raw text is limited to well-formed imports. Inspired by our WebKit patch, the exact same heuristic was adopted in Opera 10.10. Mozilla adopted the strict approach for loading cross-origin CSS files in Firefox 3.7.
 
-The interpretation of valid MIME types for cross-origin CSS on each browser slightly differs as shown in Table~\ref{table:adoption}. In addition to the \texttt{text/css} MIME type, WebKit-based browsers accept files with \texttt{application/x-unknown-content-type} or empty MIME types, which normally triggers the browser's content-sniffing algorithm, even in strict mode. %Bogus represents incorrect MIME values that lack a slash.
+The interpretation of valid MIME types for cross-origin CSS on each browser slightly differs as shown in Table~\ref{table:adoption}. All browsers allow \texttt{text/css} MIME type by default, WebKit-based browsers also accept files with \texttt{application/x-unknown-content-type} or empty MIME types, which normally triggers the browser's content-sniffing algorithm. We noticed that Firefox 3.7 allows some unknown MIME types such as \texttt{*/*} and also bogus MIME types that lack a slash such as \texttt{text}.
 
 \begin{table}
 \centering
 \begin{tabular}{|c|c|c|c|c|} \hline
 Content-Type&FF&OP&Safari&Chrome\\ \hline
-text/css&S&C&C&C\\ \hline
-application/x-&S&&C&C\\ 
-unknown-content-type&&&&\\ \hline
-Empty&S&&C&C\\ %\hline
+%text/css&&&&\\ \hline
+\texttt{application/x-}&&C&&\\ 
+\texttt{unknown-content-type}&&&&\\ \hline
+Empty&&C&&\\ \hline
+\texttt{text}&&C&C&C \\ \hline
+Bogus&&C&C&C \\ \hline
+\texttt{*/*}&&C&C&C \\ \hline
+\texttt{application/}&S&C&C&C\\ 
+\texttt{octet-stream}&&&&\\ \hline
+%Bogus&&C&C&C \\ \hline
+%text/html&S&C&C&C\\ \hline
+\texttt{text/plain}&S&C&C&C\\ \hline
+Known&S&C&C&C\\
 %Bogus&\checkmark&&&\\ \hline
-%*/*&\checkmark&&& \\
 \hline\end{tabular}
 \caption{Adoption of Proposal in Major Browsers. The `S' and `C' represent the strict approach and conservative approache, respectively.}
 \label{table:adoption}
@@ -352,10 +360,10 @@ In a content-sniffing XSS attack, the attacker uploads a crafted chameleon docum
 JavaScript Hijacking~\cite{jshijacking} is a vulnerability that allows the attacker to steal sensitive data from an honest web site that uses JavaScript as data transport format, such as JavaScript Object Notation (JSON) messages. Since the browser security model allows importing scripts from a different domain, the attacker can use a script tag in their evil page to include the target JavaScript object. A client-side mitigation is to prevent direct execution of the responses by prefixing each JavaScript object with a \texttt{while(1);} statement. The malicious page using script tag will execute the infinite loop while the legitimate client application can modify the response before executing it. A server-side defense approach is to block malicious requests by including secret tokens in every legitimate request, which can not be forged by the attacker. Another server-side technique to block JavaScript Hijacking attacks is responding only to HTTP POST requests because the script tag always uses GET requests to load external libraries. These server-side mitigations can also be used in defense of the cross-origin CSS attack, but puts the burden on web developers to implement secure applications.
 
 \subsection{Gazelle Browser}
-The Gazelle browser~\cite{gazelle} is proposed as a secure web browser that exclusively controls resource protection and sharing across web sites, or principals, as a multi-principal OS. In their architecture, all cross-principal communication are explicitly mediated by the browser kernel to prevent cross-origin attacks. Thus, cross-origin resources are protected and only retrieved if the content is a script or a style sheet based on the Content-Type header of the HTTP response. Gazelle provides the same protection against cross-origin CSS attacks as the strict MIME type checking approach at the cost of site incompatibility. From our compatibility evaluation results, the strict approach would cause CSS failure on 29 of the top 10,000 web sites.
+The Gazelle browser~\cite{gazelle} is proposed as a secure web browser that exclusively controls resource protection and sharing across web sites, or principals, as a multi-principal OS. In their architecture, all cross-principal communication are explicitly mediated by the browser kernel to prevent cross-origin attacks. Thus, cross-origin resources are protected and only retrieved if the content is a script or a style sheet based on the Content-Type header of the HTTP response. Gazelle provides the same protection against cross-origin CSS attacks as the strict MIME type checking approach at the cost of site incompatibility. From our compatibility evaluation results, the strict approach would cause CSS failure on 32 of the top 10,000 web sites.
 
 \section{Conclusions}
-In this paper, we proposed browsers to implement a stricter cross-orign CSS checking to provide robust defense for cross-origin CSS attacks. We presented two defensive approaches, the strict approach based on MIME type checking and the conservative approach using additional CSS parser testing to address web site compatibility issues. Our proposed solution does not require modifications to existing web servers and is simple to implement in browsers. We evaluated the compatibility of our proposed solution over the top 10,000 web sites. To reduce false positives in the strict approach, we recommend that web administrators should properly configure servers to provide correct MIME types to reduce false positives. Without relying on web site changes, the conservative approach mitigates the attack while maximizing site compatibility. Our proposal has been adopted in sereral major browsers including Google Chrome, Opera, Safari and Firefox.
+In this paper, we proposed browser defenses to provide robust defense for the cross-orign CSS attack. We presented two defensive approaches, the strict approach based on MIME type checking and the conservative approach using additional CSS parser testing to address web site compatibility issues. We evaluated the compatibility of our proposed solution over the top 10,000 web sites. Without relying on web site modifications, the conservative approach completely mitigates the attack while maximizing site compatibility. We found that common server misconfigurations introduced false positives in the strict approach, that would cause 0.32\% sites to render incorrectly. We recommend that web administrators should properly configure servers to provide correct MIME types to reduce false positives. Our proposal has been adopted in sereral major browsers including Google Chrome, Opera, Safari and Firefox.
 
 \bibliographystyle{abbrv}
 \bibliography{css}
