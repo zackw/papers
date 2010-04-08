@@ -20,6 +20,8 @@ Collin Jackson\\
       \affaddr{collin.jackson@sv.cmu.edu}
 }
 
+\newcommand{\todo}[1]{\textbf{[TODO: #1]}}
+
 \maketitle
 \begin{abstract}
 The cross-origin CSS attack is a newly exploited browser vulnerability that allows the attacker to steal a user's secret content on an honest web site from a different domain. In this paper, we expose the cross-origin CSS attack, which involves cross-origin style sheet loading and CSS property string injection to steal cross-origin data. This attack is constructed upon the lenient MIME type requirement and lax CSS parsing in modern browsers. We propose browsers to implement a stricter cross-orign CSS checking which can provide robust defense for cross-origin CSS attacks while addressing web site compatibility concerns. We detail other client-side and server-side mitigation techniques and find shortcomings with each technique. Our proposal has been adoped by Google Chrome, Safari, Opera and Firefox.
@@ -79,8 +81,7 @@ Cascading Style Sheets~\cite{css} is a mechanism that lets web developers contro
 \paragraph{Lax Parsing}
 In modern browsers, the CSS parser is actually very lax. The CSS parser will skip over any amount of invalid syntax in the style sheet until it finds the next valid rule. This is unlike the JavaScript parser that will abort on the first syntax error. A lax CSS parser gives the browser better compatibility for supporting misconfigured web sites, but unfortunately opens opportunities to attackers and enables the cross-origin CSS attack in this paper.
 
-(Chris' comment: I think they are intending to be forward-compatible with brand new CSS syntax too.
-There is some small interpretation of invalid syntax: careful track seems to be kept regarding opened brackets. I think this includes { ( and [ -- but of course may be browser dependent. Any CSS injection point may have to close an arbitrary number of these brackets: of the correct type in the correct order!)
+\todo{Chris' comment: I think they are intending to be forward-compatible with brand new CSS syntax too. There is some small interpretation of invalid syntax: careful track seems to be kept regarding opened brackets. I think this includes various bracket types -- but of course may be browser dependent. Any CSS injection point may have to close an arbitrary number of these brackets: of the correct type in the correct order!}
 
 \subsubsection{Same-Origin Policy}
 The same-origin policy~\cite{mozillasameorigin} is the main security mechanism in modern browsers that provides isolation of contents between unrelated web sites. The same-origin policy restricts contents to access resources only from the same origin, which applies to scripting interactions, i.e. accessing the Document Object Model (DOM)~\cite{dom} and transferring data using the \texttt{XMLHttpRequest} API. In SOP, the origin of a resource is defined as the protocol, host, and port. The same-origin policy does not apply to fetching and executing remote libraries, including scripts and style sheets, from a different origin.
@@ -135,7 +136,7 @@ When the user visits \texttt{attacker.com}, the attacker's evil page instructs t
 </HTML>
 \end{verbatim}
 \paragraph{Cookies}
-The HTTP cookie mechanism enables web sites to authenticate clients and maintain client states, allowing web sites to not only serve static content but customize the content and appearance for each session user. According to the standards, the browser always sends the user's cookie when it loads any referenced style sheets, including cross-origin CSS. If a user was logged into the \texttt{target.com} while visiting the evil page, the browser would send the user's authentication cookie on all requests to \texttt{target.com} and be considered as valid authenticated requests. This behavior exploits cookie-authenticated web sites and potentially leaks the user's sensitive information in the server's response. 
+The HTTP cookie mechanism enables web sites to authenticate clients and maintain client states, allowing web sites to not only serve static content but customize the content and appearance for each session user. According to the standards, the browser always sends the user's cookie when it loads any referenced style sheets, including cross-origin CSS. If a user was logged into the \texttt{target.com} while visiting the evil page, the browser would send the user's authentication cookie on all requests to \texttt{target.com} and be considered as valid authenticated requests. This behavior exploits cookie-authenticated web sites and potentially leaks the user's sensitive information in the server's response.
 
 \subsubsection{Confidential Data Extraction}
 The final step for the attacker is to extract the confidential data from the cross-origin imported styles in the victim's browser. The attacker's evil page can simply use JavaScript to read the computed styles. Furthermore, a variant of the cross-origin CSS attack
@@ -179,12 +180,12 @@ In CSS specifications~\cite{css}, strings can either be written with double quot
 \paragraph{Forcing UTF-7}
 The requirement for quotes to not get escaped can sometimes be bypassed in browsers that support UTF-7 encoding, including Firefox and Safari. If the target web sites fails to specify a character set in the HTTP \texttt{Content-Type} header, the attacker's evil page can force the remote resource to be parsed as UTF-7 encoding as the following:
 \begin{verbatim}
-<LINK REL="stylesheet" HREF="http://target.com" 
+<LINK REL="stylesheet" HREF="http://target.com"
 CHARSET="utf-7">
 \end{verbatim}
 By forcing UTF7, either a single or double quote may be injected by rendering it in the UTF-7 character set, i.e. `\texttt{+ACc-}' for single quote and `\texttt{+ACI-}' for double quote. This will cause the injection to survive any output escaping of the web application. A significant number of web sites actually do not specify character sets in their HTTP responses (We found that 22 out of the top 100 web sites ranked by Alexa~\cite{alexa} did not specify character sets). Some web sites specify the \texttt{Content-Type} information using meta tags with the \texttt{http-equiv} attribute in the HTML head element as the following:
 \begin{verbatim}
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; 
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;
 charset=utf-8">
 \end{verbatim}
 Browsers may use meta tags to refine the information provided by the actual headers, but can also ignore it. If a document declares a character set in a meta tag but not in the response header, the referring page can override the character set with the \texttt{charset} attribute in the parent link tag. Thus, using the equivalent HTTP header to specify the MIME type and character set is always recommended.
@@ -275,6 +276,18 @@ Other&2.90\%\\
 \caption{Common Misconfigured MIME Types in Top 10,000 Sites}
 \label{table:MIME}
 \end{table}
+
+\subsubsection{Experiment}
+To evaluate the compatibility of our proposed defense of stricter CSS loading, we conducted an experiment to measure how often web servers fail to provide the correct MIME type for CSS files and whether these CSS files are well-formed when loaded cross-origin.
+
+\paragraph{Design}
+To measure how often web servers fail to provide the correct MIME type for CSS files, we collected metrics by crawling the top 10,000 web sites ranked by Alexa\cite{alexa} and scanned through all of the style sheet resources in their home pages. We are interested in all CSS references including using HTML link tags and CSS \texttt{@import} directives. Furthermore, some web sites dynamically add CSS links using JavaScript while the page loads. To achieve a more thorough scan for these CSS references, we conducted our experiment to directly render these web pages with an instrumented WebKit browser while recording information of all CSS loads until the web page finishes loading.
+
+\paragraph{Results}
+From the top 10,000 web sites, we fetched a total of 27532 CSS references, including 22799 link tags and 4733 \texttt{@import} directives. These results do not include unreachable web sites nor unreachable CSS resources.
+Our results are shown in Table~\ref{tbl:results}.
+
+We found that as many as 172 CSS references on these popular sites did not provide the correct \texttt{Content-Type} response header. In most cases, we found that misconfigured servers provided the \texttt{text/html} MIME type for CSS files, which is for normal HTML documents. Some CSS files did not specify the \texttt{Content-Type} header in the response at all, thus had an empty MIME type. Our browser collected a list of various incorrect MIME types for CSS files, including \texttt{text/html}, \texttt{text/plain}, \texttt{text}, \texttt{application/octet-stream}, \texttt{application/x-pointplus}, \texttt{image/gif}, \texttt{Content-Type:text/css} and empty MIME type.
 
 According to the CSS parser of WebKit, our browser reported that 93 CSS files were mal-formed, which fail to have a syntactically valid CSS construct at the beginning to the file. There were three CSS files that were mal-formed and also have a broken MIME type, however none of these CSS files were cross-origin loads.
 
