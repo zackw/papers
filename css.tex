@@ -24,7 +24,7 @@ Collin Jackson\\
 
 \maketitle
 \begin{abstract}
-The cross-origin CSS attack is a newly exploited browser vulnerability that allows the attacker to steal a user's secret content on an honest web site from a different domain. In this paper, we expose the cross-origin CSS attack, which involves cross-origin style sheet loading and CSS property string injection to steal cross-origin data. This attack is constructed upon the lenient MIME type requirement and lax CSS parsing in modern browsers. We propose browsers to implement a stricter cross-orign CSS checking which can provide robust defense for cross-origin CSS attacks while addressing web site compatibility concerns. We detail other client-side and server-side mitigation techniques and find shortcomings with each technique. Our proposal has been adoped by Google Chrome, Safari, Opera and Firefox.
+Cross-origin CSS attacks allow an attacker's web site to steal confidential information from another site by hijacking a user's existing authenticated session. The attack leverages an exception in the browser's security policy for style sheets to read other types of non-style content. We describe the conditions under which the attack applies and propose client-side defenses for the attack that will still allow the vast majority of web sites to function normally. We detail other client-side and server-side mitigation proposals and find shortcomings with each technique. Our defense proposal has been adopted by Firefox, Google Chrome, Safari, and Opera.
 \end{abstract}
 
 \category{K.6.5}{Management of Computing and Information Systems}{Security and Protection}
@@ -34,7 +34,21 @@ The cross-origin CSS attack is a newly exploited browser vulnerability that allo
 \keywords{CSS, MIME, Same-Origin Policy}
 
 \section{Introduction}
-(This is the introduction.)
+
+The Web is rapidly becoming the single stop for all of our computing needs,
+including information access, personal communications, office tasks, and
+e-commerce. Faster, more standards-compliant browsers and improved development
+frameworks have made the Web the platform of choice platform for delivering
+rich, interactive experiences. Applications like Gmail and Facebook are
+rapidly supplanting traditional client software.
+
+One of the key features that has made the Web so successful is the same-origin
+policy that allows users to safely interact with software written by anyone
+--- even someone they do not trust. The browser limits interactions between
+sites to by compartmentalizing them into ``origins'' that cannot easily read
+each other's sensitive data. However, browsers have wisely added exceptions where necessary to enable powerful cross-origin interactions. The cross-origin hyperlink is the foundation that allowed search engines, e-commerce, and social media to flourish. Cross-origin library import has also played a key role in the success of the Web, allowing publishers to analyze and monetize their content with tools like Google Analytics and Google Adsense. Cross-origin images have allowed companies to outsource their infrastrucutre to content distribution networks or Amazon S3.
+
+(Segue into cross-origin stylesheets.)
 
 browser quirks/strict modes
 
@@ -47,27 +61,34 @@ In the cross-origin CSS attack, the attacker injects CSS strings into the target
 ?? mixi.jp post\_key theft~\cite{cssxss}
 
 \section{Threat Model}
-We define a precise threat model, the web attacker, for reasoning the cross-origin CSS attack. We assume that the attacker's goal is to steal a victim user's secret content on an honest web site from another domain.
+%We define a precise threat model, the web attacker, for reasoning the
+%cross-origin CSS attack. We assume that the attacker's goal is to steal a
+%victim user's secret content on an honest web site from another domain.
 
-\subsection{Web Attacker}
-A web attacker is a malicious principal who owns a domain name, e.g. \texttt{attacker.com}, and operates a web server. To study the browser's defense mechanisms, we assume that the victim's browser renders content from the attacker's web site. In addition, the web attacker is given the ability to inject semi-arbitrary strings into the target domain.
+The threat model for cross-origin CSS attacks is a ``web
+attacker''~\cite{jackson09thesis}, a malicious principal who owns a domain
+name and operates a web server. To study the browser's defense mechanisms, we
+assume that the victim user visits the attacker's web site. In addition, the
+web attacker is given the ability to inject semi-arbitrary strings into the
+target domain.
+% 
+% We do not require social engineering, cross-site scripting vulnerabilities, and we do not assume that the victim's machine has been compromised by malicious software;
+% There are a number of stronger threat models that could  threats that we do not consider in this paper, such as phishing, DNS rebinding, and XSS.
+% (more description...?)
+% T
 
-\begin{itemize}
-
-\item{Attacker Abilities:}
+\paragraph{Attacker Abilities}
 The web attacker can send and receive network messages over network protocols of the attacker's choice, but only from its own machines. Typically, the web attacker operates at least one machine as an HTTP server, which we refer to as \texttt{attacker.com}. The web attacker has no control over the victim's network connections. In particular, the web attacker cannot eavesdrop on unencrypted connections and steal session identifiers to hijack the victim's authenticated user session. Neither can the web attacker spoof network frames and impersonate another user to an honest web site.
+The web attacker is also incapable of installing malicious software on the victim's machine; otherwise, the malware could replace the browser and bypass any browser-based defenses.
 
-\item{Victim Behavior:}
+\paragraph{Victim Behavior.}
 We assume that the victim visits the attacker's web site with a popular browser. In practice, this assumption can be supported by several techniques for attacking users, e.g. buying web advertisements or sending bulk e-mail to encourage visitors. By visiting \texttt{attacker.com}, the attacker can instruct the victim's browser to fetch external style sheets and also export data to remote servers. As long as the victim's session with an honest web site haven't expired, the attacker can instruct the victim's browser to issue requests with the victim's cookies.
+We do not assume that the victim behaves discloses any sensitive information
+while on the attacker's site; merely rendering the attacker's web content
+is sufficient.
 
-\item{Target Behavior:}
+\paragraph{Target Behavior}
 We assume that the attacker can inject semi-arbitrary strings into a target domain that contains the secret content, which we refer to as \texttt{target.com}. We define the term semi-arbitrary strings as a subset of strings that may conform to CSS syntax to differentiate from fully arbitrary strings that may also conform to HTML syntax. The ability of injecting CSS strings is considered weaker than injecting HTML strings into the target domain, as in common XSS attacks, because scripts may be detected and blocked by client-side XSS filters. In practice, there are various methods to inject strings into the target domain, e.g. reflection of user-controlled strings or via URL parameters.
-
-\end{itemize}
-
-There are a number of related threats that we do not consider in this paper, such as phishing, DNS rebinding, and XSS.
-(more description...?)
-The web attacker is incapable of installing malicious software on the victim's machine, otherwise, the malware could replace the browser and bypass any browser-based defenses.
 
 \section{Attacks}
 In this section, we study cross-origin CSS attacks. First, we provide some background information. Next, we introduce cross-origin CSS attacks. Then, we discuss the restrictions for constructing this attack and suggest general areas that are exploitable. Finally, we demonstrate an attack against a popular web application and browser as our proof of concept.
