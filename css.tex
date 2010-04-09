@@ -1,9 +1,9 @@
 \documentclass{acm_proc_article-sp}
+\usepackage{url,verbatim}
 
 \begin{document}
 
 \title{Protecting Browsers from Cross-Origin CSS Attacks}
-
 \numberofauthors{3}
 \author{
 \alignauthor
@@ -46,21 +46,60 @@ One of the key features that has made the Web so successful is the same-origin
 policy that allows users to safely interact with software written by anyone
 --- even someone they do not trust. The browser limits interactions between
 sites to by compartmentalizing them into ``origins'' that cannot easily read
-each other's sensitive data. However, browsers have wisely added exceptions where necessary to enable powerful cross-origin interactions. The cross-origin hyperlink is the foundation that allowed search engines, e-commerce, and social media to flourish. Cross-origin library import has also played a key role in the success of the Web, allowing publishers to analyze and monetize their content with tools like Google Analytics and Google Adsense. Cross-origin images have allowed companies to outsource their infrastrucutre to content distribution networks or Amazon S3.
+each other's sensitive data. However, browsers have wisely added exceptions
+where necessary to enable powerful cross-origin interactions. The cross-origin
+hyperlink is the foundation that allowed search engines and social media to
+revolutionize news, communication, and e-commerce. Cross-origin images have
+allowed web applications to improve performance and reduce costs by
+outsourcing their infrastructure to content distribution networks.
+Cross-origin plugin embedding took this a step further by making the wildly
+popular YouTube video service embeddable by bloggers. Cross-origin script
+import has also played a key role in the success of the Web, allowing
+publishers to optimize and monetize their content with tools like Google
+Analytics and Google Adsense.
 
-(Segue into cross-origin stylesheets.)
+In this paper, we analyze another widely used cross-origin interaction: style
+sheet import. Style sheets are used in Web applications to improve the
+appearance of pages with color, layout, and more. They make the web an
+efficient and attractive medium for presenting information. Because style
+sheets can be imported across origins just like scripts and images, they
+constitute an exception to the browser same-origin policy that prohibits sites
+from reading content loaded from other origins. Browser vendors allow this
+exception because they assume that sites will not transmit confidential information in style sheet format.
 
-browser quirks/strict modes
+Browser vendors and standards bodies continue to push the limits of what is
+possible with style sheets. The CSS specification~\cite{cssspec} introduces
+new style sheet directives and even new syntax from time to time. All versions
+of CSS, starting from CSS1, have required that user agents ignore certain
+types of invalid style directives. This essential property of style sheets
+provides forward-compatibility with future versions and allows experimental
+vendor-proprietary extensions.
 
-Content sniffing XSS~\cite{securecontentsniffing}
+Unfortunately, this forwards-compatible parsing behavior presents a critical
+security threat to the web. A malicious web site can load HTML documents as
+style sheets, and extract the information that makes it through the browser's
+lax HTML parser. This technique was first demonstrated by a Japanese
+blogger~\cite{cssxss} to circumvent a victim web site's cross-site request
+forgery defenses in Internet Explorer. In this paper, we describe additional
+variations on the attack that work in all browsers and propose client-side
+defenses. Our proposals have been adopted by Firefox, Google Chrome, Safari,
+and Opera.
 
-JavaScript hijacking~\cite{jshijacking}
+\paragraph{Organization.}
+Section~\ref{sec:threatmodel} presents a threat model for cross-origin CSS  attacks.
+Section~\ref{sec:attacks} describes the attack in detail. Section~\ref{sec:defenses} proposes and evaluates defenses.
+Section~\ref{sec:relatedwork} surveys related work.
+Section~\ref{sec:conclusion} concludes.
 
-In the cross-origin CSS attack, the attacker injects CSS strings into the target domain that contains the secret content, instructs the victim's browser to import and parse the target document as a style sheet, and then exports the secret string from the computed style properties to the attacker.
+% Content sniffing XSS~\cite{securecontentsniffing}
+% 
+% JavaScript hijacking~\cite{jshijacking}
 
-?? mixi.jp post\_key theft~\cite{cssxss}
+% In the cross-origin CSS attack, the attacker injects CSS strings into the target domain that contains the secret content, instructs the victim's browser to import and parse the target document as a style sheet, and then exports the secret string from the computed style properties to the attacker.
+% 
+% ?? mixi.jp post\_key theft
 
-\section{Threat Model}
+\section{Threat Model} \label{sec:threatmodel}
 %We define a precise threat model, the web attacker, for reasoning the
 %cross-origin CSS attack. We assume that the attacker's goal is to steal a
 %victim user's secret content on an honest web site from another domain.
