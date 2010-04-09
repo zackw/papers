@@ -127,7 +127,7 @@ In a cross-origin CSS attack, the attacker's main objective is to steal the vict
 \subsubsection{CSS String Injection}
 Due to lenient MIME type requirement of CSS parsers, the attacker may fool the victim's browser into loading a carefully crafted non-CSS (e.g. HTML or XML) document as a valid style sheet resource. In practice, there are several methods that may allow a web attacker to inject strings into the target domain, e.g. reflection of user-controlled strings or via URL parameters. Normally, random text in a non-CSS document contains syntax errors to the CSS parser and would break the parsing. However, due to the overly lax CSS parsers in modern browsers, portions of a non-CSS document with valid CSS syntax can still be successfully parsed and recognized as style sheet rules.
 
-We illustrate an example of a CSS string injection in Figure~\ref{figure:injection}. Suppose that there is a sensitive content, represented with the string `SECRET', in an HTML document on an honest web site that the attacker wants to steal. Assuming that the attacker has sufficient influence over the web page to control the text preceding and succeeding the secret string, the CSS string injection can be constructed based on common CSS properties that have string type values, i.e. \texttt{font-family}, \texttt{background-image}, and \texttt{list-style-image}. Given the ability to inject arbitrary strings into the target domain, the HTML document can be crafted to contain a CSS property \texttt{font-family} as the following:
+We illustrate an example of a CSS string injection in Figure~\ref{figure:injection}. Suppose that there is a sensitive content, represented with the string ``SECRET'', in an HTML document on an honest web site that the attacker wants to steal. Assuming that the attacker has sufficient influence over the web page to control the text preceding and succeeding the secret string, the CSS string injection can be constructed based on common CSS properties that have string type values, i.e. \texttt{font-family}, \texttt{background-image}, and \texttt{list-style-image}. Given the ability to inject arbitrary strings into the target domain, the HTML document can be crafted to contain a CSS property \texttt{font-family} as the following:
 \begin{verbatim}
 Target document:
 <HTML>..SECRET..</HTML>
@@ -135,7 +135,7 @@ Target document:
 After injection:
 <HTML>..{} BODY { font-family: "SECRET" }..</HTML>
 \end{verbatim}
-The injected HTML document will appear to the CSS parser as containing a valid CSS rule. The fonts of the attacker's page will be styled with a font-family specified as the stolen string `SECRET'. Note that the seemingly redundant pair of brackets in the injection string re-syncs the CSS parser to make sure that the evil CSS rule parses properly. All the other non-CSS text in the document are skipped by the CSS parser, thus will not effect the parsing of the evil CSS rule. Once the crafted document is loaded, the attacker can easily steal the secret string from the computed \texttt{font-family} style of the attacker's page.
+The injected HTML document will appear to the CSS parser as containing a valid CSS rule. The fonts of the attacker's page will be styled with a font-family specified as the stolen string ``SECRET''. Note that the seemingly redundant pair of brackets in the injection string re-syncs the CSS parser to make sure that the evil CSS rule parses properly. All the other non-CSS text in the document are skipped by the CSS parser, thus will not effect the parsing of the evil CSS rule. Once the crafted document is loaded, the attacker can easily steal the secret string from the computed \texttt{font-family} style of the attacker's page.
 
 \begin{figure}
 \centering
@@ -204,7 +204,7 @@ The requirement for quotes to not get escaped can sometimes be bypassed in brows
 <LINK REL="stylesheet" HREF="http://target.com"
 CHARSET="utf-7">
 \end{verbatim}
-By forcing UTF7, either a single or double quote may be injected by rendering it in the UTF-7 character set, i.e. `\texttt{+ACc-}' for single quote and `\texttt{+ACI-}' for double quote. This will cause the injection to survive any output escaping of the web application. A significant number of web sites actually do not specify character sets in their HTTP responses (We found that 22 out of the top 100 web sites ranked by Alexa~\cite{alexa} did not specify character sets). Some web sites specify the \texttt{Content-Type} information using meta tags with the \texttt{http-equiv} attribute in the HTML head element as the following:
+By forcing UTF7, either a single or double quote may be injected by rendering it in the UTF-7 character set, i.e. ``\texttt{+ACc-}'' for single quote and ``\texttt{+ACI-}'' for double quote. This will cause the injection to survive any output escaping of the web application. A significant number of web sites actually do not specify character sets in their HTTP responses (We found that 22 out of the top 100 web sites ranked by Alexa~\cite{alexa} did not specify character sets). Some web sites specify the \texttt{Content-Type} information using meta tags with the \texttt{http-equiv} attribute in the HTML head element as the following:
 \begin{verbatim}
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html;
 charset=utf-8">
@@ -241,7 +241,7 @@ alert(document.body.currentStyle['backgroundImage']);
 </BODY>
 </HTML>
 \end{verbatim}
-In this example, the victim's browser will popup an alert message that contains some stolen cross-origin text. Within the stolen text contains the subjects, senders and the `mid' value for all e-mails received between the two evil e-mails were delivered to the victim. The `mid' value would appear to be an unguessable key to an attacker. Accordingly, it is reasonable for the mail application to rely on it as a secret token to defend CSRF attacks. This is indeed the case for the e-mail deletion operation, implemented as an HTTP GET request. This example demonstrates the potential severity of the cross-origin CSS attack, by leaking only a small amount of cross-domain text may proceed to more serious attacks and possibly session hijacking. Many social networking sites are vulnerable to variants of this attack, where the attacker gets to leave arbitrary text comments which are rendered on the victim's trusted page.
+In this example, the victim's browser will popup an alert message that contains some stolen cross-origin text. Within the stolen text contains the subjects, senders and the ``mid'' value for all e-mails received between the two evil e-mails were delivered to the victim. The ``mid'' value would appear to be an unguessable key to an attacker. Accordingly, it is reasonable for the mail application to rely on it as a secret token to defend CSRF attacks. This is indeed the case for the e-mail deletion operation, implemented as an HTTP GET request. This example demonstrates the potential severity of the cross-origin CSS attack, by leaking only a small amount of cross-domain text may proceed to more serious attacks and possibly session hijacking. Many social networking sites are vulnerable to variants of this attack, where the attacker gets to leave arbitrary text comments which are rendered on the victim's trusted page.
 
 \paragraph{UTF-7 Attack?}
 
@@ -253,7 +253,7 @@ In this section, we describe the defenses against cross-orgin CSS attacks. First
 To prevent cross-origin CSS attacks, we propose that browsers should apply stricter checking when loading cross-origin CSS files. Our initial approach is to enforce strict MIME type checking for loading cross-origin CSS files, we refer as the strict approach. We devise a conservative approach with additional CSS parser testing that maximizes web site compatibility while blocking most attacks.
 
 \subsubsection{Strict Approach}
-In the cross-origin CSS attack, the attacker's evil web page confuses the victim's browser to parse an injected non-CSS document as a style sheet. If browsers strictly required external style sheets to specify the correct MIME type, which is \texttt{text/css}, the evil web page would not be able to load any crafted document. One effective solution is to let browsers always check the MIME type of external CSS references and block any CSS load with an invalid MIME type. When strict MIME type checking is enforced, at least for cross-origin CSS loads (if not globally), browsers would be able to protect target non-CSS docuemnts from being stolen.
+In the cross-origin CSS attack, the attacker's evil web page confuses the victim's browser to parse an injected non-CSS document as a style sheet. If browsers strictly required external style sheets to specify the correct MIME type, which is \texttt{text/css}, the evil web page would not be able to load any crafted document. One effective solution is to let browsers always check the MIME type of external CSS references and block any CSS load with an invalid MIME type. When strict MIME type checking is enforced, at least for cross-origin CSS loads (if not globally), browsers would be able to protect target non-CSS documents from being stolen.
 
 The major concern of the strict approach is that any misconfigured cross-origin resources that fail to provide valid MIME types would be blocked. Strict MIME type checking relies on web developers to correctly deploy their web sites and provide valid MIME types. Unless every web developer properly configures their servers to send the correct \texttt{Content-Type} response header, the strict approach will inevitably introduce false positives and cause CSS failure on web sites. Expectedly, browser vendors would tend to resist changes that would cause web site breakage and lose its users.
 
@@ -306,7 +306,7 @@ To measure how often web servers fail to provide the correct MIME type for CSS f
 
 \paragraph{Results}
 From the top 10,000 web sites, we fetched a total of 27532 CSS references, including 22799 link tags and 4733 \texttt{@import} directives. These results do not include unreachable web sites nor unreachable CSS resources.
-Our results are shown in Table~\ref{tbl:results}.
+Our results are shown in Table~\ref{table:MIME}.
 
 We found that as many as 172 CSS references on these popular sites did not provide the correct \texttt{Content-Type} response header. In most cases, we found that misconfigured servers provided the \texttt{text/html} MIME type for CSS files, which is for normal HTML documents. Some CSS files did not specify the \texttt{Content-Type} header in the response at all, thus had an empty MIME type. Our browser collected a list of various incorrect MIME types for CSS files, including \texttt{text/html}, \texttt{text/plain}, \texttt{text}, \texttt{application/octet-stream}, \texttt{application/x-pointplus}, \texttt{image/gif}, \texttt{Content-Type:text/css} and empty MIME type.
 
@@ -316,6 +316,13 @@ Within a total of 8352 cross-origin CSS loads, there were 40 of them that had a 
 
 %We ran a scan across the top 500,000 URLs looking for cross-origin loads of CSS with an invalid MIME type. Valid MIME types are defined as text/css, application/x-unknown-content-type, and empty. There were a total of 140 URLs detected that referenced cross-origin CSS with broken MIME types. We found that some of them were non-serious conditions, in which the site loaded a CSS file which is missing and redirected to a 404 html page. There were 60 URLs that would be considered as broken, including 13 with text/plain, 15 with text/html, 31 with application/css, and 1 with application/x-pointplus. If we apply the heuristics of the conservative approach, only one URL that served text/html MIME would fail to load, which was severely broken because it had valid CSS rules after a style tag.
 
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{mime.jpg}
+\caption{CSS Files with Misconfigured MIME in Top 10,000 Sites}
+\label{table:MIME}
+\end{figure}
+
 \paragraph{Discussion}
 Based on our results, deploying the strict approach would break CSS references on 0.32\% of the top web sites. Although not prominent, we expect that if any popular web site did not render properly due to stricter CSS loading, browser vendors would possibly resist to deploy this change in risk of losing its users. Our data also suggests that misconfigured servers commonly send the \texttt{text/html} MIME type regardless of the served content type.
 
@@ -323,16 +330,10 @@ In our observations, the conservative approach did not break a single CSS refere
 
 Due to practical limitations of our automated scanning, all of the tested links were unauthenticated. It is possible that more sites will be broken after logging in.
 
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{mime.jpg}
-\caption{CSS Files with Misconfigured MIME in Top 10,000 Sites}
-\end{figure}
-
 \subsubsection{Adoption}
-Our proposal has been adopted by several major browsers, as shown in Table~\ref{table:adoption}. Our proposal requires no changes to existing web servers and only modifies the browser. We implemented the conservative approach of stricter CSS loading in a patch to WebKit, the open source web browser engine component integrated in Safari and Google Chrome. The WebKit patch was first deployed in Google Chrome 4.0.249.78, and also accepted in Safari 4.0.5. Note that the cross-origin CSS raw text leak is tightened by this patch because read access to cross-origin CSS raw text is limited to well-formed imports. Inspired by our WebKit patch, the exact same heuristic was adopted in Opera 10.10. Mozilla adopted the strict approach for loading cross-origin CSS files in Firefox 3.7.
+Our proposal has been adopted by several major browsers, including Google Chrome, Opera, Safari and Firefox. Our proposal requires no changes to existing web servers and only modifies the browser. We implemented the conservative approach of stricter CSS loading in a patch to WebKit, the open source web browser engine component integrated in Safari and Google Chrome. The WebKit patch was first deployed in Google Chrome 4.0.249.78, and also accepted in Safari 4.0.5. Note that the cross-origin CSS raw text leak is tightened by this patch because read access to cross-origin CSS raw text is limited to well-formed imports. Inspired by our WebKit patch, the exact same heuristic was adopted in Opera 10.10. Mozilla adopted the strict approach for loading cross-origin CSS files in Firefox 3.7.
 
-The interpretation of valid MIME types for cross-origin CSS on each browser slightly differs as shown in Table~\ref{table:adoption}. All browsers allow \texttt{text/css} MIME type by default, WebKit-based browsers also accept files with \texttt{application/x-unknown-content-type} or empty MIME types, which normally triggers the browser's content-sniffing algorithm. We noticed that Firefox 3.7 allows some unknown MIME types such as \texttt{*/*} and also bogus MIME types that lack a slash such as \texttt{text}.
+The interpretation of valid MIME types for cross-origin CSS on each browser slightly differs as shown in Table~\ref{table:adoption}. All browsers allow the correct \texttt{text/css} MIME type, Firefox and WebKit-based browsers also defaultly accept files with empty string or \texttt{application/x-unknown-content-type} MIME type, which are normally used to trigger the browser's content-sniffing algorithm. We noticed that Firefox 3.7 allows some unknown MIME types such as \texttt{*/*} and also bogus MIME types that lack a slash such as \texttt{text}. Known MIME types represent all the predefined MIME types for common media types with the exception of \texttt{text/css}, such as \texttt{text/html} and \texttt{image/gif}.
 
 \begin{table}
 \centering
@@ -342,18 +343,16 @@ Content-Type&FF&OP&Safari&Chrome\\ \hline
 \texttt{application/x-}&&C&&\\ 
 \texttt{unknown-content-type}&&&&\\ \hline
 Empty&&C&&\\ \hline
-\texttt{text}&&C&C&C \\ \hline
+%\texttt{text}&&C&C&C \\ \hline
 Bogus&&C&C&C \\ \hline
 \texttt{*/*}&&C&C&C \\ \hline
 \texttt{application/}&S&C&C&C\\ 
 \texttt{octet-stream}&&&&\\ \hline
-%Bogus&&C&C&C \\ \hline
-%text/html&S&C&C&C\\ \hline
+%\texttt{text/html}&S&C&C&C\\ \hline
 \texttt{text/plain}&S&C&C&C\\ \hline
 Known&S&C&C&C\\
-%Bogus&\checkmark&&&\\ \hline
 \hline\end{tabular}
-\caption{Adoption of Proposal in Major Browsers. The `S' and `C' represent the strict approach and conservative approache, respectively.}
+\caption{Adoption of Proposal in Major Browsers. The `S' and `C' represent the strict approach and conservative approach, respectively.}
 \label{table:adoption}
 \end{table}
 
