@@ -24,7 +24,8 @@ Collin Jackson\\
 
 \maketitle
 \begin{abstract}
-Cross-origin CSS attacks allow an attacker's web site to steal confidential information from another site by hijacking a user's existing authenticated session. The attack leverages an exception in the browser's security policy for style sheets to read other types of non-style content. We describe the conditions under which the attack applies and propose client-side defenses for the attack that will still allow the vast majority of web sites to function normally. We detail other client-side and server-side mitigation proposals and find shortcomings with each technique. Our defense proposal has been adopted by Firefox, Google Chrome, Safari, and Opera.
+Cross-origin CSS attacks allow an attacker's web site to steal confidential information from another site, hijacking a user's existing authenticated session. The attack leverages an exception in the browser's security policy,
+using stylesheet import to read HTML content. We describe the conditions under which the attack applies and propose client-side defenses for the attack that will still allow the vast majority of web sites to function normally. We detail other client-side and server-side mitigation proposals and find shortcomings with each technique. Our defense proposal has been adopted by Firefox, Google Chrome, Safari, and Opera.
 \end{abstract}
 
 \category{K.6.5}{Management of Computing and Information Systems}{Security and Protection}
@@ -45,7 +46,7 @@ rapidly supplanting traditional client software.
 One of the key features that has made the Web so successful is the same-origin
 policy that allows users to safely interact with software written by anyone
 --- even someone they do not trust. The browser limits interactions between
-sites to by compartmentalizing them into ``origins'' that cannot easily read
+sites by compartmentalizing them into ``origins'' that cannot easily read
 each other's sensitive data. However, browsers have wisely added exceptions
 where necessary to enable powerful cross-origin interactions. The cross-origin
 hyperlink is the foundation that allowed search engines and social media to
