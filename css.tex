@@ -25,7 +25,7 @@ Collin Jackson\\
 \maketitle
 \begin{abstract}
 Cross-origin CSS attacks allow an attacker's web site to steal confidential information from another site, hijacking a user's existing authenticated session. The attack leverages an exception in the browser's security policy,
-using stylesheet import to read HTML content. We describe the conditions under which the attack applies and propose client-side defenses for the attack that will still allow the vast majority of web sites to function normally. We detail other client-side and server-side mitigation proposals and find shortcomings with each technique. Our defense proposal has been adopted by Firefox, Google Chrome, Safari, and Opera.
+using stylesheet import to read HTML content. We show how to conduct the attack in all browsers, even if JavaScript is disabled, and propose client-side defenses that still allow the vast majority of web sites to function normally. We detail other client-side and server-side mitigation proposals and find shortcomings with each technique. Our defense proposal has been adopted by Firefox, Google Chrome, Safari, and Opera.
 \end{abstract}
 
 \category{K.6.5}{Management of Computing and Information Systems}{Security and Protection}
@@ -82,7 +82,7 @@ style sheets and extract any information that is parsed by the browser's
 error-tolerant CSS parsing algorithm. This technique was first demonstrated by
 a Japanese blogger~\cite{cssxss} to circumvent a victim web site's cross-site
 request forgery defenses in Internet Explorer. In this paper, we describe
-additional variations on the attack that work in all browsers and propose
+additional variations on the attack that work in all browsers (even if JavaScript is disabled) and propose
 client-side defenses. Our proposals have been adopted by Firefox, Google
 Chrome, Safari, and Opera.
 
