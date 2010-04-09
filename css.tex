@@ -59,14 +59,14 @@ import has also played a key role in the success of the Web, allowing
 publishers to optimize and monetize their content with tools like Google
 Analytics and Google Adsense.
 
-In this paper, we analyze another widely used cross-origin interaction: style
-sheet import. Style sheets are used in Web applications to improve the
-appearance of pages with color, layout, and more. They make the web an
-efficient and attractive medium for presenting information. Because style
-sheets can be imported across origins just like scripts and images, they
-constitute an exception to the browser same-origin policy that prohibits sites
-from reading content loaded from other origins. Browser vendors allow this
-exception because they assume that sites will not transmit confidential information in style sheet format.
+In this paper, we analyze another widely used cross-origin primitive: style
+sheet import. Style sheets are used to improve the appearance of pages with
+color, layout, and more. They make the Web an efficient and attractive medium
+for presenting information. Because style sheets can be imported across
+origins just like scripts and images, they constitute an exception to the
+browser same-origin policy that prohibits sites from reading content loaded
+from other origins. Browser vendors allow this exception because they assume
+that sites will not transmit confidential information in style sheet format.
 
 Browser vendors and standards bodies continue to push the limits of what is
 possible with style sheets. The CSS specification~\cite{cssspec} introduces
@@ -78,15 +78,15 @@ vendor-proprietary extensions.
 
 Unfortunately, this forwards-compatible parsing behavior presents a critical
 security threat to the web. A malicious web site can load HTML documents as
-style sheets, and extract the information that makes it through the browser's
-lax HTML parser. This technique was first demonstrated by a Japanese
-blogger~\cite{cssxss} to circumvent a victim web site's cross-site request
-forgery defenses in Internet Explorer. In this paper, we describe additional
-variations on the attack that work in all browsers and propose client-side
-defenses. Our proposals have been adopted by Firefox, Google Chrome, Safari,
-and Opera.
+style sheets and extract any information that is parsed by the browser's
+error-tolerant CSS parsing algorithm. This technique was first demonstrated by
+a Japanese blogger~\cite{cssxss} to circumvent a victim web site's cross-site
+request forgery defenses in Internet Explorer. In this paper, we describe
+additional variations on the attack that work in all browsers and propose
+client-side defenses. Our proposals have been adopted by Firefox, Google
+Chrome, Safari, and Opera.
 
-The rest of this paper is organized as follows. Section~\ref{sec:threatmodel} presents a threat model for cross-origin CSS  attacks.
+The rest of this paper is organized as follows. Section~\ref{sec:threatmodel} presents a threat model for cross-origin CSS attacks.
 Section~\ref{sec:attacks} describes the attack in detail. Section~\ref{sec:defenses} proposes and evaluates defenses.
 Section~\ref{sec:relatedwork} surveys related work.
 Section~\ref{sec:conclusion} concludes.
