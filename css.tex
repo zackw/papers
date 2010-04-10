@@ -162,6 +162,9 @@ Content-Type: text/html; charset=utf-8
 \end{verbatim}
 Browsers use MIME types to determine how to handle the contents of HTTP responses. However, many misconfigured web servers fail to provide the correct MIME type of their resources. Due to web site compatibility concerns, modern browsers use content-sniffing algorithms~\cite{securecontentsniffing} to guess the correct MIME type by inspecting the contents of HTTP responses.  Content-sniffing algorithms can override the provided MIME type and file extension of the document. Unfortunately, this quirk introduces chameleon documents, in which a document conforms to a benign file format (such as PDF) and contains malicious HTML.
 
+\paragraph{Cookies}
+The HTTP cookie mechanism enables web sites to authenticate clients and maintain client states, allowing web sites to not only serve static content but customize the content and appearance for each session user. According to the standards, the browser always sends the user's cookie when it loads any referenced style sheets, including cross-origin CSS. If a user was logged into the \texttt{target.com} while visiting the evil page, the browser would send the user's authentication cookie on all requests to \texttt{target.com} and be considered as valid authenticated requests. This behavior exploits cookie-authenticated web sites and potentially leaks the user's sensitive information in the server's response.
+
 \subsection{Cross-Origin CSS Attack}
 In a cross-origin CSS attack, the attacker's main objective is to steal the victim's secret content on an honest web site from a different domain. The attacker is most likely interested in stealing any sensitive information in a cookie-authenticated web page, or preferably a secret CSRF token~\cite{csrf} hidden in the document that may allow the attacker to hijack the user's session. In order to steal content from a different domain, the attacker leverages the fact that the browser's security policy allows external style sheets to be imported from cross-origin. The target document on an honest web site is injected such that portions of the document conform to CSS rules. As soon as the victim visits the attacker's evil page, the cross-origin data is imported as style sheets and stolen. The steps of the cross-origin CSS attack is shown in Figure~\ref{figure:scenario}. To describe the cross-origin CSS attack in detail, we decompose the attack into three main steps: CSS string injection, cross-origin CSS import, and confidential data extraction.
 
@@ -197,8 +200,6 @@ When the user visits \texttt{attacker.com}, the attacker's evil page instructs t
 </HEAD>
 </HTML>
 \end{verbatim}
-\paragraph{Cookies}
-The HTTP cookie mechanism enables web sites to authenticate clients and maintain client states, allowing web sites to not only serve static content but customize the content and appearance for each session user. According to the standards, the browser always sends the user's cookie when it loads any referenced style sheets, including cross-origin CSS. If a user was logged into the \texttt{target.com} while visiting the evil page, the browser would send the user's authentication cookie on all requests to \texttt{target.com} and be considered as valid authenticated requests. This behavior exploits cookie-authenticated web sites and potentially leaks the user's sensitive information in the server's response.
 
 \subsubsection{Confidential Data Extraction}
 The final step for the attacker is to extract the confidential data from the cross-origin imported styles in the victim's browser. The attacker's evil page can simply use JavaScript to read the computed styles. Furthermore, a variant of the cross-origin CSS attack
