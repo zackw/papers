@@ -25,7 +25,7 @@ Collin Jackson\\
 \maketitle
 \begin{abstract}
 Cross-origin CSS attacks allow an attacker's web site to steal confidential information from another site, hijacking a user's existing authenticated session. The attack leverages an exception in the browser's security policy,
-using stylesheet import to read HTML content. We show how to conduct the attack in all browsers, even if JavaScript is disabled, and propose client-side defenses that still allow the vast majority of web sites to function normally. We detail other client-side and server-side mitigation proposals and find shortcomings with each technique. Our defense proposals have been adopted in Firefox, Google Chrome, Safari, and Opera.
+using style sheet import to read HTML content. We show how to conduct the attack in all browsers, even if JavaScript is disabled, and propose client-side defenses that still allow the vast majority of web sites to function normally. We detail other client-side and server-side mitigation proposals and find shortcomings with each technique. Our defense proposals have been adopted in Firefox, Google Chrome, Safari, and Opera.
 \end{abstract}
 
 \category{K.6.5}{Management of Computing and Information Systems}{Security and Protection}
@@ -163,14 +163,14 @@ Content-Type: text/html; charset=utf-8
 Browsers use MIME types to determine how to handle the contents of HTTP responses. However, many misconfigured web servers fail to provide the correct MIME type of their resources. Due to web site compatibility concerns, modern browsers use content-sniffing algorithms~\cite{securecontentsniffing} to guess the correct MIME type by inspecting the contents of HTTP responses.  Content-sniffing algorithms can override the provided MIME type and file extension of the document. Unfortunately, this quirk introduces chameleon documents, in which a document conforms to a benign file format (such as PDF) and contains malicious HTML.
 
 \subsection{Cross-Origin CSS Attack}
-In a cross-origin CSS attack, the attacker's main objective is to steal the victim's secret content on an honest web site from a different domain. The attacker is most likely interested in stealing any sensitive information in a cookie-authenticated web page, or preferably a secret CSRF token~\cite{csrf} hidden in the document that may allow the attacker to hijack the user's session. In order to steal content from a different domain, the attacker leverages the fact that the browser's security policy allows external style sheets to be imported from cross-origin. The target document on an honest web site is injected such that portions of the document conform to CSS rules. As soon as the victim visits the attacker's evil page, the cross-origin data is imported as style sheets and stolen. The steps of the cross-origin CSS attack is shown in Figure~\ref{figure:scenario}. To describe the cross-origin CSS attack in detail, we decompose the attack into three main steps: CSS string injection, cross-origin CSS import, and confidential data extraction.
+In a cross-origin CSS attack, the attacker's main objective is to steal the victim's secret content on an honest web site from a different domain. The attacker is most likely interested in stealing any sensitive information in a cookie-authenticated web page, or preferably a secret CSRF token~\cite{csrf} hidden in the document that may allow the attacker to hijack the user's session. In order to steal content from a different domain, the attacker leverages the fact that the browser's security policy allows external style sheets to be imported from cross-origin. The target document on an honest web site is injected such that portions of the document conform to CSS rules. As soon as the victim visits the attacker's evil page, the cross-origin data is imported as style sheets and stolen. The steps of the cross-origin CSS attack is shown in Figure~\ref{figure:steps}. To describe the cross-origin CSS attack in detail, we decompose the attack into three main steps: CSS string injection, cross-origin CSS import, and confidential data extraction.
 
-\begin{figure}
+\begin{figure*}
 \centering
-\includegraphics[width=\linewidth]{scenario.jpg}
+\includegraphics[width=\linewidth]{steps.jpg}
 \caption{Steps of the Cross-Origin CSS Attack}
-\label{figure:scenario}
-\end{figure}
+\label{figure:steps}
+\end{figure*}
 
 \subsubsection{CSS String Injection}
 Due to lenient MIME type requirement of CSS parsers, the attacker may fool the victim's browser into loading a carefully crafted non-CSS (e.g. HTML or XML) document as a valid style sheet resource. In practice, there are several methods that may allow a web attacker to inject strings into the target domain, e.g. reflection of user-controlled strings or via URL parameters. Normally, random text in a non-CSS document contains syntax errors to the CSS parser and would break the parsing. However, due to the overly lax CSS parsers in modern browsers, portions of a non-CSS document with valid CSS syntax can still be successfully parsed and recognized as style sheet rules.
@@ -205,7 +205,7 @@ The final step for the attacker is to extract the confidential data from the cro
 can extract the stolen data even with JavaScript disabled.
 
 \paragraph{With JavaScript}
-One method of data extraction is to access the computed styles or CSS text in DOM using JavaScript. All major browsers support using JavaScript to read computed styles, even loaded from cross-origin, by calling the \texttt{window.getComputedStyle} method or retrieving the \texttt{currentStyle} object. The cross-origin CSS vulnerabilities of DOM access on major browsers are shown in Table~\ref{table:DOM}. Given that the style name and property name is known, the attacker can extract the confidential data from the injected style property. WebKit-based browsers, i.e. Safari and Google Chrome, even surrendered the full CSS text of style sheets, including CSS rules loaded from cross-origin (without comments, thankfully). The attacker could read the raw text of cross-origin CSS via \texttt{document.styleSheets[].cssRules[].cssText} and also \texttt{window.getMatchedCSSRules().cssText}. This behavior violates the same-origin policy and can cause cross-origin data leak in pages with semi-valid CSS constructs. Other browsers only permit read access to the raw text of style sheets under restricted conditions. Internet Explorer allows access to cross-origin CSS raw text via \texttt{document.styleSheets[].cssText} only if the MIME type is correct. Firefox and Opera only allows access to CSS raw text for style sheets loaded from same-origin. Even if access to raw CSS text is blocked, the ability to read cross-origin loaded CSS styles is enough to construct serious attacks.
+One method of data extraction is to access the computed styles or CSS text in DOM using JavaScript. All major browsers support using JavaScript to read computed styles, even loaded from cross-origin, by calling the \texttt{window.getComputedStyle} method or retrieving the \texttt{currentStyle} object. The cross-origin CSS vulnerabilities of DOM access on major browsers are shown in Table~\ref{table:DOM}. Given that the style name and property name is known, the attacker can extract the confidential data from the injected style property. WebKit-based browsers, i.e. Safari and Google Chrome, even surrendered the full CSS text of style sheets, including CSS rules loaded from cross-origin (without comments, thankfully). The attacker could read the raw text of cross-origin CSS via \texttt{document.styleSheets[].cssRules[].cssText} and also \texttt{window.getMatchedCSSRules().cssText}. This behavior violates the same-origin policy and can cause cross-origin data leak in pages with semi-valid CSS constructs. Other browsers only permit read access to the raw text of style sheets under restricted conditions. Internet Explorer allows access to cross-origin CSS raw text via \texttt{document.styleSheets[].rules[].style.cssText} only if the MIME type is correct. Firefox and Opera only allows access to CSS raw text for style sheets loaded from same-origin. Even if access to raw CSS text is blocked, the ability to read cross-origin loaded CSS styles is enough to construct serious attacks.
 
 After extracting the sensitive content hidden in the style properties, the attacker can send the secret data to his own evil servers or even mount CSRF attacks. There are various methods to export data to other origins, in this specific attack we are interested in approaches where no user involvement is required, e.g. using the \texttt{XMLHttpRequest} API.
 
@@ -213,10 +213,13 @@ After extracting the sensitive content hidden in the style properties, the attac
 \centering
 \begin{tabular}{|c|c|c|c|c|c|} \hline
 Methods&IE&FF&Opera&Safari&Chrome\\ \hline
-currentStyle&\checkmark&&\checkmark&&\\ \hline
-getComputedStyle&&\checkmark&\checkmark&\checkmark&\checkmark\\ \hline
-%rules[].style.cssText&\checkmark&&&\checkmark&\checkmark\\ \hline
-cssRules[].cssText&&&&\checkmark&\checkmark\\
+\texttt{currentStyle}&\checkmark&&\checkmark&&\\ \hline
+\texttt{getComputedStyle}&&\checkmark&\checkmark&\checkmark&\checkmark\\ \hline
+%\texttt{rules[].style.cssText}&\checkmark&&&\checkmark&\checkmark\\ \hline
+\texttt{styleSheets[]}&&&&\checkmark&\checkmark\\
+\texttt{.cssRules[].cssText}&&&&&\\ \hline
+\texttt{getMatchedCSSRules()}&&&&\checkmark&\checkmark\\
+\texttt{.cssText}&&&&&\\
 \hline\end{tabular}
 \caption{Cross-Origin CSS DOM Vulnerabilities}
 \label{table:DOM}
@@ -376,7 +379,7 @@ The interpretation of valid MIME types for cross-origin CSS on each browser slig
 \begin{table}
 \centering
 \begin{tabular}{|c|c|c|c|c|} \hline
-Content-Type&FF&OP&Safari&Chrome\\ \hline
+Content-Type&FF&Opera&Safari&Chrome\\ \hline
 %text/css&&&&\\ \hline
 \texttt{application/x-}&&C&&\\ 
 \texttt{unknown-content-type}&&&&\\ \hline
@@ -386,9 +389,10 @@ Bogus&&C&C&C \\ \hline
 \texttt{*/*}&&C&C&C \\ \hline
 \texttt{application/}&S&C&C&C\\ 
 \texttt{octet-stream}&&&&\\ \hline
-%\texttt{text/html}&S&C&C&C\\ \hline
 \texttt{text/plain}&S&C&C&C\\ \hline
-Known&S&C&C&C\\
+\texttt{text/html}&S&C&C&C\\ \hline
+Known MIME types&S&C&C&C\\
+excluding \texttt{text/css}&&&&\\
 \hline\end{tabular}
 \caption{Adoption of Proposal in Major Browsers. The `S' and `C' represent the strict approach and conservative approach, respectively.}
 \label{table:adoption}
