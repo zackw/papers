@@ -166,7 +166,7 @@ Browsers use MIME types to determine how to handle the contents of HTTP response
 The HTTP cookie mechanism enables web sites to authenticate clients and maintain client states, allowing web sites to not only serve static content but customize the content and appearance for each session user. According to the standards, the browser always sends the user's cookie when it loads any referenced style sheets, including cross-origin CSS. If a user was logged into the \texttt{target.com} while visiting the evil page, the browser would send the user's authentication cookie on all requests to \texttt{target.com} and be considered as valid authenticated requests. This behavior exploits cookie-authenticated web sites and potentially leaks the user's sensitive information in the server's response.
 
 \subsection{Cross-Origin CSS Attack}
-In a cross-origin CSS attack, the attacker's main objective is to steal the victim's secret content on an honest web site from a different domain. The attacker is most likely interested in stealing any sensitive information in a cookie-authenticated web page, or preferably a secret CSRF token~\cite{csrf} hidden in the document that may allow the attacker to hijack the user's session. In order to steal content from a different domain, the attacker leverages the fact that the browser's security policy allows external style sheets to be imported from cross-origin. The target document on an honest web site is injected such that portions of the document conform to CSS rules. As soon as the victim visits the attacker's evil page, the cross-origin data is imported as style sheets and stolen. The steps of the cross-origin CSS attack is shown in Figure~\ref{figure:steps}. To describe the cross-origin CSS attack in detail, we decompose the attack into three main steps: CSS string injection, cross-origin CSS import, and confidential data extraction.
+In a cross-origin CSS attack, the attacker's main objective is to steal the victim's secret content on an honest web site from a different domain. The attacker is most likely interested in stealing any sensitive information in a cookie-authenticated web page, or preferably a secret CSRF token~\cite{csrf} hidden in the document that may allow the attacker to hijack the user's session. In order to steal content from a different domain, the attacker leverages the fact that the browser's security policy allows external style sheets to be imported from cross-origin. The target document on an honest web site is injected such that portions of the document conform to CSS rules. As soon as the victim visits the attacker's evil page, the cross-origin data is imported as style properties and stolen. The steps of the cross-origin CSS attack is shown in Figure~\ref{figure:steps}. To describe the cross-origin CSS attack in detail, we decompose the attack into three main steps: CSS string injection, cross-origin CSS import, and confidential data extraction.
 
 \begin{figure*}
 \centering
@@ -186,10 +186,10 @@ Target document:
 After injection:
 <HTML>..{} BODY { font-family: "SECRET" }..</HTML>
 \end{verbatim}
-The injected HTML document will appear to the CSS parser as containing a valid CSS rule. The fonts of the attacker's page will be styled with a font-family specified as the stolen string ``SECRET''. Note that the seemingly redundant pair of brackets in the injection string re-syncs the CSS parser to make sure that the evil CSS rule parses properly. All the other non-CSS text in the document are skipped by the CSS parser, thus will not effect the parsing of the evil CSS rule. Once the crafted document is loaded, the attacker can easily steal the secret string from the computed \texttt{font-family} style of the attacker's page.
+The injected HTML document will appear to the CSS parser as containing a valid CSS rule. The fonts of the attacker's page will be styled with a font-family specified as the stolen string ``SECRET''. Note that the seemingly redundant pair of brackets in the injection string re-syncs the CSS parser to make sure that the evil CSS rule parses properly. All the other non-CSS text in the document are skipped by the CSS parser, thus will not effect the parsing of the evil CSS rule. Once the injected document is loaded, the attacker can easily steal the secret string from the computed \texttt{font-family} style of the attacker's page.
 
 \subsubsection{Cross-Origin CSS Import}
-When the user visits \texttt{attacker.com}, the attacker's evil page instructs the victim's browser to fetch and load the crafted document as a style sheet. In HTML specifications~\cite{html}, documents can import external style sheets from remote servers by using the CSS \texttt{@import} notation, or using the link tag inside the head element as the following: .
+When the user visits \texttt{attacker.com}, the attacker's evil page instructs the victim's browser to fetch and load the injected document as a style sheet. In HTML specifications~\cite{html}, documents can import external style sheets from remote servers by using the CSS \texttt{@import} notation, or using the link tag inside the head element as the following: .
 \begin{verbatim}
 <HTML>
 <HEAD>
@@ -208,7 +208,7 @@ can extract the stolen data even with JavaScript disabled.
 \paragraph{With JavaScript}
 One method of data extraction is to access the computed styles or CSS text in DOM using JavaScript. All major browsers support using JavaScript to read computed styles, even loaded from cross-origin, by calling the \texttt{window.getComputedStyle} method or retrieving the \texttt{currentStyle} object. The cross-origin CSS vulnerabilities of DOM access on major browsers are shown in Table~\ref{table:DOM}. Given that the style name and property name is known, the attacker can extract the confidential data from the injected style property. WebKit-based browsers, i.e. Safari and Google Chrome, even surrendered the full CSS text of style sheets, including CSS rules loaded from cross-origin (without comments, thankfully). The attacker could read the raw text of cross-origin CSS via \texttt{document.styleSheets[].cssRules[].cssText} and also \texttt{window.getMatchedCSSRules().cssText}. This behavior violates the same-origin policy and can cause cross-origin data leak in pages with semi-valid CSS constructs. Other browsers only permit read access to the raw text of style sheets under restricted conditions. Internet Explorer allows access to cross-origin CSS raw text via \texttt{document.styleSheets[].rules[].style.cssText} only if the MIME type is correct. Firefox and Opera only allows access to CSS raw text for style sheets loaded from same-origin. Even if access to raw CSS text is blocked, the ability to read cross-origin loaded CSS styles is enough to construct serious attacks.
 
-After extracting the sensitive content hidden in the style properties, the attacker can send the secret data to his own evil servers or even mount CSRF attacks. There are various methods to export data to other origins, in this specific attack we are interested in approaches where no user involvement is required, e.g. using the \texttt{XMLHttpRequest} API.
+After extracting the sensitive content hidden in the style properties, the attacker can send the secret data to his own evil servers or even mount CSRF attacks. There are various methods to export data to other origins, in this specific attack we are interested in approaches where no user involvement is required, e.g. using JavaScript to send data through an HTML hidden form or through the \texttt{XMLHttpRequest} API.
 
 \begin{table}
 \centering
@@ -266,9 +266,9 @@ In this section, we present an example of the cross-origin CSS attack using e-ma
 
 \paragraph{Yahoo! Mail} Yahoo! Mail is a free web mail service that lets users send and receive e-mails using any popular web browser with cookies and JavaScript enabled. After a user signs in with a valid account, the web site will authenticate the user with browser session cookies for as long as two weeks without signing out. Targeting the web mail home page, the attacker can mount an attack on victims that are signed into their accounts with the following steps:
 \begin{enumerate}
-\item{The attacker sends an evil e-mail to the victim's account with a CSS property termination string in the subject, such as `\texttt{);\}}'.}
+\item{The attacker sends an evil e-mail to the victim's account with a CSS property termination string in the subject, such as ``\texttt{);\}}''.}
 \item{The attacker waits for sensitive e-mails to fill the victim's inbox.}
-\item{The attacker sends another evil e-mail to the victim's account with a CSS property opening string in the subject, such as `\texttt{\{\}body\{background-image:url(}'.}
+\item{The attacker sends another evil e-mail to the victim's account with a CSS property opening string in the subject, such as ``\texttt{\{\}body\{background-image:url(}''.}
 \item{The victim visits \texttt{attacker.com}, which triggers the cross-origin CSS attack and steals secret data from the victim's inbox.}
 \end{enumerate}
 The attacker's evil page references the URL of web mail home page as a CSS resource and extracts the stolen data from the computed \texttt{background-image} style using JavaScript, as the following:
@@ -299,7 +299,7 @@ In this section, we describe the defenses against cross-orgin CSS attacks. First
 To prevent cross-origin CSS attacks, we propose that browsers should apply stricter checking when loading cross-origin CSS files. Our initial approach is to enforce strict MIME type checking for loading cross-origin CSS files, we refer as the strict approach. We devise a conservative approach with additional CSS parser testing that maximizes web site compatibility while blocking most attacks.
 
 \subsubsection{Strict Approach}
-In the cross-origin CSS attack, the attacker's evil web page confuses the victim's browser to parse an injected non-CSS document as a style sheet. If browsers strictly required external style sheets to specify the correct MIME type, which is \texttt{text/css}, the evil web page would not be able to load any crafted document. One effective solution is to let browsers always check the MIME type of external CSS references and block any CSS load with an invalid MIME type. When strict MIME type checking is enforced, at least for cross-origin CSS loads (if not globally), browsers would be able to protect target non-CSS documents from being stolen.
+In the cross-origin CSS attack, the attacker's evil web page confuses the victim's browser to parse the injected target document as a style sheet. If browsers strictly required external style sheets to specify the correct MIME type, which is \texttt{text/css}, the evil web page would not be able to load any crafted non-CSS document. One effective solution is to let browsers always check the MIME type of external CSS references and block any CSS load with an invalid MIME type. When strict MIME type checking is enforced, at least for cross-origin CSS loads (if not globally), browsers would be able to protect target non-CSS documents from being stolen.
 
 The major concern of the strict approach is that any misconfigured cross-origin resources that fail to provide valid MIME types would be blocked. Strict MIME type checking relies on web developers to correctly deploy their web sites and provide valid MIME types. Unless every web developer properly configures their servers to send the correct \texttt{Content-Type} response header, the strict approach will inevitably introduce false positives and cause CSS failure on web sites. Expectedly, browser vendors would tend to resist changes that would cause web site breakage and lose its users.
 
@@ -328,48 +328,44 @@ The above rules will block most cross-origin CSS attacks because the target docu
 To evaluate the compatibility of our proposed defense of stricter CSS loading, we conducted an experiment to measure how often web servers fail to provide the correct MIME type for CSS files and whether these CSS files are well-formed when loaded cross-origin.
 
 \paragraph{Design}
-To measure how often web servers fail to provide the correct MIME type for CSS files, we collected metrics by crawling the top 10,000 web sites ranked by Alexa~\cite{alexa} and scanned through all of the style sheet resources in their home pages. We are interested in all CSS references including using HTML link tags and CSS \texttt{@import} directives. Furthermore, some web sites dynamically add CSS links using JavaScript while the page loads. To achieve a more thorough scan for these CSS references, we conducted our experiment to directly render these web pages with an instrumented WebKit browser while recording information of all CSS loads until the web page finishes loading.
+To measure how often web servers fail to provide the correct MIME type for CSS files, we collected metrics by crawling the top 50,000 web sites ranked by Alexa~\cite{alexa} and scanned through all of the style sheet resources in their home pages. We are interested in all CSS references including using HTML link tags and CSS \texttt{@import} directives. Furthermore, some web sites dynamically add CSS links using JavaScript while the page loads. To achieve a more thorough scan for these CSS references, we conducted our experiment to directly render these web pages with an instrumented WebKit browser while recording information of all CSS loads until the web page finishes loading.
+
+\paragraph{Results}
+From the top 50,000 web sites, we fetched a total of 138,924 CSS references, including 114,596 HTML link tags and 24,328 CSS \texttt{@import} directives. These results include 108,545 same-origin references and 30,379 cross-origin references. We did not include data for sites unreachable during our evaluation, due to unresponding servers or domain name errors. Our results are shown in Figure~\ref{figure:MIME}.
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{mime.jpg}
+\caption{CSS Files with Misconfigured MIME in Top 50,000 Sites excluding HTTP errors and landing page redirection}
+\label{figure:MIME}
+\end{figure}
+
+In the top 50,000 sites, our crawler logged a total of 1,773 misconfigured CSS references that did not provide the correct \texttt{Content-Type} response header. We noticed that 1,091 of these CSS references retrieved HTTP responses with error status codes i.e. 400 bad request, 403 forbidden, 404 not found, 500 internal server error, 502 bad gateway or 503 service temporarily unavailable, and have no affect to the rendering of the page if blocked. For HTTP responses that did not specify the \texttt{Content-Type} header at all, we considered them identical as setting an empty MIME type. Excluding the HTTP errors, we logged a total of 287 CSS references that provided an empty MIME type. There were as many as 332 CSS references that provided the \texttt{text/html} MIME type for CSS files, which is normally for HTML documents. However, within these \texttt{text/html} responses we found that 56 of them were less serious conditions, where the specified URL was not found and was redirected to a landing page or an error page (with HTTP status code 200). Excluding CSS references with HTTP errors or landing page redirections, the percentage of the common misconfigured MIME types for CSS files in the top 50,000  sites are shown in Table~\ref{table:MIME}. Other MIME types represent various less-frequent \texttt{Content-Type} headers that our crawler collected for CSS files including \texttt{S3Object}, \texttt{application/x-javascript}, \texttt{application/binary}, \texttt{application/x-pointplus}, \texttt{application/x-troff}, \texttt{text}, \texttt{text/javascript}, \texttt{text/x-c}, \texttt{image/gif} and \texttt{Content-Type:text/css}.
 
 \begin{table}
 \centering
 \begin{tabular}{|c|c|c|} \hline
 Content-Type&Percentage\\ \hline
-\texttt{text/html}&87.78\%\\ \hline
-Empty&7.56\%\\ \hline
-\texttt{text/plain}&1.74\%\\ \hline
-Other&2.90\%\\
+Empty (excluding HTTP errors)&45.85\%\\ \hline
+\texttt{text/html} (excluding landing pages)&44.09\%\\ \hline
+\texttt{application/octet-stream}&3.83\%\\ \hline
+\texttt{text/plain}&3.51\%\\ \hline
+Other MIME types&2.72\%\\
 \hline\end{tabular}
-\caption{Common Misconfigured MIME Types in Top 10,000 Sites}
+\caption{Common Misconfigured MIME Types in Top 50,000 Sites}
 \label{table:MIME}
 \end{table}
 
-\paragraph{Results}
-From the top 10,000 web sites, we fetched a total of 27532 CSS references, including 22799 link tags and 4733 \texttt{@import} directives. These results do not include unreachable web sites nor unreachable CSS resources.
-Our results are shown in Table~\ref{table:MIME}.
+Our crawler reported that 541 CSS references were mal-formed, in which the CSS resource failed to have a syntactically valid CSS construct at the beginning of the file. Within these mal-formed CSS files, 466 of them were same-origin loads and 75 of them were cross-origin loads. We noticed that one of the common syntax errors was starting the CSS file with an HTML style tag. Within the CSS references that provided incorrect MIME types, we found there were 26 CSS files that were syntatically mal-formed. In our observations, all 26 were same-origin loads and none of them were cross-origin loads.
 
-We found that as many as 172 CSS references on these popular sites did not provide the correct \texttt{Content-Type} response header. In most cases, we found that misconfigured servers provided the \texttt{text/html} MIME type for CSS files, which is for normal HTML documents. Some CSS files did not specify the \texttt{Content-Type} header in the response at all, thus had an empty MIME type. Our browser collected a list of various incorrect MIME types for CSS files, including \texttt{text/html}, \texttt{text/plain}, \texttt{text}, \texttt{application/octet-stream}, \texttt{application/x-pointplus}, \texttt{image/gif}, \texttt{Content-Type:text/css} and empty MIME type.
+Within a total of 30379 cross-origin CSS references, we observed 290 CSS references that provided an invalid MIME type. Applying the strict approach of our proposed defense would cause CSS failure in 255 out of the top 50,000 sites. We also observed that all of theses cross-origin CSS files with broken MIME types were syntactically well-formed. Thus, apply our conservative approach would not induce false positives, or undesired CSS failures.
 
-Our crawler reported that 93 CSS files were mal-formed, which fail to have a syntactically valid CSS construct at the beginning to the file. There were three CSS files that were mal-formed and also have a broken MIME type, however none of these CSS files were cross-origin loads.
-
-Within a total of 8352 cross-origin CSS loads, there were 40 of them that had a broken MIME type. Blocking these loads would cause CSS failure on 32 of the 10000 most popular web sites. However, we also observed that none of the cross-origin CSS files with broken MIME types were mal-formed.
-
-%We ran a scan across the top 500,000 URLs looking for cross-origin loads of CSS with an invalid MIME type. Valid MIME types are defined as text/css, application/x-unknown-content-type, and empty. There were a total of 140 URLs detected that referenced cross-origin CSS with broken MIME types. We found that some of them were non-serious conditions, in which the site loaded a CSS file which is missing and redirected to a 404 html page. There were 60 URLs that would be considered as broken, including 13 with text/plain, 15 with text/html, 31 with application/css, and 1 with application/x-pointplus. If we apply the heuristics of the conservative approach, only one URL that served text/html MIME would fail to load, which was severely broken because it had valid CSS rules after a style tag.
-
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{mime.jpg}
-\caption{CSS Files with Misconfigured MIME in Top 10,000 Sites}
-\label{table:MIME}
-\end{figure}
+%We ran a scan across the top 500,000 URLs looking for cross-origin loads of CSS with an invalid MIME type. Valid MIME types are defined as text/css, application/x-unknown-content-type, and empty. There were a total of 140 URLs detected that referenced cross-origin CSS with broken MIME types. There were 60 URLs that would be considered as broken, including 13 with text/plain, 15 with text/html, 31 with application/css, and 1 with application/x-pointplus. If we apply the heuristics of the conservative approach, only one URL that served text/html MIME would fail to load, which was severely broken because it had valid CSS rules after a style tag.
 
 \paragraph{Discussion}
-Based on our results, deploying the strict approach
-would break CSS references on 0.32\% of the top web sites. Although this
-fraction may seem low, browser vendors have historically been reluctant to
-deploy changes that break popular web sites. Our observations also suggest that misconfigured servers commonly send the \texttt{text/html} MIME type
-regardless of the served content type.
+Based on our results, deploying the strict approach would break CSS references on 0.51\% of the top web sites. Although this fraction may seem low, browser vendors have historically been reluctant to deploy changes that break popular web sites. Our observations also suggest that misconfigured servers commonly send an empty MIME type or the \texttt{text/html} MIME type regardless of the served content type.
 
-In our observations, the conservative approach did not break a single CSS reference in the top $10,000$ web sites. The conservative approach is an appealing defense because it maximizes web site compatibility while blocking the cross-origin CSS attack.
+In our observations, the conservative approach did not break a single CSS reference in the top $50,000$ web sites. The conservative approach is an appealing defense because it blocks the cross-origin CSS attack while maximizing web site compatibility.
 
 Due to practical limitations of our automated scanning, all of the tested links were unauthenticated. It is possible that more sites will be broken after logging in.
 
@@ -445,16 +441,16 @@ However, the OP browser does maintain a detailed security audit log that could
 be used by forensics experts to identify the site where the attack originated.
 
 \subsection{Gazelle Browser}
-The Gazelle browser~\cite{gazelle} is proposed as a secure web browser that exclusively controls resource protection and sharing across web sites, or principals, as a multi-principal OS. In their architecture, all cross-principal communication are explicitly mediated by the browser kernel to prevent cross-origin attacks. Thus, cross-origin resources are protected and only retrieved if the content is a script or a style sheet based on the Content-Type header of the HTTP response. Gazelle provides the same protection against cross-origin CSS attacks as the strict MIME type checking approach at the cost of site incompatibility. From our compatibility evaluation results, the strict approach would cause CSS failure on 32 of the top 10,000 web sites.
+The Gazelle browser~\cite{gazelle} is proposed as a secure web browser that exclusively controls resource protection and sharing across web sites, or principals, as a multi-principal OS. In their architecture, all cross-principal communication are explicitly mediated by the browser kernel to prevent cross-origin attacks. Thus, cross-origin resources are protected and only retrieved if the content is a script or a style sheet based on the Content-Type header of the HTTP response. Gazelle provides the same protection against cross-origin CSS attacks as the strict MIME type checking approach at the cost of site incompatibility. From our compatibility evaluation results, the strict approach would cause CSS failure on 255 of the top 50,000 web sites.
 
 \section{Conclusions} \label{sec:conclusion}
 In this paper, we presented two defense approaches for cross-origin CSS attacks. The strict approach is based on solely on MIME type
 checking, while the conservative approach uses the CSS parser to
 address web site compatibility issues. We evaluated the compatibility of our
-proposed solution over the top 10,000 web sites. Without relying on web site
+proposed solution over the top 50,000 web sites. Without relying on web site
 modifications, the conservative approach completely mitigates the attack while
 maximizing site compatibility. We found that common server misconfigurations
-introduced false positives in the strict approach and would cause 0.32\%
+introduced false positives in the strict approach and would cause 0.51\%
 sites to render incorrectly. We recommend that web administrators should
 properly configure servers to provide correct MIME types to reduce false
 positives. Our proposal has been adopted in several major browsers, including
