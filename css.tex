@@ -336,7 +336,7 @@ From the top 50,000 web sites, we fetched a total of 138,924 CSS references, inc
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{mime.jpg}
-\caption{CSS Files with Misconfigured MIME in Top 50,000 Sites excluding HTTP errors and landing page redirection}
+\caption{Percentage of CSS files with misconfigured MIME types in top 50,000 sites excluding HTTP errors and landing page redirection.}
 \label{figure:MIME}
 \end{figure}
 
@@ -352,20 +352,20 @@ Empty (excluding HTTP errors)&45.85\%\\ \hline
 \texttt{text/plain}&3.51\%\\ \hline
 Other MIME types&2.72\%\\
 \hline\end{tabular}
-\caption{Common Misconfigured MIME Types in Top 50,000 Sites}
+\caption{Common misconfigured MIME types for CSS files in top 50,000 Sites.}
 \label{table:MIME}
 \end{table}
 
 Our crawler reported that 541 CSS references were mal-formed, in which the CSS resource failed to have a syntactically valid CSS construct at the beginning of the file. Within these mal-formed CSS files, 466 of them were same-origin references and 75 of them were cross-origin references. We noticed that one of the common syntax errors was starting the CSS file with an HTML style tag. Within the CSS references that provided incorrect MIME types, we found that there were 26 CSS files which were syntactically mal-formed. In our observations, all 26 of theses CSS files were same-origin references.
 
-Within a total of 30379 cross-origin CSS references, we observed 290 CSS references that provided an invalid MIME type. Applying the strict approach of our proposed defense would cause CSS failure in 255 out of the top 50,000 sites. We also observed that all of these cross-origin CSS files with broken MIME types were syntactically well-formed. Thus, apply our conservative approach would not induce false positives, or undesired CSS failures.
+Within a total of 30379 cross-origin CSS references, we observed that 290 CSS references provided an invalid MIME type. Applying the strict approach of our proposed defense would cause CSS failure in 255 out of the top 50,000 sites. In our observations, all of these cross-origin CSS files with broken MIME types were syntactically well-formed. Thus, applying the conservative approach with additional CSS parsing test would avoid inducing undesired CSS failures on these sites.
 
 %We ran a scan across the top 500,000 URLs looking for cross-origin loads of CSS with an invalid MIME type. Valid MIME types are defined as text/css, application/x-unknown-content-type, and empty. There were a total of 140 URLs detected that referenced cross-origin CSS with broken MIME types. There were 60 URLs that would be considered as broken, including 13 with text/plain, 15 with text/html, 31 with application/css, and 1 with application/x-pointplus. If we apply the heuristics of the conservative approach, only one URL that served text/html MIME would fail to load, which was severely broken because it had valid CSS rules after a style tag.
 
 \paragraph{Discussion}
-Based on our results, deploying the strict approach would break CSS references on 0.51\% of the top web sites. Although this fraction may seem low, browser vendors have historically been reluctant to deploy changes that break popular web sites. Our observations also suggest that misconfigured servers commonly send an empty MIME type or the \texttt{text/html} MIME type regardless of the served content type.
+Based on our results, deploying the strict approach would break CSS references on 0.51\% of the top web sites. Although this fraction may seem low, browser vendors have historically been reluctant to deploy changes that break popular web sites. Our observations also suggest that misconfigured servers often fail to provide the \texttt{Content-Type} header or send the \texttt{text/html} MIME type regardless of the served content type.
 
-In our observations, the conservative approach did not break a single CSS reference in the top $50,000$ web sites. The conservative approach is an appealing defense because it blocks the cross-origin CSS attack while maximizing web site compatibility.
+In our observations, the conservative approach would not break a single CSS reference in the top $50,000$ web sites. The conservative approach is an appealing defense because it blocks the cross-origin CSS attack while maximizing web site compatibility.
 
 Due to practical limitations of our automated scanning, all of the tested links were unauthenticated. It is possible that more sites will be broken after logging in.
 
@@ -392,7 +392,7 @@ Bogus&&C&C&C \\ \hline
 Known MIME types&S&C&C&C\\
 excluding \texttt{text/css}&&&&\\
 \hline\end{tabular}
-\caption{Adoption of Proposal in Major Browsers. The `S' and `C' represent the strict approach and conservative approach, respectively.}
+\caption{Adoption of proposal in major browsers. The `S' and `C' represent the strict approach and conservative approach, respectively.}
 \label{table:adoption}
 \end{table}
 
@@ -441,7 +441,7 @@ However, the OP browser does maintain a detailed security audit log that could
 be used by forensics experts to identify the site where the attack originated.
 
 \subsection{Gazelle Browser}
-The Gazelle browser~\cite{gazelle} is proposed as a secure web browser that exclusively controls resource protection and sharing across web sites, or principals, as a multi-principal OS. In their architecture, all cross-principal communication are explicitly mediated by the browser kernel to prevent cross-origin attacks. Thus, cross-origin resources are protected and only retrieved if the content is a script or a style sheet based on the Content-Type header of the HTTP response. Gazelle provides the same protection against cross-origin CSS attacks as the strict MIME type checking approach at the cost of site incompatibility. From our compatibility evaluation results, the strict approach would cause CSS failure on 255 of the top 50,000 web sites.
+The Gazelle browser~\cite{gazelle} is proposed as a secure web browser that exclusively controls resource protection and sharing across web sites, or principals, as a multi-principal OS. In their architecture, all cross-principal communication are explicitly mediated by the browser kernel to prevent cross-origin attacks. Cross-origin resources are protected and only retrieved if the content is a script or a style sheet, based on the \texttt{Content-Type} header of the HTTP response. Gazelle provides the same protection against cross-origin CSS attacks as the strict MIME type checking approach at the cost of site incompatibility. From our compatibility evaluation results, the strict approach would cause CSS failure on 255 of the top 50,000 web sites.
 
 \section{Conclusions} \label{sec:conclusion}
 In this paper, we presented two defense approaches for cross-origin CSS attacks. The strict approach is based on solely on MIME type
