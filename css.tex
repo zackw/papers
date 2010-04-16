@@ -318,25 +318,27 @@ The existence of nearly identical attacks demonstrates the general nature of the
 \section{Defenses} \label{sec:defenses}
 In this section, we describe the defenses against cross-orgin CSS attacks. First, we propose to apply stricter browser requirements for loading cross-origin CSS references. Next, we present an evaluation of web site compatibility for our proposal. Then, we state the progress of adoption for our proposal in major browsers. Finally, we discuss the shortcomings of other defensive approaches, including client-side and server-side mitigations.
 
-\subsection{Proposal: Cross-Origin CSS Checking}
-To prevent cross-origin CSS attacks, we propose that browsers should apply stricter checking when loading cross-origin CSS files. Our initial approach is to enforce strict MIME type checking for loading cross-origin CSS files, we refer as the strict approach. We devise a conservative approach with additional CSS parser testing that maximizes web site compatibility while blocking most attacks.
+\subsection{Proposal: New Quirks Mode Restrictions} To prevent cross-origin
+CSS attacks, we propose that browsers should apply stricter checking when
+loading cross-origin CSS files. In fact, most modern browsers already have a
+standard-compliant mode that requires the correct MIME type when loading CSS
+files. However, this mode is only triggered when the web developer declares a
+document type definition (DTD), e.g. \verb|<!DOCTYPE html>|, in the referring
+document. When no DTD is present, the browser renders the document in
+``quirks'' mode for better backward-compatibility. Of course, in a
+cross-origin CSS attack, the attacker is perfectly willing to omit the DTD in
+order to trigger quirks mode.
+
+Our proposed defense, therefore, is to enforce MIME type checking for
+cross-origin CSS files, even in quirks mode. We describe two variants on this
+proposal: a strict approach that does not allow any MIME type mismatches, and
+a conservative approach that maximizes web site compatibility by allowing
+apparently benign MIME type mismatches.
 
 \subsubsection{Strict Approach}
 In the cross-origin CSS attack, the attacker's evil web page confuses the victim's browser to parse the injected target document as a style sheet. If browsers strictly required external style sheets to specify the correct MIME type, which is \texttt{text/css}, the evil web page would not be able to load any crafted non-CSS document. One effective solution is to let browsers always check the MIME type for cross-origin CSS references and block any CSS load with an invalid MIME type. When strict MIME type checking is enforced, at least for cross-origin CSS references (if not globally), browsers would be able to protect target non-CSS documents from being stolen.
 
 The major concern of the strict approach is that any misconfigured cross-origin resources that fail to provide valid MIME types would be blocked. Strict MIME type checking relies on web developers to correctly deploy their web sites and provide valid MIME types. Unless every web developer properly configures their servers to send the correct \texttt{Content-Type} response header, the strict approach will inevitably introduce false positives and cause CSS failure on web sites. Expectedly, browser vendors would tend to resist changes that would cause web site breakage and lose its users.
-
-\paragraph{Strict Mode}
-In fact, most modern browsers have a strict mode, or standard-compliant mode,
-that always require the correct MIME type when loading CSS files. However,
-strict modes are only triggered when the web developer declares a document
-type definition (DTD) in the referring document. For new web applications, it
-is always recommended to develop standard compliant web pages and add a
-\verb|<!DOCTYPE html>| declaration at the beginning of the document.
-Otherwise, the quirks mode, or compatibility mode, is used by default for
-better backward-compatibility. The strict mode option is not a mitigation to
-the cross-origin CSS attack because attackers can avoid
-strict mode by simply not declaring a doctype in their malicious documents.
 
 \subsubsection{Conservative Approach}
 To address web site compatibility concerns, we propose a conservative approach that blocks most attacks while tolerating some common MIME type misconfigurations. In order to reduce false positives in the strict MIME type approach, an additional level of checking is applied to cross-origin CSS loads that have invalid MIME types. When a valid MIME type is not provided, the browser will try to parse the cross-origin CSS but rejects the stylesheet upon encountering the first syntax error. This simple parsing test helps to determine whether the imported CSS file is an injected target document. Therefore, the devised solution blocks a CSS load only when all of the following conditions are met:
