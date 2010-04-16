@@ -139,7 +139,7 @@ is sufficient.
 We assume that the attacker can inject semi-arbitrary strings into a target domain that contains the secret content, which we refer to as \texttt{target.com}. We define the term semi-arbitrary strings as a subset of strings that may conform to CSS syntax to differentiate from fully arbitrary strings that may also conform to HTML syntax. The ability of injecting CSS strings is considered weaker than injecting HTML strings into the target domain, as in common XSS attacks, because scripts may be detected and blocked by client-side XSS filters. In practice, there are various methods to inject strings into the target domain, e.g. reflection of user-controlled strings or via URL parameters.
 
 \section{Attacks} \label{sec:attacks}
-In this section, we study cross-origin CSS attacks. First, we provide some background information. Next, we introduce cross-origin CSS attacks. Then, we discuss the restrictions for constructing this attack and suggest general areas that are exploitable. Finally, we demonstrate an attack against a popular web application and browser as our proof of concept.
+In this section, we study cross-origin CSS attacks. First, we provide some background information. Next, we introduce cross-origin CSS attacks. Then, we discuss the restrictions for constructing this attack and suggest general areas that are exploitable. Finally, we demonstrate an attack against two popular web applications as our proof of concept.
 
 \subsection{Background}
 In this section, we provide background information about Cascading Style Sheets (CSS), the same-origin policy (SOP), and MIME types.
@@ -262,7 +262,30 @@ In CSS, a string cannot directly contain a newline. To include a newline in a st
 The CSS parser in the Internet Explorer accepts both newlines in CSS strings and newlines in unquoted URL strings, regardless of whether escaped or not. Unfortunately, even a fully-patched browser can expose its users to a cross-origin CSS data theft and potentially serious session hijacking.
 
 \subsection{Example Attacks}
-In this section, we present an example of the cross-origin CSS attack using e-mail subject string injection on a popular web mail application and steal data from victims using the Internet Explorer browser.
+In this section, we present two examples of the cross-origin CSS attack on popular web sites with the Internet Explorer browser. First we describe an attack on a popular movie database web site to steal private messages of registered users. Then we describe using e-mail subject string injection on a popular web mail application to steal the subjects of recieved e-mails and even secret CSRF tokens.
+
+\paragraph{IMDb} IMDb is a popular online database of movies and related information, which allows users to rate films and make posts on message boards. Some of the features for a registered account include adding users to their friends list and sending private messages to other users. Targeting the user's private messaging page, the attacker can mount an attack on the victim's inbox and steal the subject and body of all preceding private messages with the following steps:
+\begin{enumerate}
+\item{The attacker sends an evil private message to the victim's account with a CSS property opening string in the subject, such as ``\texttt{\{\}body\{font-family:'}''.}
+\item{The victim visits \texttt{attacker.com}, which triggers the cross-origin CSS attack and steals content from the victim's private messaging inbox.}
+\end{enumerate}
+We chose to use single quotes for CSS property injection to avoid string termination due to the existance of double quotes in the page source. The attacker's evil page references the URL of victim's private messaging page as a CSS resource and extracts the stolen data from the computed \texttt{font-family} style using JavaScript, as the following:
+\begin{verbatim}
+<HTML>
+<HEAD>
+<LINK REL="stylesheet" HREF="http://www.imdb.com/
+user/ur12345678/boards/pm/">
+<SCRIPT>
+function steal() {
+alert(document.body.currentStyle['fontFamily']);
+}
+</SCRIPT>
+</HEAD>
+<BODY onLoad="steal()">
+</BODY>
+</HTML>
+\end{verbatim}
+Note that the target URL contains the victim's user number ``ur12345678'', which is public and can be simply fetched from any user post on the message board. In this example, a single injection point is sufficient due to the highly propable existance of the termination string. Such a vulnerability may be widespread on many low security sites.
 
 \paragraph{Yahoo! Mail} Yahoo! Mail is a free web mail service that lets users send and receive e-mails using any popular web browser with cookies and JavaScript enabled. After a user signs in with a valid account, the web site will authenticate the user with browser session cookies for as long as two weeks without signing out. Targeting the web mail home page, the attacker can mount an attack on victims that are signed into their accounts with the following steps:
 \begin{enumerate}
@@ -286,11 +309,7 @@ alert(document.body.currentStyle['backgroundImage']);
 </BODY>
 </HTML>
 \end{verbatim}
-In this example, the victim's browser will popup an alert message that contains some stolen cross-origin text. Within the stolen text contains the subjects, senders and the ``mid'' value for all e-mails received between the two evil e-mails were delivered to the victim. The ``mid'' value would appear to be an unguessable key to an attacker. Accordingly, it is reasonable for the mail application to rely on it as a secret token to defend CSRF attacks. This is indeed the case for the e-mail deletion operation, implemented as an HTTP GET request. This example demonstrates the potential severity of the cross-origin CSS attack, by leaking only a small amount of cross-domain text may proceed to more serious attacks and possibly session hijacking. Many social networking sites are vulnerable to variants of this attack, where the attacker gets to leave arbitrary text comments which are rendered on the victim's trusted page.
-
-\paragraph{UTF-7 Attack}
-
-\todo{Fill in this section}
+In this example, the victim's browser will popup an alert message that contains some stolen cross-origin text. Within the stolen text contains the subjects, senders and the ``mid'' value for all e-mails received between the two evil e-mails were delivered to the victim. The ``mid'' value would appear to be an unguessable key to an attacker. Accordingly, it is reasonable for the mail application to rely on it as a secret token to defend CSRF attacks. This is indeed the case for the e-mail deletion operation, implemented as an HTTP GET request. Such an attack can similarly be applied to steal the secret ``mid'' value on Windows Live Hotmail by sending two evil e-mails to the victim's Hotmail account and referencing the mobile URL ``\texttt{http://mail.live.com/m/}'' as CSS resource. This example demonstrates the potential severity of the cross-origin CSS attack, by leaking only a small amount of cross-domain text may proceed to more serious attacks and possibly session hijacking. Many social networking sites are vulnerable to variants of this attack, where the attacker gets to leave arbitrary text comments which are rendered on the victim's trusted page.
 
 \section{Defenses} \label{sec:defenses}
 In this section, we describe the defenses against cross-orgin CSS attacks. First, we propose to apply stricter browser requirements for loading cross-origin CSS references. Next, we present an evaluation of web site compatibility for our proposal. Then, we state the progress of adoption for our proposal in major browsers. Finally, we discuss the shortcomings of other defensive approaches, including client-side and server-side mitigations.
@@ -358,7 +377,7 @@ Other MIME types&2.72\%\\
 
 Our crawler reported that 541 CSS references were mal-formed, in which the CSS resource failed to have a syntactically valid CSS construct at the beginning of the file. Within these mal-formed CSS files, 466 of them were same-origin references and 75 of them were cross-origin references. We noticed that one of the common syntax errors was starting the CSS file with an HTML style tag. Within the CSS references that provided incorrect MIME types, we found that there were 26 CSS files which were syntactically mal-formed. In our observations, all 26 of theses CSS files were same-origin references.
 
-Within a total of 30379 cross-origin CSS references, we observed that 290 CSS references provided an invalid MIME type. Applying the strict approach of our proposed defense would cause CSS failure in 255 out of the top 50,000 sites. In our observations, all of these cross-origin CSS files with broken MIME types were syntactically well-formed. Thus, applying the conservative approach with additional CSS parsing test would avoid inducing undesired CSS failures on these sites.
+Within a total of 30379 cross-origin CSS references, we observed a total of 290 CSS resources that provided an invalid MIME type. Applying the strict approach of our proposed defense would cause CSS failure on 255 of the top 50,000 sites due to blocking these CSS loads. In our observations, all of these cross-origin CSS files with broken MIME types were syntactically well-formed. Thus, applying the conservative approach with additional CSS parsing test would avoid inducing undesired CSS failures on all top 50,000 sites.
 
 %We ran a scan across the top 500,000 URLs looking for cross-origin loads of CSS with an invalid MIME type. Valid MIME types are defined as text/css, application/x-unknown-content-type, and empty. There were a total of 140 URLs detected that referenced cross-origin CSS with broken MIME types. There were 60 URLs that would be considered as broken, including 13 with text/plain, 15 with text/html, 31 with application/css, and 1 with application/x-pointplus. If we apply the heuristics of the conservative approach, only one URL that served text/html MIME would fail to load, which was severely broken because it had valid CSS rules after a style tag.
 
