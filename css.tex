@@ -245,7 +245,7 @@ The cross-origin CSS attack is less serious than it could be, because there are 
 \subsubsection{Insufficient Injection Points}
 The first and most crucial step of the cross-origin CSS attack is to contain the secret data into a CSS property string. In order for the CSS parser to properly parse the evil CSS rule, certain symbols must be inserted at the beginning and at the end of the stolen string. In general, the attacker must have sufficient influence over the target document to control two injection points to insert the CSS property opening strings and termination strings, respectively. Typically, socially-related web sites are relatively more susceptible to this attack since the pages often contain user-controlled strings such as comments on photos. For some web sites, a second injection is not required because the termination string happens to exist later in the document. This is possible since the termination string can be as short as just a quotation mark and an ending bracket. 
 
-\subsubsection{Character Escapes}
+\subsubsection{Character Escapes} \label{sec:escapes}
 In CSS specifications~\cite{css}, strings can either be written with double quotes or with single quotes. Double quotes cannot occur inside double quotes, analogously for single quotes. Therefore, the attacker has the choice to inject either single or double quotes depending on the occurrence of quotes in the secret data. In a context where both quotes are escaped, it becomes more difficult to inject a CSS string. However, a variation of the attack  can bypass this restriction by injecting the CSS property \texttt{background-image}. For the \texttt{background-image} property, the URL value is written with the functional notation \texttt{url()}, which does not require the use of single or double quotes around the URL string itself. The CSS specification does define that certain characters must be escaped in an unquoted URL, e.g. parentheses, commas, white spaces, single quotes and double quotes. However, in Internet Explorer, the CSS parser does not require any of these characters to be escaped in an unquoted URL and will parse until it encounters a closing parentheses and a semicolon.
 
 \paragraph{Forcing UTF-7}
@@ -321,7 +321,12 @@ We found that Windows Live Hotmail was vulnerable to a nearly identical attack a
 The existence of nearly identical attacks demonstrates the general nature of the cross-origin CSS vulnerabilities. We expect that many social networking sites are vulnerable to variants of this attack as well, because the attacker can leave arbitrary text comments that are rendered somewhere on the victim's view of the page.
 
 \section{Defenses} \label{sec:defenses}
-In this section, we describe the defenses against cross-orgin CSS attacks. First, we propose to apply stricter browser requirements for loading cross-origin CSS references. Next, we present an evaluation of web site compatibility for our proposal. Then, we state the progress of adoption for our proposal in major browsers. Finally, we discuss the shortcomings of other defensive approaches, including client-side and server-side mitigations.
+In this section, we describe the defenses against cross-origin CSS attacks.
+First, we propose to apply stricter browser requirements for loading
+cross-origin CSS references. Next, we present an evaluation of web site
+compatibility for our proposal. Then, we state the progress of adoption for
+our proposal in major browsers. Finally, we discuss the shortcomings of other
+defensive approaches, including client-side and server-side mitigations.
 
 \subsection{Proposal: Restrictions on Cross-Origin CSS}
 To prevent cross-origin
@@ -427,6 +432,26 @@ excluding \texttt{text/css}&&&&\\
 \label{table:adoption}
 \end{table}
 
+\subsubsection{Missing Content Types}
+
+Web applications can omit the Content-Type header or send a Content-Type of
+application/x-unknown-content type if they do not know the mime type of a
+document. This scenario is not common but we did see it a number of times in
+our experiment. Most browsers, with the notable exception of Opera, will
+attempt to load stylesheets that lack a mime type in both standards mode and
+quirks mode, because there is no mime type mismatch. This behavior could open
+up a server to attack if it fails to set a Content-Type header on its HTML
+documents. We have not yet observed any web servers in the wild that are
+affected by this vulnerability, but browsers may wish to follow Opera's lead
+and block such stylesheets when loaded across origins. In any case, we
+recommend that web applications always set a Content-Type header.
+
+\section{Related Work} \label{sec:relatedwork}
+In this section, we review some current browser defense techniques that are
+used to defend against similar attacks, including content-sniffing XSS and
+JavaScript hijacking. We also consider recent research proposals for secure
+web browsers and their protection against the cross-origin CSS attack.
+
 \subsection{Other Client-Side Approaches}
 There are other approaches that can be deployed in browsers without modifying web servers including globally blocking cookies, tightening DOM access and enforce stricter CSS parsing.  We argue that all of these approaches could either be circumvented with a variation of the attack, or would significantly reduce web site compatibility.
 
@@ -446,16 +471,26 @@ adopt such mitigations to protect users of browsers that have not yet adopted
 our proposed defenses, such as Internet Explorer.
 
 \paragraph{Newlines}
-In the CSS specifications, strings cannot directly contain newlines. Thus, a method to interfere the cross-origin CSS attack is to use newlines surrounding sensitive web content. In most browsers, newlines will break CSS parsing and fail to load the cross-origin data. However, the Internet Explorer allows newlines within CSS property strings, making newlines an ineffective server-side mitigation.
+In the CSS specification, strings and URLs cannot directly contain newlines.
+In most browsers, newlines will break CSS parsing, preventing the attacker from loading the cross-origin data.
+Thus, web applications that surround potential injection points with
+newlines may interfere the cross-origin CSS attack.
+However, the Internet Explorer allows newlines within CSS
+property strings, making newlines an ineffective server-side mitigation for this browser.
 
 \paragraph{HTML encoding}
 Another mitigation for web applications would be to HTML-encode potential attack characters in user-controlled content. For example, the CSS parsing for a string would break if it was not written in quotes. However, the attacker could bypass this barrier by injecting the \texttt{background-image} property which allows embedding strings within the \texttt{url()} notation without using quotes. We expect that escaping curly braces using \verb|&#123;| and \verb|&#125;| would be more successful; however most HTML encoding utility functions such as \verb|html_encode| in Ruby and \verb|htmlentities| in PHP refuse to encode these characters.
 
+\paragraph{Declare Character Set Using HTTP Headers}
+
+We observe that 22 of the top 100 web sites did not declare a character set
+for HTML documents in their HTTP Content-Type header. A missing character set
+may allow attacker to bypass encoding of quotes and curly braces by forcing
+the UTF-7 character set, as described in Section~\ref{sec:escapes}. We
+recommend that web applications always set document character sets using the HTTP Content-Type header.
+
 \paragraph{Don't Use Ambient Authentication}
 A more effective server-side mitigation is to avoid the use of ambient authentication, including HTTP authentication and session cookies. One solution is the web-key authentication scheme~\cite{webkey} which explicitly embeds user permissions in URLs without using cookies for authentication. This approach can mitigate the attack since the attacker does not know the unguessable URL.
-
-\section{Related Work} \label{sec:relatedwork}
-In this section, we relate some current browser defense techniques that are used to defend against similar attacks, including content-sniffing XSS and JavaScript hijacking. We also consider recent research proposals for secure web browsers and their protection against the cross-origin CSS attack.
 
 \subsection{Content-Sniffing XSS Defenses}
 In a content-sniffing XSS attack, the attacker uploads a crafted chameleon document that conforms to a benign file format (e.g. PostScript) to an honest web site and causes the victim user's browser to treat the file as HTML and renders the attacker's evil page in the honest site's domain. Such vulnerabilities are caused by discrepancies between the browser's content-sniffing algorithm and the web site's upload filter. A secure content-sniffing algorithm~\cite{securecontentsniffing} was proposed to protect web sites from this attack by avoiding privilege escalation and using prefix-disjoint signatures. The \texttt{X-Content-Type-Options} header~\cite{nosniff} proposed by Microsoft allows web sites to opt-out of MIME sniffing in supporting browsers by specifying the \texttt{nosniff} directive in the HTTP response header. However, this approach requires modifications to all web sites and web browsers to completely mitigate the content-sniffing XSS attack. Neither the secure content-sniffing algorithm nor the \texttt{nosniff} directive is triggered for loading style sheets, thus both approaches do not prevent the cross-origin CSS attack.
