@@ -376,7 +376,14 @@ From the top 50,000 web sites, we fetched a total of 138,924 CSS references, inc
 \label{figure:MIME}
 \end{figure}
 
-In the top 50,000 sites, our crawler logged a total of 1,773 misconfigured CSS references that did not provide the correct \texttt{Content-Type} response header. We noticed that 1,091 of these CSS references retrieved HTTP responses with error status codes i.e. 400 bad request, 403 forbidden, 404 not found, 500 internal server error, 502 bad gateway or 503 service temporarily unavailable, and have no affect to the rendering of the page if blocked. For HTTP responses that did not specify the \texttt{Content-Type} header at all, we considered them identical as setting an empty MIME type. Excluding the HTTP errors, we logged a total of 287 CSS references that provided an empty MIME type. There were as many as 332 CSS references that provided the \texttt{text/html} MIME type for CSS files, which is normally for HTML documents. However, within these \texttt{text/html} responses we found that 56 of them were less serious conditions, where the specified URL was not found and was redirected to a landing page or an error page (with HTTP status code 200). Excluding CSS references with HTTP errors or landing page redirections, the percentage of the common misconfigured MIME types for CSS files in the top 50,000  sites are shown in Table~\ref{table:MIME}. Other MIME types represent various less-frequent \texttt{Content-Type} headers that our crawler collected for CSS files including \texttt{S3Object}, \texttt{application/x-javascript}, \texttt{application/binary}, \texttt{application/x-pointplus}, \texttt{application/x-troff}, \texttt{text}, \texttt{text/javascript}, \texttt{text/x-c}, \texttt{image/gif} and \texttt{Content-Type:text/css}.
+In the top 50,000 sites, our crawler logged a total of 1,773 misconfigured CSS references that did not provide the correct \texttt{Content-Type} response header. We noticed that 1,091 of these CSS references retrieved HTTP responses with error status codes i.e. 400 bad request, 403 forbidden, 404 not found, 500 internal server error, 502 bad gateway or 503 service temporarily unavailable, and have no affect to the rendering of the page if blocked. For HTTP responses that did not specify the \texttt{Content-Type} header at all, we considered them identical as setting an empty MIME type. Excluding the HTTP errors, we logged a total of 287 CSS references that provided an empty MIME type. There were as many as 332 CSS references that provided the \verb|text/html| MIME type for CSS files, which is normally for HTML documents. However, within these \texttt{text/html} responses we found that 56 of them were less serious conditions, where the specified URL was not found and was redirected to a landing page or an error page (with HTTP status code 200). Excluding CSS references with HTTP errors or landing page redirections, the percentage of the common misconfigured MIME types for CSS files in the top 50,000 sites are shown in Table~\ref{table:MIME}.
+\todo{Include some less common mime types such as application/x-javascript}
+% Other MIME types represent various less-frequent \verb|Content-Type|
+% headers that our crawler collected for CSS files including \verb|S3Object|,
+% \verb|application/x-javascript|, \verb|application/binary|,
+% \verb|application/x-pointplus|, \verb|application/x-troff|, \verb|text|,
+% \verb|text/javascript|, \verb|text/x-c|, \verb|image/gif| and
+% \verb|Content-Type:text/css|.
 
 \begin{table}
 \centering
@@ -434,17 +441,19 @@ excluding \texttt{text/css}&&&&\\
 
 \subsubsection{Missing Content Types}
 
-Web applications can omit the Content-Type header or send a Content-Type of
-application/x-unknown-content type if they do not know the mime type of a
-document. This scenario is not common but we did see it a number of times in
-our experiment. Most browsers, with the notable exception of Opera, will
-attempt to load stylesheets that lack a mime type in both standards mode and
-quirks mode, because there is no mime type mismatch. This behavior could open
-up a server to attack if it fails to set a Content-Type header on its HTML
-documents. We have not yet observed any web servers in the wild that are
-affected by this vulnerability, but browsers may wish to follow Opera's lead
-and block such stylesheets when loaded across origins. In any case, we
-recommend that web applications always set a Content-Type header.
+One remaining issue that is not yet addressed by our proposal is that some web
+applications omit the Content-Type header entirely or send a Content-Type of
+\verb|application/x-unknown-content|. This scenario is not very common for
+HTML documents but we did see 287 stylesheets that lacked a Content-Type
+header in our experiment.~\todo{Fill in with the final number} Most browsers,
+with the notable exception of Opera, do attempt to load cross-origin
+stylesheets that lack a mime type in both standards mode and quirks mode,
+because there is no mime type mismatch. This behavior could open up a server
+to attack if it fails to set a Content-Type header on its HTML documents. We
+have not yet observed any web servers in the wild that are affected by this
+vulnerability, but browsers may wish to follow Opera's lead and block such
+stylesheets when loaded across origins. In any case, we recommend that web
+applications always set a Content-Type header.
 
 \section{Related Work} \label{sec:relatedwork}
 In this section, we review some current browser defense techniques that are
