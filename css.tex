@@ -367,30 +367,32 @@ To evaluate the compatibility of our proposed defense of stricter CSS loading, w
 To measure how often web servers fail to provide the correct MIME type for CSS files, we collected metrics by crawling the top 50,000 web sites ranked by Alexa~\cite{alexa} and scanned through all of the style sheet resources in their home pages. We are interested in all CSS references including using HTML link tags and CSS \texttt{@import} directives. Furthermore, some web sites dynamically add CSS links using JavaScript while the page loads. To achieve a more thorough scan for these CSS references, we conducted our experiment to directly render these web pages with an instrumented WebKit browser while recording information of all CSS loads until the web page finishes loading.
 
 \paragraph{Results}
-From the top 50,000 web sites, we fetched a total of 138,924 CSS references, including 114,596 HTML link tags and 24,328 CSS \texttt{@import} directives. These results include 108,545 same-origin references and 30,379 cross-origin references. We did not include data for sites unreachable during our evaluation, due to unresponding servers or domain name errors. Our results are shown in Figure~\ref{figure:MIME}.
+From the top 50,000 web sites, we fetched a total of 138,924 CSS references, including 114,596 HTML link tags and 24,328 CSS \texttt{@import} directives. These results include 108,545 same-origin references and 30,379 cross-origin references. We did not include data for sites unreachable during our evaluation, due to unresponding servers or domain name errors. Our results are shown in Table~\ref{table:results}.
 
-\begin{figure}
+\begin{table*}
 \centering
-\includegraphics[width=\linewidth]{mime.jpg}
-\caption{Percentage of CSS files with misconfigured MIME types in top 50,000 sites excluding HTTP errors and landing page redirection.}
-\label{figure:MIME}
-\end{figure}
+\begin{tabular}{|c|c|c|c|c|c|} \hline
+&\multicolumn{2}{|c}{Valid MIME}&\multicolumn{3}{|c|}{Invalid MIME}\\ \hline
+&Well-Formed&Mal-Formed&Well-Formed&Mal-Formed&HTTP Errors\\ \hline
+Same-Origin&&440&&26&\\ \hline
+Cross-Origin&&75&&0&\\
+\hline\end{tabular}
+\caption{Results for CSS references in top 50,000 Sites.}
+\label{table:results}
+\end{table*}
 
-In the top 50,000 sites, our crawler logged a total of 1,773 misconfigured CSS references that did not provide the correct \texttt{Content-Type} response header. We noticed that 1,091 of these CSS references retrieved HTTP responses with error status codes i.e. 400 bad request, 403 forbidden, 404 not found, 500 internal server error, 502 bad gateway or 503 service temporarily unavailable, and have no affect to the rendering of the page if blocked. For HTTP responses that did not specify the \texttt{Content-Type} header at all, we considered them identical as setting an empty MIME type. Excluding the HTTP errors, we logged a total of 287 CSS references that provided an empty MIME type. There were as many as 332 CSS references that provided the \verb|text/html| MIME type for CSS files, which is normally for HTML documents. However, within these \texttt{text/html} responses we found that 56 of them were less serious conditions, where the specified URL was not found and was redirected to a landing page or an error page (with HTTP status code 200). Excluding CSS references with HTTP errors or landing page redirections, the percentage of the common misconfigured MIME types for CSS files in the top 50,000 sites are shown in Table~\ref{table:MIME}.
-\todo{Include some less common mime types such as application/x-javascript}
-% Other MIME types represent various less-frequent \verb|Content-Type|
-% headers that our crawler collected for CSS files including \verb|S3Object|,
-% \verb|application/x-javascript|, \verb|application/binary|,
+In the top 50,000 sites, our crawler logged a total of 1,773 misconfigured CSS references that did not provide the correct \texttt{Content-Type} response header. We noticed that 1,091 of these CSS references retrieved HTTP responses with error status codes i.e. 400 bad request, 403 forbidden, 404 not found, 500 internal server error, 502 bad gateway or 503 service temporarily unavailable, and have no affect to the rendering of the page if blocked. For HTTP responses that did not specify the \texttt{Content-Type} header at all, we considered them identical as setting an empty MIME type. Excluding the HTTP errors, we logged a total of 287 CSS references that provided an empty MIME type. There were as many as 332 CSS references that provided the \verb|text/html| MIME type for CSS files, which is normally for HTML documents. However, within these \texttt{text/html} responses we found that some of them were less serious conditions, where the specified URL was not found and was redirected to a landing page or an error page (with HTTP status code 200). Excluding CSS references with HTTP errors, the percentage of the common misconfigured MIME types for CSS files in the top 50,000 sites are shown in Table~\ref{table:MIME}. Other MIME types represent various less-frequent \verb|Content-Type| headers that our crawler collected for CSS files, e.g. \verb|S3Object|, \verb|application/x-javascript| and \verb|application/binary|.
 % \verb|application/x-pointplus|, \verb|application/x-troff|, \verb|text|,
 % \verb|text/javascript|, \verb|text/x-c|, \verb|image/gif| and
 % \verb|Content-Type:text/css|.
+Applying the strict approach of MIME type checking would block a total of 290 cross-origin CSS loads on 255 of the top 50,000 sites.
 
 \begin{table}
 \centering
 \begin{tabular}{|c|c|c|} \hline
 Content-Type&Percentage\\ \hline
 Empty (excluding HTTP errors)&45.85\%\\ \hline
-\texttt{text/html} (excluding landing pages)&44.09\%\\ \hline
+\texttt{text/html}&44.09\%\\ \hline
 \texttt{application/octet-stream}&3.83\%\\ \hline
 \texttt{text/plain}&3.51\%\\ \hline
 Other MIME types&2.72\%\\
@@ -399,14 +401,13 @@ Other MIME types&2.72\%\\
 \label{table:MIME}
 \end{table}
 
-Our crawler reported that 541 CSS references were mal-formed, in which the CSS resource failed to have a syntactically valid CSS construct at the beginning of the file. Within these mal-formed CSS files, 466 of them were same-origin references and 75 of them were cross-origin references. We noticed that one of the common syntax errors was starting the CSS file with an HTML style tag. Within the CSS references that provided incorrect MIME types, we found that there were 26 CSS files which were syntactically mal-formed. In our observations, all 26 of theses CSS files were same-origin references.
-
-Within a total of 30379 cross-origin CSS references, we observed a total of 290 CSS resources that provided an invalid MIME type. Applying the strict approach of our proposed defense would cause CSS failure on 255 of the top 50,000 sites due to blocking these CSS loads. In our observations, all of these cross-origin CSS files with broken MIME types were syntactically well-formed. Thus, applying the conservative approach with additional CSS parsing test would avoid inducing undesired CSS failures on all top 50,000 sites.
+Our crawler reported that 541 CSS references were mal-formed, in which the CSS resource failed to have a syntactically valid CSS construct at the beginning of the file. We noticed that one of the common syntax errors was starting the CSS file with an HTML style tag. For the CSS references with incorrect MIME types, we found that there were 26 CSS files which were syntactically mal-formed. In our observations, all of the cross-origin CSS files with invalid MIME types were syntactically well-formed. Thus, applying the conservative approach with additional CSS parsing test would avoid inducing undesired CSS failures on all top 50,000 sites. 
 
 %We ran a scan across the top 500,000 URLs looking for cross-origin loads of CSS with an invalid MIME type. Valid MIME types are defined as text/css, application/x-unknown-content-type, and empty. There were a total of 140 URLs detected that referenced cross-origin CSS with broken MIME types. There were 60 URLs that would be considered as broken, including 13 with text/plain, 15 with text/html, 31 with application/css, and 1 with application/x-pointplus. If we apply the heuristics of the conservative approach, only one URL that served text/html MIME would fail to load, which was severely broken because it had valid CSS rules after a style tag.
 
 \paragraph{Discussion}
-Based on our results, deploying the strict approach would break CSS references on 0.51\% of the top web sites. Although this fraction may seem low, browser vendors have historically been reluctant to deploy changes that break popular web sites. Our observations also suggest that misconfigured servers often fail to provide the \texttt{Content-Type} header or send the \texttt{text/html} MIME type regardless of the served content type.
+Based on our results, deploying the strict approach would break CSS references on 0.51\% of the top web sites due to blocking cross-origin CSS loads with invalid MIME types. Although this fraction may seem low, browser vendors have historically been reluctant to deploy changes that break popular web sites. Our observations also suggest that misconfigured servers often %fail to provide the \texttt{Content-Type} header or 
+send the \texttt{text/html} MIME type regardless of the served content type.
 
 In our observations, the conservative approach would not break a single CSS reference in the top $50,000$ web sites. The conservative approach is an appealing defense because it blocks the cross-origin CSS attack while maximizing web site compatibility.
 
