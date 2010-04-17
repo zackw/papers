@@ -180,16 +180,19 @@ Due to lenient MIME type requirement of CSS parsers, the attacker may fool the v
 
 We illustrate an example of CSS string injection in Figure~\ref{figure:injection}. Suppose that there is a sensitive content, represented with the string ``SECRET'', in an HTML document on an honest web site that the attacker wants to steal. Assuming that the attacker has sufficient influence over the web page to control the text preceding and succeeding the secret string, the CSS string injection can be constructed based on common CSS properties that have string type values, i.e. \texttt{font-family}, \texttt{background-image}, and \texttt{list-style-image}. Given the ability to inject arbitrary strings into the target domain, the HTML document can be crafted to contain a CSS property \texttt{font-family} as the following:
 \begin{verbatim}
+CSS injection opening string: {}BODY{font-family:"
+CSS injection termination string: "}
+
 Target document:
 <HTML>..SECRET..</HTML>
 
-After injection:
-<HTML>..{} BODY { font-family: "SECRET" }..</HTML>
+Injected document:
+<HTML>..{}BODY{font-family:"SECRET"}..</HTML>
 \end{verbatim}
 The injected HTML document will appear to the CSS parser as containing a valid CSS rule. The fonts of the attacker's page will be styled with a font-family specified as the stolen string ``SECRET''. Note that the seemingly redundant pair of brackets in the injection string re-syncs the CSS parser to make sure that the evil CSS rule parses properly. All the other non-CSS text in the document are skipped by the CSS parser, thus will not effect the parsing of the evil CSS rule. Once the injected document is loaded, the attacker can easily steal the secret string from the computed \texttt{font-family} style of the attacker's page.
 
 \subsubsection{Cross-Origin CSS Import}
-When the user visits \texttt{attacker.com}, the attacker's evil page instructs the victim's browser to fetch and load the injected document as a style sheet. In HTML specifications~\cite{html}, documents can import external style sheets from remote servers by using the CSS \texttt{@import} notation, or using the link tag inside the head element as the following: .
+When the user visits \texttt{attacker.com}, the attacker's evil page instructs the victim's browser to fetch and load the injected document as a style sheet. Documents can import external style sheets from remote servers by using the CSS~\cite{css} \texttt{@import} notation, or using the HTML~\cite{html} link tag inside the head element as the following:
 \begin{verbatim}
 <HTML>
 <HEAD>
@@ -202,13 +205,13 @@ When the user visits \texttt{attacker.com}, the attacker's evil page instructs t
 \end{verbatim}
 
 \subsubsection{Confidential Data Extraction}
-The final step for the attacker is to extract the confidential data from the cross-origin imported styles in the victim's browser. The attacker's evil page can simply use JavaScript to read the computed styles. Furthermore, a variant of the cross-origin CSS attack
-can extract the stolen data even with JavaScript disabled.
+The final step for the attacker is to extract the confidential data from the cross-origin imported styles in the victim's browser. The attacker's evil page may use JavaScript to read the full CSS text via CSSOM, or read the computed styles of specific CSS properties via DOM. Furthermore, a variant of the cross-origin CSS attack can extract the stolen data even with JavaScript disabled. 
 
-\paragraph{With JavaScript}
-One method of data extraction is to access the computed styles or CSS text in DOM using JavaScript. All major browsers support using JavaScript to read computed styles, even loaded from cross-origin, by calling the \texttt{window.getComputedStyle} method or retrieving the \texttt{currentStyle} object. The cross-origin CSS vulnerabilities of DOM access on major browsers are shown in Table~\ref{table:DOM}. Given that the style name and property name is known, the attacker can extract the confidential data from the injected style property. WebKit-based browsers, i.e. Safari and Google Chrome, even surrendered the full CSS text of style sheets, including CSS rules loaded from cross-origin (without comments, thankfully). The attacker could read the raw text of cross-origin CSS via \texttt{document.styleSheets[].cssRules[].cssText} and also \texttt{window.getMatchedCSSRules().cssText}. This behavior violates the same-origin policy and can cause cross-origin data leak in pages with semi-valid CSS constructs. Other browsers only permit read access to the raw text of style sheets under restricted conditions. Internet Explorer allows access to cross-origin CSS raw text via \texttt{document.styleSheets[].rules[].style.cssText} only if the MIME type is correct. Firefox and Opera only allows access to CSS raw text for style sheets loaded from same-origin. Even if access to raw CSS text is blocked, the ability to read cross-origin loaded CSS styles is enough to construct serious attacks.
+\paragraph{CSSOM with JavaScript}
+One method of confidential data extraction is to access the full CSS text via CSSOM using JavaScript. WebKit-based browsers, i.e. Safari and Google Chrome, allow access to the full CSS text of style sheets, including CSS rules loaded from cross-origin (without comments, thankfully). The attacker could read the raw text of cross-origin CSS via \texttt{document.styleSheets[].cssRules[].cssText} and also \texttt{window.getMatchedCSSRules().cssText}. This behavior violates the same-origin policy and can cause cross-origin data leak in pages with semi-valid CSS constructs. Other browsers only permit read access to the raw text of style sheets under restricted conditions. Internet Explorer allows access to cross-origin CSS raw text via \texttt{document.styleSheets[].rules[].style.cssText} only if the MIME type is correct. Firefox and Opera only allows access to CSS raw text for style sheets loaded from same-origin.
 
-After extracting the sensitive content hidden in the style properties, the attacker can send the secret data to his own evil servers or even mount CSRF attacks. There are various methods to export data to other origins, in this specific attack we are interested in approaches where no user involvement is required, e.g. using JavaScript to send data through an HTML hidden form or through the \texttt{XMLHttpRequest} API.
+\paragraph{DOM with JavaScript}
+Another method of data extraction using JavaScript is to access the computed styles via DOM. All major browsers support using JavaScript to read computed styles, even loaded from cross-origin, by calling the \texttt{window.getComputedStyle} method or retrieving the \texttt{currentStyle} object. The cross-origin CSS vulnerabilities of JavaScript access on major browsers are shown in Table~\ref{table:DOM}. Given that the style name and property name is known, the attacker can extract the confidential data from the injected style property. Even if access to raw CSS text is blocked, the ability to read cross-origin loaded CSS styles is enough to construct serious attacks.
 
 \begin{table}
 \centering
@@ -222,9 +225,11 @@ Methods&IE&FF&Opera&Safari&Chrome\\ \hline
 \texttt{getMatchedCSSRules()}&&&&\checkmark&\checkmark\\
 \texttt{.cssText}&&&&&\\
 \hline\end{tabular}
-\caption{Cross-Origin CSS DOM Vulnerabilities}
+\caption{Cross-Origin CSS JavaScript Vulnerabilities}
 \label{table:DOM}
 \end{table}
+
+After extracting the sensitive content hidden in the style properties, the attacker may send the secret data to his own evil servers or even mount CSRF attacks. There are various methods to export data to other origins, in this specific attack we are interested in approaches where no user involvement is required, e.g. using JavaScript to send data through an HTML hidden form or through the \texttt{XMLHttpRequest} API.
 
 \paragraph{Without JavaScript}
 Another method is available to exploit users that have disabled JavaScript in their browsers. The attacker can extract data without using JavaScript by injecting the CSS property \texttt{background-image} string as the following:
