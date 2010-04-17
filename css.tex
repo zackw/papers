@@ -53,21 +53,32 @@ rapidly supplanting traditional client software.
 One of the key features that has made the Web so successful is the same-origin
 policy that allows users to safely interact with software written by anyone
 --- even someone they do not trust. The browser limits interactions between
-sites by compartmentalizing them into ``origins'' that cannot easily read
-each other's sensitive data. However, browsers have wisely added exceptions
-where necessary to enable powerful cross-origin interactions. The cross-origin
-hyperlink is the foundation that allowed search engines and social media to
-revolutionize news, communication, and e-commerce. Cross-origin images have
-allowed web applications to improve performance and reduce costs by
-outsourcing their infrastructure to content distribution networks.
-Cross-origin plugin embedding took this a step further by making the wildly
-popular YouTube video service available to bloggers. Cross-origin script
-import has also played a key role in the success of the Web, allowing
+sites by compartmentalizing them into ``origins'' that cannot easily read each
+other's sensitive data~\cite{mozillasameorigin}. However, browsers have wisely
+added exceptions where necessary to enable powerful cross-origin interactions.
+The cross-origin hyperlink is the foundation that allowed search engines and
+social media to revolutionize news, communication, and e-commerce.
+Cross-origin images have allowed web applications to improve performance and
+reduce costs by outsourcing their infrastructure to content distribution
+networks. Cross-origin plugin embedding took this a step further by making the
+wildly popular YouTube video service available to bloggers. Cross-origin
+script import has also played a key role in the success of the Web, allowing
 publishers to optimize and monetize their content with tools like Google
 Analytics and Google AdSense.
 
-In this paper, we analyze another widely used cross-origin primitive: style
-sheet import. Style sheets are used to improve the appearance of pages with
+To keep web sites safe in the midst of all these cross-origin interactions,
+browsers must determine which web content requires enhanced privileges and/or
+confidentiality~\cite{mashupos}. HTML documents have the full privileges of
+the origin that served them and cannot be read by other origins, whereas
+library resources such as scripts and style sheets have no origin privileges
+but can be imported into any origin. A critical and often-overlooked aspect of
+the browser same-origin policy is the error-prone process of assigning content types to web resources. Previously, Barth et al showed how a web site could be
+compromised if a browser mistakenly handled a non-HTML resource as
+HTML~\cite{securecontentsniffing}. In this paper, we discuss the opposite
+scenario: a web site can be compromised if a browser mistakenly handles an
+HTML resource as a style sheet library.
+
+Style sheets are used to improve the appearance of pages with
 color, layout, and more. They make the Web an efficient and attractive medium
 for presenting information. Because style sheets can be imported across
 origins just like scripts and images, they constitute an exception to the
@@ -79,22 +90,27 @@ Browser vendors and standards bodies continue to push the limits of what is
 possible with style sheets. The CSS specification~\cite{cssspec} introduces
 new style sheet directives and even new syntax from time to time. All versions
 of CSS, starting from CSS1, have required that user agents ignore certain
-types of invalid style directives. This essential property of style sheets
+types of invalid style directives~\cite{syndata}. This essential property of style sheets
 provides forward-compatibility with future versions and allows experimental
 vendor-proprietary extensions.
 
 Unfortunately, this forwards-compatible parsing behavior presents a critical
-security threat to the web. A malicious web site can load HTML documents as
-style sheets and extract any information that is parsed by the browser's
-error-tolerant CSS parsing algorithm. This technique was first demonstrated by
-a Japanese blogger~\cite{cssxss} to circumvent a victim web site's cross-site
-request forgery defenses in Internet Explorer. In this paper, we describe
-additional variations on the attack that work in all browsers. The attack can be used to steal We show that all browsers have APIs that can be used to extract secrets from the style of the current document, and even if JavaScript is disabled by a security tool such as NoScript, background images can still be used by the attacker's web site to relay confidential information back to the attacker.
+security issue when combined with the browser same-origin policy. A malicious
+web site can load HTML documents as style sheets and extract information that
+is parsed by the browser's error-tolerant CSS parsing algorithm. This
+technique was first demonstrated by a Japanese blogger~\cite{cssxss} to
+circumvent a Japanese social networking site's cross-site request forgery
+defenses in Internet Explorer. In this paper, we describe a general form of
+the attack that works in all browsers. We show that all browsers have APIs
+that can be used to extract secrets from the style of the current document,
+even if JavaScript is disabled by a security tool such as NoScript. We propose
+and implement new browser CSS handling behavior to prevent style sheets from
+being used to compromise web sites. We surveyed the top 50,000 web sites to
+determine the compatibility impact of our proposal. Finding the compatibility
+cost to be acceptable, we deployed our proposal; the new behavior has now been
+adopted by Firefox, Google Chrome, Safari, and Opera.
 
-To prevent the attack, we propose a new behavior and propose
-client-side defenses. Our proposals have been adopted by Firefox, Google
-Chrome, Safari, and Opera.
-
+\paragraph{Organization}
 The rest of this paper is organized as follows. Section~\ref{sec:threatmodel} presents a threat model for cross-origin CSS attacks.
 Section~\ref{sec:attacks} describes the attack in detail. Section~\ref{sec:defenses} proposes and evaluates defenses.
 Section~\ref{sec:relatedwork} surveys related work.
@@ -138,34 +154,93 @@ is sufficient.
 \paragraph{Target Site Behavior}
 We assume that the attacker can inject semi-arbitrary strings into a target domain that contains the secret content, which we refer to as \texttt{target.com}. We define the term semi-arbitrary strings as a subset of strings that may conform to CSS syntax to differentiate from fully arbitrary strings that may also conform to HTML syntax. The ability of injecting CSS strings is considered weaker than injecting HTML strings into the target domain, as in common XSS attacks, because scripts may be detected and blocked by client-side XSS filters. In practice, there are various methods to inject strings into the target domain, e.g. reflection of user-controlled strings or via URL parameters.
 
-\section{Attacks} \label{sec:attacks}
-In this section, we study cross-origin CSS attacks. First, we provide some background information. Next, we introduce cross-origin CSS attacks. Then, we discuss the restrictions for constructing this attack and suggest general areas that are exploitable. Finally, we demonstrate an attack against two popular web applications as our proof of concept.
+\section{Cross-Origin CSS Attacks} \label{sec:attacks}
+In this section, we introduce cross-origin CSS attacks. First, we provide some
+relevant background information on browser behavior. Next, we describe in
+detail the steps of the attack. Then, we discuss the restrictions that make
+constructing this attack and suggest general areas that are exploitable.
+Finally, we demonstrate attacks against several popular web applications as a proof of concept.
 
 \subsection{Background}
-In this section, we provide background information about Cascading Style Sheets (CSS), the same-origin policy (SOP), and MIME types.
+
+In this section, we describe three aspects of browser behavior that are required for cross-origin CSS attacks: session authentication, cross-origin resources, and error-tolerant style sheet parsing.
+
+\subsubsection{Session Authentication}
+Web applications that handle sensitive data typically use client-side state to
+main a distinct ``session'' for each visitor. HTTP cookies~\cite{rfc2109,
+httpstate} are commonly used by web application to manage this state. HTTP
+basic and digest authentication~\cite{rfc2617} can also be used to maintain
+client sessions. Once a user has logged in to a web site, the browser ensures
+that subsequent requests to that site will also be part of the same
+authenticated session. Since the server knows who is making a request, it can
+reply with confidential HTML documents intended only for that specific user.
+
+\subsubsection{Cross-Origin Resources}
+
+\todo{Collin: Finish this section}
+
+% Web browsers permit a variety of 
+% If a page on \url{http://a.com} provides a hyperlink, form, image, script, stylesheet, or embedded plugin that requests a resource on \url{http://b.com}.
+% 
+% 
+% Note that browsers always sends the user's cookie when it loads any referenced style sheets, including cross-origin CSS. If a user was logged into the \texttt{target.com} while visiting the evil page, the browser would send the user's authentication cookie on all requests to \texttt{target.com} and be considered as valid authenticated requests. This behavior exploits cookie-authenticated web sites and potentially leaks the user's sensitive information in the server's response.
+% 
+% 
+% The browser same-origin policy is intended to prevent other origins from reading these documents.
+% 
+% Cross-site request forgery attacks abuse this behavior by sending cross-origin requests to the server that were not initiated by the user. A typical defense
+% 
+% When a web
+
+% Most often, state is handled using the HTTP cookie mechanism, enables web
+% sites to authenticate clients and maintain client states, allowing web sites
+% to not only serve static content but customize the content and appearance for
+% each session user.
+% 
 
 \subsubsection{Cascading Style Sheets}
-Cascading Style Sheets~\cite{css} is a mechanism that lets web developers control the visual appearance of web documents using style sheet language. The design of CSS enables separation of document content from the visual appearance, including layouts, colors, and fonts. This allows web sites to adjusting its appearance, e.g. switching on-screen views to printable views, without requiring modifications to the document. Furthermore, documents are allowed to import external style sheets and let third parties to control a subset of the CSS rules. This feature allows web sites to share style sheets across a number of documents.
+Error handling rules in CSS are designed for forward compatibility
+with future extensions~\cite{syndata}. These rules are designed to tolerate errors and recover at the next valid CSS rule. The parsing behaviors that most affect cross-origin CSS attacks are as follows:
 
-\paragraph{Lax Parsing}
-In modern browsers, the CSS parser is actually very lax. The CSS parser will skip over any amount of invalid syntax in the style sheet until it finds the next valid rule. This is unlike the JavaScript parser that will abort on the first syntax error. A lax CSS parser gives the browser better compatibility for supporting misconfigured web sites, but unfortunately opens opportunities to attackers and enables the cross-origin CSS attack in this paper.
+\begin{itemize}
+\item Single- and double-quoted strings and /* */ comments act like they
+do in JavaScript. In all browsers except for Internet Explorer, multiline strings are not allowed. CSS does not have // comments.
+\item Braces, parentheses, and brackets must be properly balanced and nested at all times. 
+\item Unlike HTML, angle brackets are {\em not} expected to balance or nest. 
+\item At top level (not inside braces) HTML comment delimiters are ignored.
+There is no attempt to balance them.
+\item The end of a style sheet closes all open constructs {\em without error}.  \end{itemize}
 
-\todo{Chris' comment: I think they are intending to be forward-compatible with brand new CSS syntax too. There is some small interpretation of invalid syntax: careful track seems to be kept regarding opened brackets. I think this includes various bracket types -- but of course may be browser dependent. Any CSS injection point may have to close an arbitrary number of these brackets: of the correct type in the correct order!}
+% \subsubsection{MIME Types}
+% The HTTP \verb|Content-Type| header indicates the type of the content that is transmitted using Multipurpose Internet Mail Extensions (MIME)~\cite{mime} types such as \texttt{text/plain} for plain text and \texttt{image/jpeg} for JPEG images. A typical \verb|Content-Type| header is the following:
+% \begin{verbatim}
+% Content-Type: text/html; charset=utf-8
+% \end{verbatim}
+% Browsers use MIME types to determine how to handle the contents of HTTP responses. However, many misconfigured web servers fail to provide the correct MIME type of their resources.
+% % Due to web site compatibility concerns, modern browsers use content-sniffing
+% % algorithms~\cite{securecontentsniffing} to guess the correct MIME type by
+% % inspecting the contents of HTTP responses. 
+% % Content-sniffing algorithms can override the provided MIME type and file
+% % extension of the document. Unfortunately, this quirk introduces chameleon
+% % documents, in which a document conforms to a benign file format (such as
+% % PostScript) and contains malicious HTML.
 
-\subsubsection{Same-Origin Policy}
-The same-origin policy~\cite{mozillasameorigin} is the main security mechanism in modern browsers that provides isolation of contents between unrelated web sites. The same-origin policy restricts contents to access resources only from the same origin, which applies to scripting interactions, i.e. accessing the Document Object Model (DOM)~\cite{dom} and transferring data using the \texttt{XMLHttpRequest} API. In SOP, the origin of a resource is defined as the protocol, host, and port. The same-origin policy does not apply to fetching and executing remote libraries, including scripts and style sheets, from a different origin.
+% \subsection{Background}
+% In this section, we provide background information about Cascading Style Sheets (CSS), the same-origin policy (SOP), and MIME types.
+% 
+% \subsubsection{Cascading Style Sheets}
+% Cascading Style Sheets~\cite{css} is a mechanism that lets web developers control the visual appearance of web documents using style sheet language. The design of CSS enables separation of document content from the visual appearance, including layouts, colors, and fonts. This allows web sites to adjusting its appearance, e.g. switching on-screen views to printable views, without requiring modifications to the document. Furthermore, documents are allowed to import external style sheets and let third parties to control a subset of the CSS rules. This feature allows web sites to share style sheets across a number of documents.
+% 
+% \paragraph{Lax Parsing}
+% In modern browsers, the CSS parser is actually very lax. The CSS parser will skip over any amount of invalid syntax in the style sheet until it finds the next valid rule. This is unlike the JavaScript parser that will abort on the first syntax error. A lax CSS parser gives the browser better compatibility for supporting misconfigured web sites, but unfortunately opens opportunities to attackers and enables the cross-origin CSS attack in this paper.
+% 
+% \todo{Chris' comment: I think they are intending to be forward-compatible with brand new CSS syntax too. There is some small interpretation of invalid syntax: careful track seems to be kept regarding opened brackets. I think this includes various bracket types -- but of course may be browser dependent. Any CSS injection point may have to close an arbitrary number of these brackets: of the correct type in the correct order!}
+% 
+% \subsubsection{Same-Origin Policy}
+% The same-origin policy~\cite{mozillasameorigin} is the main security mechanism in modern browsers that provides isolation of contents between unrelated web sites. The same-origin policy restricts contents to access resources only from the same origin, which applies to scripting interactions, i.e. accessing the Document Object Model (DOM)~\cite{dom} and transferring data using the \texttt{XMLHttpRequest} API. In SOP, the origin of a resource is defined as the protocol, host, and port. The same-origin policy does not apply to fetching and executing remote libraries, including scripts and style sheets, from a different origin.
+% 
 
-\subsubsection{MIME Types}
-The HTTP \texttt{Content-Type} header indicates the type of the content that is transmitted using Multipurpose Internet Mail Extensions (MIME)~\cite{mime} types such as \texttt{text/plain} for plain text and \texttt{image/jpeg} for JPEG images. The line in the HTTP header typically looks like the following:
-\begin{verbatim}
-Content-Type: text/html; charset=utf-8
-\end{verbatim}
-Browsers use MIME types to determine how to handle the contents of HTTP responses. However, many misconfigured web servers fail to provide the correct MIME type of their resources. Due to web site compatibility concerns, modern browsers use content-sniffing algorithms~\cite{securecontentsniffing} to guess the correct MIME type by inspecting the contents of HTTP responses.  Content-sniffing algorithms can override the provided MIME type and file extension of the document. Unfortunately, this quirk introduces chameleon documents, in which a document conforms to a benign file format (such as PostScript) and contains malicious HTML.
-
-\paragraph{Cookies}
-The HTTP cookie mechanism enables web sites to authenticate clients and maintain client states, allowing web sites to not only serve static content but customize the content and appearance for each session user. According to the standards, the browser always sends the user's cookie when it loads any referenced style sheets, including cross-origin CSS. If a user was logged into the \texttt{target.com} while visiting the evil page, the browser would send the user's authentication cookie on all requests to \texttt{target.com} and be considered as valid authenticated requests. This behavior exploits cookie-authenticated web sites and potentially leaks the user's sensitive information in the server's response.
-
-\subsection{Cross-Origin CSS Attack}
+\subsection{Attack Steps}
 In a cross-origin CSS attack, the attacker's main objective is to steal the victim's secret content on an honest web site from a different domain. The attacker is most likely interested in stealing any sensitive information in a cookie-authenticated web page, or preferably a secret CSRF token~\cite{csrf} hidden in the document that may allow the attacker to hijack the user's session. In order to steal content from a different domain, the attacker leverages the fact that the browser's security policy allows external style sheets to be imported from cross-origin. The target document on an honest web site is injected such that portions of the document conform to CSS rules. As soon as the victim visits the attacker's evil page, the cross-origin data is imported as style properties and stolen. The steps of the cross-origin CSS attack is shown in Figure~\ref{figure:steps}. To describe the cross-origin CSS attack in detail, we decompose the attack into three main steps: CSS string injection, cross-origin CSS import, and confidential data extraction.
 
 \begin{figure*}
@@ -375,8 +450,8 @@ From the top 50,000 web sites, we fetched a total of 138,924 CSS references, inc
 &\multicolumn{2}{|c}{Valid MIME}&\multicolumn{3}{|c|}{Invalid MIME}\\ %\hline
 \cline{2-6}
 &Well-Formed&Mal-Formed&Well-Formed&Mal-Formed&HTTP Errors\\ \hline
-Same-Origin&&440&&26&\\ \hline
-Cross-Origin&&75&&0&\\
+Same-Origin&{\it Coming soon}&440&{\it Coming soon}&26&{\it Coming soon}\\ \hline
+Cross-Origin&{\it Coming soon}&75&{\it Coming soon}&0&{\it Coming soon}\\
 \hline\end{tabular}
 \caption{Results for CSS references in top 50,000 Sites.}
 \label{table:results}
