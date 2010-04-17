@@ -519,8 +519,8 @@ applications omit the Content-Type header entirely or send a Content-Type of
 HTML documents but we did see 595 style sheets that lacked a Content-Type
 header in our experiment. Most browsers, 
 with the notable exception of Opera, do attempt to load cross-origin
-style sheets that lack a mime type in both standards mode and quirks mode,
-because there is no mime type mismatch. This behavior could open up a server
+style sheets that lack a MIME type in both standards mode and quirks mode,
+because there is no MIME type mismatch. This behavior could open up a server
 to attack if it fails to set a Content-Type header on its HTML documents. We
 have not yet observed any web servers in the wild that are affected by this
 vulnerability, but browsers may wish to follow Opera's lead and block such
@@ -532,7 +532,7 @@ In this section, we discuss the shortcomings of other defensive approaches for t
 web browsers and their protection against the cross-origin CSS attack.
 
 \subsection{Other Client-Side Approaches}
-There are other approaches that can be deployed in browsers without modifying web servers including globally blocking cookies and tightening DOM access.  We argue that all of these approaches could either be circumvented with a variation of the attack, or would significantly reduce web site compatibility.
+There are other defensive approaches that can be deployed in browsers without modifying web servers including globally blocking cookies and tightening DOM access.  We argue that all of these approaches could either be circumvented with a variation of the attack, or would significantly reduce web site compatibility.
 
 \paragraph{Block Cookies}
 Browsers give users the option of disabling cookies and always send anonymous requests, thus can prevent web attackers from stealing content on any cookie-authenticated URLs. However, session cookies are often used by web sites to control the response of each user's request and provide user-specific styles, e.g. adjusting to mobile account or printable view. Disabling cookies would break a huge number of sites that require logging in. A more conservative approach would be to prevent sending cookies when sending requests for cross-origin CSS. However, that would still break legitimate web sites that provide user-specific styles using external style sheets.
