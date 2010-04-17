@@ -372,7 +372,8 @@ From the top 50,000 web sites, we fetched a total of 138,924 CSS references, inc
 \begin{table*}
 \centering
 \begin{tabular}{|c|c|c|c|c|c|} \hline
-&\multicolumn{2}{|c}{Valid MIME}&\multicolumn{3}{|c|}{Invalid MIME}\\ \hline
+&\multicolumn{2}{|c}{Valid MIME}&\multicolumn{3}{|c|}{Invalid MIME}\\ %\hline
+\cline{2-6}
 &Well-Formed&Mal-Formed&Well-Formed&Mal-Formed&HTTP Errors\\ \hline
 Same-Origin&&440&&26&\\ \hline
 Cross-Origin&&75&&0&\\
@@ -445,15 +446,15 @@ excluding \texttt{text/css}&&&&\\
 One remaining issue that is not yet addressed by our proposal is that some web
 applications omit the Content-Type header entirely or send a Content-Type of
 \verb|application/x-unknown-content|. This scenario is not very common for
-HTML documents but we did see 287 stylesheets that lacked a Content-Type
+HTML documents but we did see 287 style sheets that lacked a Content-Type
 header in our experiment.~\todo{Fill in with the final number} Most browsers,
 with the notable exception of Opera, do attempt to load cross-origin
-stylesheets that lack a mime type in both standards mode and quirks mode,
+style sheets that lack a mime type in both standards mode and quirks mode,
 because there is no mime type mismatch. This behavior could open up a server
 to attack if it fails to set a Content-Type header on its HTML documents. We
 have not yet observed any web servers in the wild that are affected by this
 vulnerability, but browsers may wish to follow Opera's lead and block such
-stylesheets when loaded across origins. In any case, we recommend that web
+style sheets when loaded across origins. In any case, we recommend that web
 applications always set a Content-Type header.
 
 \section{Related Work} \label{sec:relatedwork}
@@ -463,7 +464,7 @@ JavaScript hijacking. We also consider recent research proposals for secure
 web browsers and their protection against the cross-origin CSS attack.
 
 \subsection{Other Client-Side Approaches}
-There are other approaches that can be deployed in browsers without modifying web servers including globally blocking cookies, tightening DOM access and enforce stricter CSS parsing.  We argue that all of these approaches could either be circumvented with a variation of the attack, or would significantly reduce web site compatibility.
+There are other approaches that can be deployed in browsers without modifying web servers including globally blocking cookies and tightening DOM access.  We argue that all of these approaches could either be circumvented with a variation of the attack, or would significantly reduce web site compatibility.
 
 \paragraph{Block Cookies}
 Browsers give users the option of disabling cookies and always send anonymous requests, thus can prevent web attackers from stealing content on any cookie-authenticated URLs. However, session cookies are often used by web sites to control the response of each user's request and provide user-specific styles, e.g. adjusting to mobile account or printable view. Disabling cookies would break a huge number of sites that require logging in. A more conservative approach would be to prevent sending cookies when sending requests for cross-origin CSS. However, that would still break legitimate web sites that provide user-specific styles using external style sheets.
@@ -471,8 +472,8 @@ Browsers give users the option of disabling cookies and always send anonymous re
 \paragraph{Restrict DOM Access}
 The same-origin policy for DOM access restricts the ability for JavaScript to access DOM properties and methods across domains. To prevent the cross-origin CSS attack, browsers should cautiously block DOM access to style sheets loaded from cross-origin, at least when the CSS file is malformed or has incorrect MIME type. However, all major browsers grant read access to computed styles loaded from cross-origin using either \texttt{window.getComputedStyle} or \texttt{currentStyle}, violating the same-origin policy. Even if browsers restricted the read access to computed styles for cross-origin loads, the attacker could bypass this limitation with \texttt{background-image} property injection that could automatically export data in requests to cross-origin servers.
 
-\paragraph{Stricter CSS Parsing}
-CSS parsers are tolerant of syntax errors and will resume parsing after syntax errors. The cross-origin CSS attack could be mitigated if the browser's CSS parser rejected the stylesheet on the first syntax error, as it does with script libraries. However, this approach would require all web developers to strictly write well formed CSS, and would immediately break many existing web sites.
+%\paragraph{Stricter CSS Parsing}
+%CSS parsers are tolerant of syntax errors and will resume parsing after syntax errors. The cross-origin CSS attack could be mitigated if the browser's CSS parser rejected the style sheet on the first syntax error, as it does with script libraries. However, this approach would require all web developers to strictly write well formed CSS, and would immediately break many existing web sites.
 
 \subsection{Server-side Mitigations}
 In this section, we consider approaches that can be adopted by web servers
