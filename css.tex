@@ -14,10 +14,15 @@ Chris Evans\\
 Lin-Shung Huang\\
       \affaddr{Carnegie Mellon University}\\
       \affaddr{linshung.huang@sv.cmu.edu}
+\and
 \alignauthor
 Collin Jackson\\
       \affaddr{Carnegie Mellon University}\\
       \affaddr{collin.jackson@sv.cmu.edu}
+\alignauthor
+Zack Weinberg\\
+      \affaddr{Mozilla}\\
+      \affaddr{zweinberg@mozilla.com}
 }
 
 \newcommand{\todo}[1]{\textbf{[TODO: #1]}}
@@ -175,9 +180,9 @@ that subsequent requests to that site will also be part of the same
 authenticated session. Since the server knows who is making a request, it can
 reply with confidential HTML documents intended only for that specific user.
 
-\subsubsection{Cross-Origin Resources}
+%\subsubsection{Cross-Origin Resources}
 
-\todo{Collin: Finish this section}
+%\todo{Collin: Finish this section}
 
 % Web browsers permit a variety of 
 % If a page on \url{http://a.com} provides a hyperlink, form, image, script, stylesheet, or embedded plugin that requests a resource on \url{http://b.com}.
@@ -604,7 +609,7 @@ Firefox, Google Chrome, Safari and Opera.
 \section*{Acknowledgements}
 
 We thank Dave Hyatt, Sam Weinig, Maciej Stachowiak, and Adam Barth of the
-WebKit project for reviewing our implementation of cross-origin CSS defenses in Google Chrome and Safari. We thank David Baron, Zack Weinberg, Boris Zbarsky of Mozilla.
+WebKit project for reviewing our implementation of cross-origin CSS defenses in Google Chrome and Safari. We thank David Baron and Boris Zbarsky of Mozilla.
 
 \bibliographystyle{abbrv}
 \bibliography{css}
