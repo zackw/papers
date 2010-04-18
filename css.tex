@@ -547,14 +547,15 @@ cookies~\cite{jackson06thirdpartycookies}. This third-party cookie blocking
 behavior is insufficient to stop the cross-origin CSS attack, since the
 attacker can still hijack the user's existing authenticated session.
 
-\paragraph{Block CSSOM}
+\paragraph{Block JavaScript Style APIs}
 The same-origin policy for DOM access restricts the ability for JavaScript to
 access DOM properties and methods across domains. To prevent the cross-origin
-CSS attack, browsers could block DOM access to computed styles styles loaded
-from cross-origin style sheets, at least when the CSS file is malformed or has
-incorrect MIME type. This restriction would stop some attacks, but the
-attacker could still bypass this limitation with \texttt{background-image}
-property injection technique described in Section~\ref{sec:extraction}.
+CSS attack, browsers could block DOM access to stylesheet text and computed
+styles loaded from cross-origin style sheets, at least when the CSS file is
+malformed or has incorrect MIME type. This restriction would stop some
+attacks, but the attacker could still bypass this limitation with
+\texttt{background-image} property injection technique described in
+Section~\ref{sec:extraction}.
 
 %\paragraph{Stricter CSS Parsing}
 %CSS parsers are tolerant of syntax errors and will resume parsing after syntax errors. The cross-origin CSS attack could be mitigated if the browser's CSS parser rejected the style sheet on the first syntax error, as it does with script libraries. However, this approach would require all web developers to strictly write well formed CSS, and would immediately break many existing web sites.
