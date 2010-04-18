@@ -212,7 +212,7 @@ Browsers allow web pages to reference to cross-origin resources, enabling them t
 % each session user.
 % 
 
-\subsubsection{Cascading Style Sheets}
+\subsubsection{Cascading Style Sheets} \label{sec:lax}
 Error handling rules for style sheets are designed for forward compatibility
 with future extensions~\cite{syndata}. These rules are designed to tolerate errors and recover at the next valid CSS rule. The parsing behaviors that most affect cross-origin CSS attacks are as follows:
 
@@ -265,33 +265,26 @@ In a cross-origin CSS attack, the attacker's main objective is to steal the vict
 \end{figure*}
 
 \subsubsection{CSS String Injection}
-Due to lenient MIME type requirement of CSS parsers, the attacker may fool the victim's browser into loading a carefully crafted non-CSS (e.g. HTML or XML) document as a valid style sheet resource. In practice, there are several methods that may allow a web attacker to inject strings into the target domain, e.g. reflection of user-controlled strings or via URL parameters. Normally, random text in a non-CSS document contains syntax errors to the CSS parser and would break the parsing. However, due to the lax CSS parsers in modern browsers, portions of a non-CSS document with valid CSS syntax can still be successfully parsed and recognized as style sheet rules.
+One might expect that a non-CSS document would contain numerous syntax errors would fail to parse as a valid style sheet. However, due to the error-tolerant CSS parsing behavior described in Section~\ref{sec:lax}, portions of a non-CSS document with valid CSS syntax can still be successfully parsed and recognized as style sheet rules. Thus, it is sufficient for the attacker to inject strings into the target document that will form a valid style rule. In practice, there are several methods that may allow a web attacker to inject strings into the target domain, e.g. reflection of user-controlled strings in URL parameters. 
 
 We illustrate an example of CSS string injection in Figure~\ref{figure:injection}. Suppose that there is a sensitive content, represented with the string ``SECRET'', in an HTML document on an honest web site that the attacker wants to steal. Assuming that the attacker has sufficient influence over the web page to control the text preceding and succeeding the secret string, the CSS string injection can be constructed based on common CSS properties that have string type values, i.e. \texttt{font-family}, \texttt{background-image}, and \texttt{list-style-image}. Given the ability to inject arbitrary strings into the target domain, the HTML document can be crafted to contain a CSS property \texttt{font-family} as the following:
-\begin{verbatim}
-CSS property opening string: {}BODY{font-family:"
-
-CSS property termination string: "}
-
-Target document:
-<HTML>..SECRET..</HTML>
-
-Injected document:
-<HTML>..{}BODY{font-family:"SECRET"}..</HTML>
-\end{verbatim}
+\begin{itemize}
+\item CSS property opening string: \verb|{}BODY{font-family:"|
+\item CSS property termination string: \verb|"}|
+\item Target document: \verb|<HTML>..SECRET..</HTML>|
+\item Injected document: \\
+\verb|<HTML>..{}BODY{font-family:"SECRET"}..</HTML>|
+\end{itemize}
 The injected HTML document will appear to the CSS parser as containing a valid CSS rule. The fonts of the attacker's page will be styled with a font-family specified as the stolen string ``SECRET''. Note that the seemingly redundant pair of brackets in the injection string re-syncs the CSS parser to make sure that the evil CSS rule parses properly. All the other non-CSS text in the document are skipped by the CSS parser, thus will not effect the parsing of the evil CSS rule. Once the injected document is loaded, the attacker can easily steal the secret string from the computed \texttt{font-family} style of the attacker's page.
 
 \subsubsection{Cross-Origin CSS Import}
-When the user visits \texttt{attacker.com}, the attacker's evil page instructs the victim's browser to fetch and load the injected document as a style sheet. Documents can import external style sheets from remote servers by using the CSS~\cite{css} \texttt{@import} notation, or using the HTML~\cite{html} link tag inside the head element as the following:
+When the user visits \texttt{attacker.com}, the attacker's evil page instructs the victim's browser to fetch and load the injected document as a style sheet. Documents can import external style sheets from remote servers by using the HTML~\cite{html} link tag:
 \begin{verbatim}
-<HTML>
-<HEAD>
-  <STYLE>
-    @import url(http://target.com);
-  </STYLE>
-  <LINK REL="stylesheet" HREF="http://target.com">
-</HEAD>
-</HTML>
+<LINK REL="stylesheet" HREF="http://target.com">
+\end{verbatim}
+Alternatively, style sheets can be imported included using the CSS ``import'' directive:
+\begin{verbatim}
+<STYLE>@import url(http://target.com);</STYLE>
 \end{verbatim}
 
 \subsubsection{Confidential Data Extraction}\label{sec:extraction}
