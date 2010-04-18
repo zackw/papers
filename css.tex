@@ -50,7 +50,7 @@ using style sheet import to read HTML content. We show how to conduct the attack
 
 The Web is rapidly becoming the single stop for all of our computing needs,
 including information access, personal communications, office tasks, and
-e-commerce. Faster, more standards-compliant browsers and improved development
+e-commerce. Faster, more standards-compliant browsers and improved development\linebreak
 frameworks have made the Web the platform of choice platform for delivering
 rich, interactive experiences. Applications like Gmail and Facebook are
 rapidly supplanting traditional client software.
@@ -99,7 +99,7 @@ types of invalid style directives~\cite{syndata}. This essential property of sty
 provides forward-compatibility with future versions and allows experimental
 vendor-proprietary extensions.
 
-Unfortunately, this forwards-compatible parsing behavior presents a critical
+Unfortunately, this forwards-compatible parsing behavior\linebreak presents a critical
 security issue when combined with the browser same-origin policy. A malicious
 web site can load HTML documents as style sheets and extract information that
 is parsed by the browser's error-tolerant CSS parsing algorithm. This
@@ -289,10 +289,10 @@ When the user visits \texttt{attacker.com}, the attacker's evil page instructs t
 The final step for the attacker is to extract the confidential data from the cross-origin imported styles in the victim's browser. With JavaScript enabled, the attacker's evil page may read the full CSS text via CSSOM or the computed styles of specific CSS properties via DOM. Furthermore, a variant of the cross-origin CSS attack can extract the stolen data even with JavaScript disabled. 
 
 \paragraph{CSSOM with JavaScript}
-One method of confidential data extraction using JavaScript is to access the full CSS text via CSSOM. WebKit-based browsers, i.e. Safari and Google Chrome, allow access to the full CSS text of style sheets, including CSS rules loaded from cross-origin (without comments, thankfully). The attacker could read the raw text of cross-origin CSS via \texttt{document.styleSheets[].cssRules[].cssText} and also \texttt{window.getMatchedCSSRules().cssText}. This behavior violates the same-origin policy and can cause cross-origin data leak in pages with semi-valid CSS constructs. Other browsers only permit read access to the raw text of style sheets under restricted conditions. Internet Explorer allows access to cross-origin CSS raw text via \texttt{document.styleSheets[].rules[].style.cssText} only if the MIME type is correct. Firefox and Opera only allows access to CSS raw text for style sheets loaded from same-origin.
+One method of confidential data extraction using JavaScript is to access the full CSS text via CSSOM. WebKit-based browsers, i.e. Safari and Google Chrome, allow access to the full CSS text of style sheets, including CSS rules loaded from cross-origin (without comments, thankfully). The attacker could read the raw text of cross-origin CSS via \texttt{document.styleSheets[].cssRules[]} \texttt{.cssText} and also \texttt{window.getMatchedCSSRules().cssText}. This behavior violates the same-origin policy and can cause cross-origin data leak in pages with semi-valid CSS constructs. Other browsers only permit read access to the raw text of style sheets under restricted conditions. Internet Explorer allows access to cross-origin CSS raw text via \texttt{document.styleSheets[].rules[].style.cssText} only if the MIME type is correct. Firefox and Opera only allows access to CSS raw text for style sheets loaded from same-origin.
 
 \paragraph{DOM with JavaScript}
-Another method of data extraction using JavaScript is to access the computed styles via DOM. All major browsers support using JavaScript to read computed styles, even loaded from cross-origin, by calling the \texttt{window.getComputedStyle} method or retrieving the \texttt{currentStyle} object. The cross-origin CSS vulnerabilities of JavaScript access on major browsers are shown in Table~\ref{table:DOM}. Given that the style name and property name is known, the attacker can extract the confidential data from the injected style property. Even if access to raw CSS text is blocked, the ability to read cross-origin loaded CSS styles is enough to construct serious attacks.
+Another method of data extraction using JavaScript is to access the computed styles via DOM. All major browsers support using JavaScript to read computed styles, even loaded from cross-origin, by calling the \texttt{window.getComputedStyle} method or retrieving the\linebreak \texttt{currentStyle} object. The cross-origin CSS vulnerabilities of JavaScript access on major browsers are shown in Table~\ref{table:DOM}. Given that the style name and property name is known, the attacker can extract the confidential data from the injected style property. Even if access to raw CSS text is blocked, the ability to read cross-origin loaded CSS styles is enough to construct serious attacks.
 
 \begin{table}
 \centering
@@ -452,7 +452,7 @@ From the top 100,000 web sites, we fetched a total of 325,562 CSS references, in
 \begin{table*}
 \centering
 \begin{tabular}{|c|c|c|c|c|c|} \hline
-&\multicolumn{2}{|c}{Valid MIME}&\multicolumn{3}{|c|}{Invalid MIME}\\ %\hline
+&\multicolumn{2}{|c}{Valid MIME}&\multicolumn{3}{|c|}{Invalid MIME}\\
 \cline{2-6}
 &Well-Formed&Mal-Formed&Well-Formed&Mal-Formed&HTTP Errors\\ \hline
 Same-Origin&270,281&902&733&67&2,100\\ \hline
@@ -492,7 +492,7 @@ Due to practical limitations of our automated scanning, all of the tested links 
 \subsubsection{Adoption}
 Our proposal has been adopted by several major browsers, including Google Chrome, Opera, Safari and Firefox. Our proposal requires no changes to existing web servers and only modifies the browser. We implemented the conservative approach of stricter cross-origin CSS loading in a patch to WebKit, the open source web browser engine component integrated in Safari and Google Chrome. The WebKit patch was first deployed in Google Chrome 4.0.249.78, and also accepted in Safari 4.0.5. Note that the cross-origin CSS raw text leak is tightened by this patch because read access to cross-origin CSS raw text is limited to well-formed imports. Inspired by our WebKit patch, the exact same heuristic was adopted in Opera 10.10. Mozilla adopted the strict approach for loading cross-origin CSS files in Firefox 3.7.
 
-The interpretation of valid MIME types for cross-origin CSS on each browser slightly differs as shown in Table~\ref{table:adoption}. All browsers allow the correct \texttt{text/css} MIME type, Firefox and WebKit-based browsers also defaultly accept files with empty string or \texttt{application/x-unknown-content-type} MIME type, which are normally used to trigger the browser's content-sniffing algorithm. We noticed that Firefox 3.7 allows some unknown MIME types such as \texttt{*/*} and also bogus MIME types that lack a slash such as \texttt{text}. Known MIME types represent all the predefined MIME types for common media types with the exception of \texttt{text/css}, such as \texttt{text/html} and \texttt{image/gif}.
+The interpretation of valid MIME types for cross-origin CSS on each browser slightly differs as shown in Table~\ref{table:adoption}. All browsers allow the correct \texttt{text/css} MIME type, Firefox and WebKit-based browsers also defaultly accept files with empty string or \texttt{application/x-unknown-content-type}\linebreak MIME type, which are normally used to trigger the browser's content-sniffing algorithm. We noticed that Firefox 3.7 allows some unknown MIME types such as \texttt{*/*} and also bogus MIME types that lack a slash such as \texttt{text}. Known MIME types represent all the predefined MIME types for common media types with the exception of \texttt{text/css}, such as \texttt{text/html} and \texttt{image/gif}.
 
 \begin{table}
 \centering
@@ -520,7 +520,7 @@ excluding \texttt{text/css}&&&&\\
 
 One remaining issue that is not yet addressed by our proposal is that some web
 applications omit the Content-Type header entirely or send a Content-Type of
-\verb|application/x-unknown-content|. This scenario is not very common for
+\verb|application/x-| \verb|unknown-content|. This scenario is not very common for
 HTML documents but we did see 595 style sheets that lacked a Content-Type
 header in our experiment. Most browsers, 
 with the notable exception of Opera, do attempt to load cross-origin
@@ -585,7 +585,7 @@ the UTF-7 character set, as described in Section~\ref{sec:escapes}. We
 recommend that web applications always set document character sets using the HTTP Content-Type header.
 
 \paragraph{Don't Use Ambient Authentication}
-A more effective server-side mitigation is to avoid the use of ambient authentication, including HTTP authentication and session cookies. One solution is the web-key authentication scheme~\cite{webkey} which explicitly embeds user permissions in URLs without using cookies for authentication. This approach can mitigate the attack since the attacker does not know the unguessable URL.
+A more effective\linebreak server-side mitigation is to avoid the use of ambient authentication, including HTTP authentication and session cookies. One solution is the web-key authentication scheme~\cite{webkey} which explicitly embeds user permissions in URLs without using cookies for authentication. This approach can mitigate the attack since the attacker does not know the unguessable URL.
 
 \section{Related Work} \label{sec:relatedwork}
 In this section, we review current browser defense techniques that are used to
