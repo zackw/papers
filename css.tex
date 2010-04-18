@@ -29,8 +29,8 @@ Zack Weinberg\\
 
 \maketitle
 \begin{abstract}
-Cross-origin CSS attacks allow an attacker's web site to steal confidential information from another site, hijacking a user's existing authenticated session. The attack leverages an exception in the browser's security policy,
-using style sheet import to read HTML content. We show how to conduct the attack in all browsers, even if JavaScript is disabled, and propose client-side defenses that still allow the vast majority of web sites to function normally. Our defense proposals have been adopted in Firefox, Google Chrome, Safari, and Opera.
+Cross-origin CSS attacks allow an attacker's web site to steal confidential information from another site, hijacking a user's existing authenticated session and bypassing any cross-site request forgery defenses. The attack leverages an exception in the browser's security policy,
+using style sheet import to read HTML content. We show how to conduct the attack in all browsers, even if JavaScript is disabled, and propose client-side defenses that still allow the vast majority of web sites to function normally. We propose, implement, and deploy defenses in Firefox, Google Chrome, and Safari. Our defense proposal has also been adopted in Opera.
 \end{abstract}
 
 \category{K.6.5}{Management of Computing and Information Systems}{Security and Protection}
@@ -157,7 +157,15 @@ while on the attacker's site; merely rendering the attacker's web content
 is sufficient.
 
 \paragraph{Target Site Behavior}
-We assume that the attacker can inject semi-arbitrary strings into a target domain that contains the secret content, which we refer to as \texttt{target.com}. We define the term semi-arbitrary strings as a subset of strings that may conform to CSS syntax to differentiate from fully arbitrary strings that may also conform to HTML syntax. The ability of injecting CSS strings is considered weaker than injecting HTML strings into the target domain, as in common XSS attacks, because scripts may be detected and blocked by client-side XSS filters. In practice, there are various methods to inject strings into the target domain, e.g. reflection of user-controlled strings or via URL parameters.
+We assume that the attacker can inject semi-arbitrary strings into a target
+domain that contains the secret content, which we refer to as
+\texttt{target.com}. In practice, there are various methods to inject strings
+into the target domain, e.g. reflection of URL parameters. Specifically, we
+are interested in sites that allow injection of strings that can be
+interpreted as CSS syntax tokens, which are more common than sites that allow
+injection of arbitrary HTML and JavaScript Sites that allow injection of
+arbitrary HTML and JavaScript are already vulnerable to cross-site scripting
+attacks.
 
 \section{Cross-Origin CSS Attacks} \label{sec:attacks}
 In this section, we introduce cross-origin CSS attacks. First, we provide some
