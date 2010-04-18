@@ -462,7 +462,7 @@ From the top 100,000 web sites, we fetched a total of 325,562 CSS references, in
 Same-Origin&270,281&902&733&67&2,100\\ \hline
 Cross-Origin&53,993&160&660&0&428\\
 \hline\end{tabular}
-\caption{Results for CSS references in top 100,000 Sites.}
+\caption{Categorization of CSS references for the top 100,000 sites.}
 \label{table:results}
 \end{table*}
 
@@ -494,9 +494,9 @@ In our observations, the conservative approach would not break a single CSS refe
 Due to practical limitations of our automated scanning, all of the tested links were unauthenticated. It is possible that more sites will be broken after logging in.
 
 \subsubsection{Adoption}
-Our proposals have been adopted by several major browsers, including Google Chrome, Opera, Safari and Firefox. Our proposal requires no changes to existing web servers and only modifies the browser. We implemented the conservative approach of stricter cross-origin CSS loading in a patch to WebKit, the open source web browser engine component integrated in Safari and Google Chrome. The WebKit patch was first deployed in Google Chrome 4.0.249.78, and also accepted in Safari 4.0.5. Note that the cross-origin CSS raw text leak is tightened by this patch because read access to cross-origin CSS raw text is limited to well-formed imports. Inspired by our WebKit patch, the exact same heuristic was adopted in Opera 10.10. We implemented the strict approach for loading cross-origin CSS files in Mozilla Firefox. Mozilla has deployed our patch in alpha builds of Firefox 3.7.
+Our proposals have been adopted by several major browsers, including Google Chrome, Opera, Safari and Firefox. Our proposal requires no changes to existing web servers and only modifies the browser. We implemented the conservative approach of stricter cross-origin CSS loading in a patch to WebKit, the open source web browser engine component integrated in Safari and Google Chrome. The WebKit patch was first deployed in Google Chrome~4.0.249.78, and also accepted in Safari~4.0.5. Note that the cross-origin CSS raw text leak is tightened by this patch because read access to cross-origin CSS raw text is limited to well-formed imports. Inspired by our WebKit patch, the exact same heuristic was adopted in Opera~10.10. We implemented the strict approach for loading cross-origin CSS files in Mozilla Firefox. Mozilla has deployed our patch in alpha builds of Firefox~3.7.
 
-The interpretation of valid MIME types for cross-origin CSS on each browser slightly differs as shown in Table~\ref{table:adoption}. All browsers allow the correct \texttt{text/css} MIME type, Firefox and WebKit-based browsers also defaultly accept files with empty string or \texttt{application/x-unknown-content-type}\linebreak MIME type, which are normally used to trigger the browser's content-sniffing algorithm. We noticed that Firefox 3.7 allows some unknown MIME types such as \texttt{*/*} and also bogus MIME types that lack a slash such as \texttt{text}. Known MIME types represent all the predefined MIME types for common media types with the exception of \texttt{text/css}, such as \texttt{text/html} and \texttt{image/gif}.
+The interpretation of valid MIME types for cross-origin CSS on each browser differs slightly, as shown in Table~\ref{table:adoption}. All browsers allow the correct \texttt{text/css} MIME type, Firefox and WebKit-based browsers also defaultly accept files with empty string or \texttt{application/x-unknown-content-type}\linebreak MIME type, which are normally used to trigger the browser's content-sniffing algorithm. We noticed that Firefox 3.7 allows some unknown MIME types such as \texttt{*/*} and also bogus MIME types that lack a slash such as \texttt{text}. Known MIME types represent all the predefined MIME types for common media types with the exception of \texttt{text/css}, such as \texttt{text/html} and \texttt{image/gif}.
 
 \begin{table}
 \centering
