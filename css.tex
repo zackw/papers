@@ -30,7 +30,7 @@ Zack Weinberg\\
 \maketitle
 \begin{abstract}
 Cross-origin CSS attacks allow an attacker's web site to steal confidential information from another site, hijacking a user's existing authenticated session. The attack leverages an exception in the browser's security policy,
-using style sheet import to read HTML content. We show how to conduct the attack in all browsers, even if JavaScript is disabled, and propose client-side defenses that still allow the vast majority of web sites to function normally. We detail other client-side and server-side mitigation proposals and find shortcomings with each technique. Our defense proposals have been adopted in Firefox, Google Chrome, Safari, and Opera.
+using style sheet import to read HTML content. We show how to conduct the attack in all browsers, even if JavaScript is disabled, and propose client-side defenses that still allow the vast majority of web sites to function normally. Our defense proposals have been adopted in Firefox, Google Chrome, Safari, and Opera.
 \end{abstract}
 
 \category{K.6.5}{Management of Computing and Information Systems}{Security and Protection}
@@ -285,7 +285,7 @@ When the user visits \texttt{attacker.com}, the attacker's evil page instructs t
 </HTML>
 \end{verbatim}
 
-\subsubsection{Confidential Data Extraction}
+\subsubsection{Confidential Data Extraction}\label{sec:extraction}
 The final step for the attacker is to extract the confidential data from the cross-origin imported styles in the victim's browser. With JavaScript enabled, the attacker's evil page may read the full CSS text via CSSOM or the computed styles of specific CSS properties via DOM. Furthermore, a variant of the cross-origin CSS attack can extract the stolen data even with JavaScript disabled. 
 
 \paragraph{CSSOM with JavaScript}
@@ -532,18 +532,29 @@ vulnerability, but browsers may wish to follow Opera's lead and block such
 style sheets when loaded across origins. In any case, we recommend that web
 applications always set a Content-Type header.
 
-\section{Related Work} \label{sec:relatedwork}
-In this section, we discuss the shortcomings of other defensive approaches for the cross-origin CSS attack, including client-side and server-side mitigations. Then, we review some current browser defense techniques that are used to defend against similar attacks, including content-sniffing XSS and JavaScript hijacking. We also consider recent research proposals for secure
-web browsers and their protection against the cross-origin CSS attack.
-
 \subsection{Other Client-Side Approaches}
 There are other defensive approaches that can be deployed in browsers without modifying web servers including globally blocking cookies and tightening DOM access.  We argue that all of these approaches could either be circumvented with a variation of the attack, or would significantly reduce web site compatibility.
 
-\paragraph{Block Cookies}
-Browsers give users the option of disabling cookies and always send anonymous requests, thus can prevent web attackers from stealing content on any cookie-authenticated URLs. However, session cookies are often used by web sites to control the response of each user's request and provide user-specific styles, e.g. adjusting to mobile account or printable view. Disabling cookies would break a huge number of sites that require logging in. A more conservative approach would be to prevent sending cookies when sending requests for cross-origin CSS. However, that would still break legitimate web sites that provide user-specific styles using external style sheets.
+\paragraph{Block Cookies} 
+Browsers give users the option of disabling cookies
+and always send anonymous requests, thus can prevent web attackers from
+stealing content on any cookie-authenticated URLs. Additionally, some browsers
+restrict cross-origin resources from setting or reading cookies (``third-party
+cookie blocking''). However, some sites use session cookies for cross-origin
+resources, which is why browser third-party cookie blocking typically only
+blocks incoming cookies, rather than outbound
+cookies~\cite{jackson06thirdpartycookies}. This third-party cookie blocking
+behavior is insufficient to stop the cross-origin CSS attack, since the
+attacker can still hijack the user's existing authenticated session.
 
-\paragraph{Restrict DOM Access}
-The same-origin policy for DOM access restricts the ability for JavaScript to access DOM properties and methods across domains. To prevent the cross-origin CSS attack, browsers should cautiously block DOM access to style sheets loaded from cross-origin, at least when the CSS file is malformed or has incorrect MIME type. However, all major browsers grant read access to computed styles loaded from cross-origin using either \texttt{window.getComputedStyle} or \texttt{currentStyle}, violating the same-origin policy. Even if browsers restricted the read access to computed styles for cross-origin loads, the attacker could bypass this limitation with \texttt{background-image} property injection that could automatically export data in requests to cross-origin servers.
+\paragraph{Block CSSOM}
+The same-origin policy for DOM access restricts the ability for JavaScript to
+access DOM properties and methods across domains. To prevent the cross-origin
+CSS attack, browsers could block DOM access to computed styles styles loaded
+from cross-origin style sheets, at least when the CSS file is malformed or has
+incorrect MIME type. This restriction would stop some attacks, but the
+attacker could still bypass this limitation with \texttt{background-image}
+property injection technique described in Section~\ref{sec:extraction}.
 
 %\paragraph{Stricter CSS Parsing}
 %CSS parsers are tolerant of syntax errors and will resume parsing after syntax errors. The cross-origin CSS attack could be mitigated if the browser's CSS parser rejected the style sheet on the first syntax error, as it does with script libraries. However, this approach would require all web developers to strictly write well formed CSS, and would immediately break many existing web sites.
@@ -576,11 +587,46 @@ recommend that web applications always set document character sets using the HTT
 \paragraph{Don't Use Ambient Authentication}
 A more effective server-side mitigation is to avoid the use of ambient authentication, including HTTP authentication and session cookies. One solution is the web-key authentication scheme~\cite{webkey} which explicitly embeds user permissions in URLs without using cookies for authentication. This approach can mitigate the attack since the attacker does not know the unguessable URL.
 
+\section{Related Work} \label{sec:relatedwork}
+In this section, we review current browser defense techniques that are used to
+defend against similar attacks: content-sniffing XSS and JavaScript hijacking.
+We also consider recent research proposals for secure web browsers and their
+protection against the cross-origin CSS attack.
+
 \subsection{Content-Sniffing XSS Defenses}
-In a content-sniffing XSS attack, the attacker uploads a crafted chameleon document that conforms to a benign file format (e.g. PostScript) to an honest web site and causes the victim user's browser to treat the file as HTML and renders the attacker's evil page in the honest site's domain. Such vulnerabilities are caused by discrepancies between the browser's content-sniffing algorithm and the web site's upload filter. A secure content-sniffing algorithm~\cite{securecontentsniffing} was proposed to protect web sites from this attack by avoiding privilege escalation and using prefix-disjoint signatures. The \texttt{X-Content-Type-Options} header~\cite{nosniff} proposed by Microsoft allows web sites to opt-out of MIME sniffing in supporting browsers by specifying the \texttt{nosniff} directive in the HTTP response header. However, this approach requires modifications to all web sites and web browsers to completely mitigate the content-sniffing XSS attack. Neither the secure content-sniffing algorithm nor the \texttt{nosniff} directive is triggered for loading style sheets, thus both approaches do not prevent the cross-origin CSS attack.
+In a content-sniffing XSS attack, the attacker uploads a crafted chameleon
+document that conforms to a benign file format (e.g. PostScript) to an honest
+web site and causes the victim user's browser to treat the file as HTML and
+renders the attacker's evil page in the honest site's domain. Such
+vulnerabilities are caused by discrepancies between the browser's
+content-sniffing algorithm and the web site's upload filter. A secure
+content-sniffing algorithm~\cite{securecontentsniffing} was proposed to
+protect web sites from this attack by avoiding privilege escalation and using
+prefix-disjoint signatures. The \texttt{X-Content-Type-Options}
+header~\cite{nosniff} proposed by Microsoft allows web sites to opt-out of
+MIME sniffing in supporting browsers by specifying the \texttt{nosniff}
+directive in the HTTP response header. Neither the content-sniffing algorithm
+nor the \texttt{nosniff} directive are triggered for loading style sheets,
+thus both approaches do not prevent the cross-origin CSS attack.
 
 \subsection{JavaScript Hijacking Defenses}
-JavaScript Hijacking~\cite{jshijacking} is a vulnerability that allows the attacker to steal sensitive data from an honest web site that uses JavaScript as data transport format, such as JavaScript Object Notation (JSON) messages. Since the browser security model allows importing scripts from a different domain, the attacker can use a script tag in their evil page to include the target JavaScript object. A client-side mitigation is to prevent direct execution of the responses by prefixing each JavaScript object with a \texttt{while(1);} statement. The malicious page using script tag will execute the infinite loop while the legitimate client application can modify the response before executing it. A server-side defense approach is to block malicious requests by including secret tokens in every legitimate request, which can not be forged by the attacker. Another server-side technique to block JavaScript Hijacking attacks is responding only to HTTP POST requests because the script tag always uses GET requests to load external libraries. These server-side mitigations can also be used in defense of the cross-origin CSS attack, but puts the burden on web developers to implement secure applications.
+JavaScript Hijacking~\cite{jshijacking} is a vulnerability that allows the
+attacker to steal sensitive data from an honest web site that uses JavaScript
+as data transport format, such as JavaScript Object Notation (JSON) messages.
+Since the browser security model allows importing scripts from a different
+domain, the attacker can use a script tag in their evil page to include the
+target JavaScript object. A client-side mitigation is to prevent direct
+execution of the responses by prefixing each JavaScript object with a
+\texttt{while(1);} statement. The malicious page using script tag will execute
+the infinite loop while the legitimate client application can modify the
+response before executing it. A server-side defense approach is to block
+malicious requests by including secret tokens in every legitimate request,
+which can not be forged by the attacker. Another server-side technique to
+block JavaScript Hijacking attacks is responding only to HTTP POST requests
+because the script tag always uses GET requests to load external libraries.
+These server-side mitigations can also be used in defense of the cross-origin
+CSS attack, but puts the burden on web developers to implement secure
+applications.
 
 \subsection{OP Browser}
 The OP web browser~\cite{op-browser} uses sandboxing techniques to isolate and
