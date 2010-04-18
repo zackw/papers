@@ -213,7 +213,7 @@ Browsers allow web pages to reference to cross-origin resources, enabling them t
 % 
 
 \subsubsection{Cascading Style Sheets}
-Error handling rules in CSS are designed for forward compatibility
+Error handling rules for style sheets are designed for forward compatibility
 with future extensions~\cite{syndata}. These rules are designed to tolerate errors and recover at the next valid CSS rule. The parsing behaviors that most affect cross-origin CSS attacks are as follows:
 
 \begin{itemize}
@@ -255,7 +255,7 @@ There is no attempt to balance them.
 % 
 
 \subsection{Attack Steps}
-In a cross-origin CSS attack, the attacker's main objective is to steal the victim's secret content on an honest web site from a different domain. The attacker is most likely interested in stealing any sensitive information in a cookie-authenticated web page, or preferably a secret CSRF token hidden in the document that may allow the attacker to hijack the user's session. In order to steal content from a different domain, the attacker leverages the fact that the browser's security policy allows external style sheets to be imported from cross-origin. The target document on an honest web site is injected such that portions of the document conform to CSS rules. As soon as the victim visits the attacker's evil page, the cross-origin data is imported as style properties and stolen. The steps of the cross-origin CSS attack is shown in Figure~\ref{figure:steps}. To describe the cross-origin CSS attack in detail, we decompose the attack into three main steps: CSS string injection, cross-origin CSS import, and confidential data extraction.
+In a cross-origin CSS attack, the attacker's main objective is to steal the victim's secret content on an honest web site from a different domain. The attacker is most likely interested in stealing sensitive information in a cookie-authenticated web page, or preferably a secret CSRF token hidden in the document that may allow the attacker to make requests on the user's behalf. In order to steal content from a different origin, the attacker loads the target document from an honest web site as a cross-origin style sheet reference. The attacker must ensure that portions of the portions of the target document conform to CSS parser rules. As soon as the victim visits the attacker's evil page, the cross-origin data is imported as style properties and stolen. The steps of the cross-origin CSS attack is shown in Figure~\ref{figure:steps}. To describe the cross-origin CSS attack in detail, we decompose the attack into three main steps: CSS string injection, cross-origin CSS import, and confidential data extraction.
 
 \begin{figure*}
 \centering
@@ -441,7 +441,7 @@ In the cross-origin CSS attack, the attacker's evil web page confuses the victim
 The major concern of the strict approach is that any misconfigured cross-origin resources that fail to provide valid MIME types would be blocked. Strict MIME type checking relies on web developers to correctly deploy their web sites and provide valid MIME types. Unless every web developer properly configures their servers to send the correct Content-Type response header, the strict approach will inevitably introduce false positives and cause CSS failure on web sites. Expectedly, browser vendors would tend to resist changes that would cause web site breakage and lose its users.
 
 \subsubsection{Conservative Approach}
-To address web site compatibility concerns, we propose a conservative approach that blocks most attacks while tolerating some common MIME type misconfigurations. In order to reduce false positives in the strict MIME type approach, an additional level of checking is applied to cross-origin CSS loads that have invalid MIME types. When a valid MIME type is not provided, the browser will try to parse the cross-origin CSS but rejects the stylesheet upon encountering the first syntax error. This simple parsing test helps to determine whether the imported CSS file is an injected target document. Therefore, the devised solution blocks a CSS load only when all of the following conditions are met:
+To address web site compatibility concerns, we propose a conservative approach that blocks most attacks while tolerating some common MIME type misconfigurations. In order to reduce false positives in the strict MIME type approach, an additional level of checking is applied to cross-origin CSS loads that have invalid MIME types. When a valid MIME type is not provided, the browser will try to parse the cross-origin CSS but rejects the style sheet upon encountering the first syntax error. This simple parsing test helps to determine whether the imported CSS file is an injected target document. Therefore, the devised solution blocks a CSS load only when all of the following conditions are met:
 \begin{itemize}
 \item{The CSS load is a cross-origin reference.}
 \item{The CSS load has an invalid MIME type for CSS.}
@@ -559,7 +559,7 @@ attacker can still hijack the user's existing authenticated session.
 \paragraph{Block JavaScript Style APIs}
 The same-origin policy for DOM access restricts the ability for JavaScript to
 access DOM properties and methods across domains. To prevent the cross-origin
-CSS attack, browsers could block DOM access to stylesheet text and computed
+CSS attack, browsers could block DOM access to style sheet text and computed
 styles loaded from cross-origin style sheets, at least when the CSS file is
 malformed or has incorrect MIME type. This restriction would stop some
 attacks, but the attacker could still bypass this limitation with
@@ -665,7 +665,7 @@ Firefox, Google Chrome, Safari and Opera.
 \section*{Acknowledgements}
 
 We thank Dave Hyatt, Sam Weinig, Maciej Stachowiak, and Adam Barth of the
-WebKit project for reviewing our implementation of cross-origin CSS defenses in Google Chrome and Safari. We thank David Baron and Boris Zbarsky of Mozilla.
+WebKit project and David Baron and Boris Zbarsky of Mozilla for reviewing our implementations of cross-origin CSS defenses.
 
 \bibliographystyle{abbrv}
 \bibliography{css}
