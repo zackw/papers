@@ -180,7 +180,8 @@ that subsequent requests to that site will also be part of the same
 authenticated session. Since the server knows who is making a request, it can
 reply with confidential HTML documents intended only for that specific user.
 
-%\subsubsection{Cross-Origin Resources}
+\subsubsection{Cross-Origin Resources}
+Browsers allow web pages to reference to cross-origin resources, enabling them to send requests to other origins. These references may take the form of a library import (scripts, style sheets) or navigation to a new document (hyperlinks, forms). The requests for cross-origin resources carry the cookies and HTTP authentication credentials of the site receiving the request, not the site that is making the request. Thus, it is important that the server receiving a cross-origin request ensure that the request is actually authorized by the user before making any changes to the user's account. Web applications typically include a secret token in the request to prevent such cross-origin request forgery (CSRF) attacks~\cite{csrf}. It is assumed that the attacker will not be able to learn the value of this secret token because the browser prevents the attacker from reading documents that are loaded across origins.
 
 %\todo{Collin: Finish this section}
 
@@ -246,7 +247,7 @@ There is no attempt to balance them.
 % 
 
 \subsection{Attack Steps}
-In a cross-origin CSS attack, the attacker's main objective is to steal the victim's secret content on an honest web site from a different domain. The attacker is most likely interested in stealing any sensitive information in a cookie-authenticated web page, or preferably a secret CSRF token~\cite{csrf} hidden in the document that may allow the attacker to hijack the user's session. In order to steal content from a different domain, the attacker leverages the fact that the browser's security policy allows external style sheets to be imported from cross-origin. The target document on an honest web site is injected such that portions of the document conform to CSS rules. As soon as the victim visits the attacker's evil page, the cross-origin data is imported as style properties and stolen. The steps of the cross-origin CSS attack is shown in Figure~\ref{figure:steps}. To describe the cross-origin CSS attack in detail, we decompose the attack into three main steps: CSS string injection, cross-origin CSS import, and confidential data extraction.
+In a cross-origin CSS attack, the attacker's main objective is to steal the victim's secret content on an honest web site from a different domain. The attacker is most likely interested in stealing any sensitive information in a cookie-authenticated web page, or preferably a secret CSRF token hidden in the document that may allow the attacker to hijack the user's session. In order to steal content from a different domain, the attacker leverages the fact that the browser's security policy allows external style sheets to be imported from cross-origin. The target document on an honest web site is injected such that portions of the document conform to CSS rules. As soon as the victim visits the attacker's evil page, the cross-origin data is imported as style properties and stolen. The steps of the cross-origin CSS attack is shown in Figure~\ref{figure:steps}. To describe the cross-origin CSS attack in detail, we decompose the attack into three main steps: CSS string injection, cross-origin CSS import, and confidential data extraction.
 
 \begin{figure*}
 \centering
