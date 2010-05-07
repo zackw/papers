@@ -466,7 +466,30 @@ Cross-Origin&53,993&160&660&0&428\\
 \label{table:results}
 \end{table*}
 
-In the top 100,000 sites, our crawler logged a total of 3,987 (1.22\%) misconfigured CSS references that did not provide the correct Content-Type response header. We noticed that 2,528 of these CSS references retrieved HTTP responses with error status codes i.e. 400 bad request, 403 forbidden, 404 not found, 500 internal server error, 502 bad gateway or 503 service temporarily unavailable, and have no affect to the rendering of the page if blocked. For HTTP responses that did not specify the Content-Type header at all, we considered them identical as setting an empty MIME type. Excluding the HTTP errors, we logged a total of 595 CSS references that provided an empty MIME type. There were as many as 731 CSS references that provided the \verb|text/html| MIME type for CSS files, which is normally for HTML documents. However, within these \texttt{text/html} responses we found that some of them were less serious conditions, where the specified URL was not found and was redirected to a landing page or an error page (with HTTP status code 200). Excluding CSS references with HTTP errors, the percentage of the common misconfigured MIME types for CSS files in the top 100,000 sites are shown in Table~\ref{table:MIME}. Other MIME types represent various less-frequent Content-Type headers that our crawler collected for CSS files, e.g. \verb|content/unknown|,\verb|application/x-javascript| and \verb|text/xml|. Applying the strict approach of MIME type checking would block a total of 660 cross-origin CSS loads on 611 of the top 100,000 sites.
+In the top 100,000 sites, our crawler logged a total of 3,987 (1.22\%)
+misconfigured CSS references that did not provide the correct
+Content-Type response header. We noticed that 2,528 of these CSS
+references retrieved HTTP responses with error status codes, e.g. 400
+Bad Request, 403 Forbidden, 404 Not Found, 500 Internal Server Error,
+502 Bad Gateway or 503 Service Temporarily Unavailable. These
+resources are already blocked, so blocking them has no affect to the
+rendering of the page. For HTTP responses that did not specify the
+Content-Type header at all, we considered them identical to setting an
+empty MIME type. Excluding the HTTP errors, we logged a total of 595
+CSS references that provided an empty MIME type. There were as many as
+731 CSS references that provided the \verb|text/html| MIME type for
+CSS files. However, within these \texttt{text/html} responses we found
+that some of them were less serious conditions, where the specified
+URL was not found and was redirected to a landing page or an error
+page (with HTTP status code 200). Excluding CSS references with HTTP
+errors, the percentage of the common misconfigured MIME types for CSS
+files in the top 100,000 sites are shown in
+Table~\ref{table:MIME}. Other MIME types represent various
+less-frequent Content-Type headers that our crawler collected for CSS
+files, e.g. \verb|content/unknown|,\verb|application/x-javascript| and
+\verb|text/xml|. Applying the strict approach of MIME type checking
+would block a total of 660 cross-origin CSS loads on 611 of the top
+100,000 sites.
 
 \begin{table}
 \centering
