@@ -1,10 +1,13 @@
 \documentclass{acm_proc_article-sp}
-\usepackage{url,verbatim}
-
+\usepackage{url}
+\usepackage{verbatim}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\hyphenation{brow-ser brow-sers tra-dit-ion-al}
 \begin{document}
 
 \title{Protecting Browsers from Cross-Origin CSS Attacks}
-\numberofauthors{3}
+\numberofauthors{4}
 \author{
 \alignauthor
 Chris Evans\\
@@ -29,11 +32,18 @@ Zack Weinberg\\
 
 \maketitle
 \begin{abstract}
-Cross-origin CSS attacks allow an attacker's web site to steal confidential information from another site, hijacking a user's existing authenticated session and bypassing any cross-site request forgery defenses. The attack leverages an exception in the browser's security policy,
-using style sheet import to read HTML content. We show how to conduct the attack in all browsers, even if JavaScript is disabled, and propose client-side defenses that still allow the vast majority of web sites to function normally. We propose, implement, and deploy defenses in Firefox, Google Chrome, and Safari. Our defense proposal has also been adopted in Opera.
+Cross-origin CSS attacks use style sheet import to steal confidential
+information from a victim website, hijacking a user's existing
+authenticated session and bypassing cross-site defenses.  We show how
+to conduct these attacks with any browser, even if JavaScript is
+disabled, and propose client-side defenses that still allow the vast
+majority of web sites to function normally. We have implemented and
+deployed defenses in Firefox, Google Chrome, and Safari. Our defense
+proposal has also been adopted in Opera.
 \end{abstract}
 
-\category{K.6.5}{Management of Computing and Information Systems}{Security and Protection}
+\category{K.6.5}{Management of Computing and Information Systems}
+                {Security and Protection}
 
 \terms{Security}
 
@@ -41,84 +51,84 @@ using style sheet import to read HTML content. We show how to conduct the attack
 
 \section{Introduction}
 
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{injection}
-\caption{Cross-Origin CSS Attack}
-\label{figure:injection}
-\end{figure}
+The Web was originally envisioned \cite{wwwproposal} as a means to
+collate a wide variety of human-readable, static documents, present
+them via a unified interface, and facilitate browsing through them by
+searching or via inter-document references. It has grown into a
+versatile platform for all kinds of computing tasks, progressively
+gaining support for data entry, client-side scripting, and
+application-specific network dialogues.  Web-hosted applications have
+supplanted traditional desktop applications for almost everything that
+requires network communication, and are becoming competitive in other
+areas.  It is not an exaggeration to say that the Web is the
+development platform of choice for new software.
 
-The Web is rapidly becoming the single stop for all of our computing needs,
-including information access, personal communications, office tasks, and
-e-commerce. Faster, more standards-compliant browsers and improved development\linebreak
-frameworks have made the Web the platform of choice platform for delivering
-rich, interactive experiences. Applications like Gmail and Facebook are
-rapidly supplanting traditional client software.
+The \emph{same-origin policy}~\cite{mozillasameorigin} is the basic
+principle used to secure Web applications from each other.  Scripts
+belonging to one website can only communicate with that site's
+servers, and cannot access the contents of pages loaded from other
+sites.  However, this compartmentalization applies only to scripts.
+An HTML document can load any sort of content---images, style sheets,
+nested documents and “plug-ins,” even scripts---from any site,
+same-origin or not.  In theory, this is a safe, useful capability:
+rarely-changing content like images may be hosted on servers dedicated
+to that purpose; popular script libraries (jQuery, Prototype, etc) may
+be shared among sites; pages may incorporate YouTube-hosted videos
+instead of just referring to them.  To prevent these
+\emph{transclusion} mechanisms from breaching security, browsers apply
+the same-origin rule even within what appears to the user to be one
+unified “page;” for instance, scripts can only inspect the DOM tree
+for an \texttt{IFRAME}'s nested document if that document came from
+the same origin.
 
-One of the key features that has made the Web so successful is the same-origin
-policy that allows users to safely interact with software written by anyone
---- even someone they do not trust. The browser limits interactions between
-sites by compartmentalizing them into ``origins'' that cannot easily read each
-other's sensitive data~\cite{mozillasameorigin}. However, browsers have wisely
-added exceptions where necessary to enable powerful cross-origin interactions.
-The cross-origin hyperlink is the foundation that allowed search engines and
-social media to revolutionize news, communication, and e-commerce.
-Cross-origin images have allowed web applications to improve performance and
-reduce costs by outsourcing their infrastructure to content distribution
-networks. Cross-origin plugin embedding took this a step further by making the
-wildly popular YouTube video service available to bloggers. Cross-origin
-script import has also played a key role in the success of the Web, allowing
-publishers to optimize and monetize their content with tools like Google
-Analytics and Google AdSense.
+Cascading style sheets (CSS) are the third principal component of Web
+documents; they define appearance, just as HTML defines content and
+Javascript behavior.  Of the three, CSS was invented last; proposals
+for author control of style were circulated as early as
+1993~\cite{css-history}, but the first complete specification dates to
+1996~\cite{css1} and was not implemented in a widely-used browser till
+1997~\cite{eich}.  Style sheets were originally considered no more
+dangerous than images: they can only change the visual appearance of
+the page, and they cannot contain script (except in Internet Explorer,
+which has led to exploits \cite{joyexploit}).  Thus, cross-origin
+constraints were originally not applied to style sheets.
+Unfortunately, even these limited capabilities turn out to permit some
+exploits.  A well-known example is \emph{clickjacking}
+\cite{clickjacking}, which uses styling and \texttt{IFRAME}s to trick
+the user into clicking a button that appears to control the current
+page, but actually has an effect on some other site.
 
-To keep web sites safe in the midst of all these cross-origin interactions,
-browsers must determine which web content requires enhanced privileges and/or
-confidentiality~\cite{mashupos}. HTML documents have the full privileges of
-the origin that served them and cannot be read by other origins, whereas
-library resources such as scripts and style sheets have no origin privileges
-but can be imported into any origin. A critical and often-overlooked aspect of
-the browser same-origin policy is the error-prone process of assigning content types to web resources. Previously, Barth et al showed how a web site could be
-compromised if a browser mistakenly handled a non-HTML resource as
-HTML~\cite{securecontentsniffing}. In this paper, we discuss the opposite
-scenario: a web site can be compromised if a browser mistakenly handles an
-HTML resource as a style sheet library.
+Since its very first iteration, the CSS specification has planned for
+future additions.  As long as the syntax of new CSS features conforms
+to the “base grammar” defined in \cite{syndata}, old browsers will
+skip over new features they do not understand, while continuing to
+honor what they do understand.  Web designers can thus build sites
+that take advantage of the very latest CSS features but “degrade
+gracefully” and remain usable with older browsers.  Unfortunately, the
+base grammar is so permissive that it can find valid style rules in an
+input stream that is actually HTML.  This leads to a security hole,
+first described in 2002 \cite{cssxss02} and rediscovered at least
+twice since then \cite{cssxss05,cssxss08}: a malicious site can load
+HTML documents as if they were style sheets, then use a variety of
+techniques to extract information from the page.  To date, all
+published attacks have required Javascript, and most have been
+specific to Internet Explorer.
 
-Style sheets are used to improve the appearance of pages with
-color, layout, and more. They make the Web an efficient and attractive medium
-for presenting information. Because style sheets can be imported across
-origins just like scripts and images, they constitute an exception to the
-browser same-origin policy that prohibits sites from reading content loaded
-from other origins. Browser vendors allow this exception because they assume
-that sites will not transmit confidential information in style sheet format.
-
-Browser vendors and standards bodies continue to push the limits of what is
-possible with style sheets. The CSS specification~\cite{cssspec} introduces
-new style sheet directives and even new syntax from time to time. All versions
-of CSS, starting from CSS1, have required that user agents ignore certain
-types of invalid style directives~\cite{syndata}. This essential property of style sheets
-provides forward-compatibility with future versions and allows experimental
-vendor-proprietary extensions.
-
-Unfortunately, this forwards-compatible parsing behavior\linebreak leads to a critical
-security problem when combined with the browser same-origin policy. A malicious
-web site can load HTML documents as style sheets and extract information that
-is parsed by the browser's error-tolerant CSS parsing algorithm. This
-technique was first demonstrated by a Japanese blogger~\cite{cssxss} to
-circumvent a Japanese social networking site's cross-site request forgery
-defenses in Internet Explorer. In this paper, we describe a general form of
-the attack that works in all browsers. We show that all browsers have APIs
-that can be used to extract secrets from the style of the current document,
-even if JavaScript is disabled by a security tool such as NoScript. We propose
-and implement new browser CSS handling behavior to prevent style sheets from
-being used to compromise web sites. We surveyed the top 100,000 web sites to
-determine the compatibility impact of our proposal. Finding the compatibility
-cost to be acceptable, we deployed our proposal; the new behavior has now been
-adopted by Firefox, Google Chrome, Safari, and Opera.
+In this paper, we present a general form of this attack that can be
+made to work in any browser that supports CSS, even if Javascript is
+disabled or unsupported.  We then propose and implement modifications
+to browser handling of CSS that completely block the attack, as long
+as the victimized web site does not make certain errors (discussed
+below).  Our modifications have no negative side effects for most
+websites, and have been adopted by Firefox, Google Chrome, Safari, and
+Opera.
 
 \paragraph{Organization}
-The rest of this paper is organized as follows. Section~\ref{sec:threatmodel} presents a threat model for cross-origin CSS attacks.
-Section~\ref{sec:attacks} describes the attack in detail. Section~\ref{sec:defenses} proposes and evaluates defenses.
-Section~\ref{sec:relatedwork} surveys related work.
+The rest of this paper is organized as
+follows. Section~\ref{sec:threatmodel} presents a threat model for
+cross-origin CSS attacks.  Section~\ref{sec:attacks} describes the
+attack in detail. Section~\ref{sec:defenses} proposes and evaluates
+defenses.  Section~\ref{sec:relatedwork} surveys related work.
 Section~\ref{sec:conclusion} concludes.
 
 % Content sniffing XSS~\cite{securecontentsniffing}
@@ -291,10 +301,23 @@ Alternatively, style sheets can be imported included using the CSS ``import'' di
 The final step for the attacker is to extract the confidential data from the cross-origin imported styles in the victim's browser. The extraction methods are summarized in Table~\ref{table:DOM}. With JavaScript enabled, the attacker's evil page may read the full CSS text via the Cascading Style Sheets Object Model (CSSOM) or the computed styles of specific CSS properties via DOM. Furthermore, a variant of the cross-origin CSS attack can extract the stolen data even with JavaScript disabled.
 
 \paragraph{CSSOM}
-One method of confidential data extraction using JavaScript is to access the full CSS text via CSSOM. WebKit-based browsers, i.e. Safari and Google Chrome, allow access to the full CSS text of style sheets, including CSS rules loaded from cross-origin (without comments, thankfully). The attacker could read the raw text of cross-origin CSS via \texttt{document.styleSheets[]}\texttt{.cssRules[]}\texttt{.cssText} and also \texttt{window.getMatchedCSSRules().cssText}. This behavior violates the same-origin policy and can cause cross-origin data leak in pages with semi-valid CSS constructs. Other browsers only permit read access to the raw text of style sheets under restricted conditions. Internet Explorer allows access to cross-origin CSS raw text via \texttt{document.styleSheets[]} \texttt{.rules[]}\texttt{.style}\texttt{.cssText} only if the MIME type is correct. Firefox and Opera only allows access to CSS raw text for style sheets loaded from same-origin.
+One method of confidential data extraction using JavaScript is to
+access the full CSS text via CSSOM. WebKit-based browsers, i.e. Safari
+and Google Chrome, allow access to the full CSS text of style sheets,
+including CSS rules loaded from cross-origin (without comments,
+thankfully). The attacker can read the raw text of cross-origin CSS
+via {\ttfamily document.styleSheets[].cssRules[].cssText} and
+{\ttfamily window.\\getMatchedCSSRules().cssText}. This behavior violates
+the same-origin policy and can cause cross-origin data leak in pages
+with semi-valid CSS constructs. Other browsers only permit read access
+to the raw text of style sheets under restricted conditions. Internet
+Explorer allows access to cross-origin CSS raw text via
+\texttt{document.styleSheets[].rules[].\\style.cssText} only if the MIME
+type is correct. Firefox and Opera only allows access to CSS raw text
+for style sheets loaded from same-origin.
 
 \paragraph{Computed Style}
-Another method of data extraction using JavaScript is to access the computed styles via DOM. All major browsers support using JavaScript to read computed styles, even loaded from cross-origin, by calling the \texttt{window.getComputedStyle} method or retrieving the\linebreak \texttt{currentStyle} object. Given that the style name and property name is known, the attacker can extract the confidential data from the injected style property. Even if access to raw CSS text is blocked, the ability to read cross-origin loaded CSS styles is enough to construct serious attacks.
+Another method of data extraction using JavaScript is to access the computed styles via DOM. All major browsers support using JavaScript to read computed styles, even loaded from cross-origin, by calling the \texttt{window.getComputedStyle} method or retrieving the \texttt{currentStyle} object. Given that the style name and property name is known, the attacker can extract the confidential data from the injected style property. Even if access to raw CSS text is blocked, the ability to read cross-origin loaded CSS styles is enough to construct serious attacks.
 
 \begin{table}
 \centering
@@ -519,7 +542,7 @@ Due to practical limitations of our automated scanning, all of the tested links 
 \subsubsection{Adoption}
 Our proposals have been adopted by several major browsers, including Google Chrome, Opera, Safari and Firefox. Our proposal requires no changes to existing web servers and only modifies the browser. We implemented the conservative approach of stricter cross-origin CSS loading in a patch to WebKit, the open source web browser engine component integrated in Safari and Google Chrome. The WebKit patch was first deployed in Google Chrome~4.0.249.78, and also accepted in Safari~4.0.5. Note that the cross-origin CSS raw text leak is tightened by this patch because read access to cross-origin CSS raw text is limited to well-formed imports. Inspired by our WebKit patch, the exact same heuristic was adopted in Opera~10.10. We implemented the strict approach for loading cross-origin CSS files in Mozilla Firefox. Mozilla has deployed our patch in alpha builds of Firefox~3.7.
 
-The interpretation of valid MIME types for cross-origin CSS on each browser differs slightly, as shown in Table~\ref{table:adoption}. All browsers allow the correct \texttt{text/css} MIME type, Firefox and WebKit-based browsers also defaultly accept files with empty string or \texttt{application/x-unknown-content-type}\linebreak MIME type, which are normally used to trigger the browser's content-sniffing algorithm. We noticed that Firefox 3.7 allows some unknown MIME types such as \texttt{*/*} and also bogus MIME types that lack a slash such as \texttt{text}. Known MIME types represent all the predefined MIME types for common media types with the exception of \texttt{text/css}, such as \texttt{text/html} and \texttt{image/gif}.
+The interpretation of valid MIME types for cross-origin CSS on each browser differs slightly, as shown in Table~\ref{table:adoption}. All browsers allow the correct \texttt{text/css} MIME type, Firefox and WebKit-based browsers also defaultly accept files with empty string or \texttt{application/x-unknown-content-type} MIME type, which are normally used to trigger the browser's content-sniffing algorithm. We noticed that Firefox 3.7 allows some unknown MIME types such as \texttt{*/*} and also bogus MIME types that lack a slash such as \texttt{text}. Known MIME types represent all the predefined MIME types for common media types with the exception of \texttt{text/css}, such as \texttt{text/html} and \texttt{image/gif}.
 
 \begin{table}
 \centering
@@ -613,7 +636,7 @@ the UTF-7 character set, as described in Section~\ref{sec:escapes}. We
 recommend that web applications always set document character sets using the HTTP Content-Type header.
 
 \paragraph{Don't Use Ambient Authentication}
-A more effective\linebreak server-side mitigation is to avoid the use of ambient authentication, including HTTP authentication and session cookies. One solution is the web-key authentication scheme~\cite{webkey} which explicitly embeds user permissions in URLs without using cookies for authentication. This approach can mitigate the attack since the attacker does not know the unguessable URL.
+A more effective server-side mitigation is to avoid the use of ambient authentication, including HTTP authentication and session cookies. One solution is the web-key authentication scheme~\cite{webkey} which explicitly embeds user permissions in URLs without using cookies for authentication. This approach can mitigate the attack since the attacker does not know the unguessable URL.
 
 \section{Related Work} \label{sec:relatedwork}
 In this section, we review current browser defense techniques that are used to
@@ -689,3 +712,9 @@ WebKit project and David Baron and Boris Zbarsky of Mozilla for reviewing our im
 \bibliography{css}
 
 \end{document}
+
+  CSS has the ability to add images to a page, and therefore, to
+request that the browser load arbitrary URLs; together with the
+mechanism for making visited links appear different than unvisited
+links, this enables \emph{history snooping}\todo{cite!}, which reveals
+what sites the user has visited.
