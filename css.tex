@@ -74,12 +74,11 @@ same-origin or not.  In theory, this is a safe, useful capability:
 rarely-changing content like images may be hosted on servers dedicated
 to that purpose; popular script libraries (jQuery, Prototype, etc) may
 be shared among sites; pages may incorporate YouTube-hosted videos
-instead of just referring to them.  To prevent these
-\emph{transclusion} mechanisms from breaching security, browsers apply
-the same-origin rule even within what appears to the user to be one
-unified “page;” for instance, scripts can only inspect the DOM tree
-for an \texttt{IFRAME}'s nested document if that document came from
-the same origin.
+instead of just referring to them.  Browsers apply the same-origin
+rule even within what appears to the user to be one unified “page;”
+for instance, scripts can only inspect the DOM tree for an
+\texttt{IFRAME}'s nested document if that document came from the same
+origin.
 
 Cascading style sheets (CSS) are the third principal component of Web
 documents; they define appearance, just as HTML defines content and
@@ -92,27 +91,45 @@ dangerous than images: they can only change the visual appearance of
 the page, and they cannot contain script (except in Internet Explorer,
 which has led to exploits \cite{joyexploit}).  Thus, cross-origin
 constraints were originally not applied to style sheets.
-Unfortunately, even these limited capabilities turn out to permit some
-exploits.  A well-known example is \emph{clickjacking}
-\cite{clickjacking}, which uses styling and \texttt{IFRAME}s to trick
+Unfortunately, even these limited capabilities are enough to allow
+some exploits.  For instance, \emph{clickjacking}
+\cite{clickjacking} uses styling and \texttt{IFRAME}s to trick
 the user into clicking a button that appears to control the current
 page, but actually has an effect on some other site.
 
-Since its very first iteration, the CSS specification has planned for
-future additions.  As long as the syntax of new CSS features conforms
-to the “base grammar” defined in \cite{syndata}, old browsers will
-skip over new features they do not understand, while continuing to
-honor what they do understand.  Web designers can thus build sites
-that take advantage of the very latest CSS features but “degrade
-gracefully” and remain usable with older browsers.  Unfortunately, the
-base grammar is so permissive that it can find valid style rules in an
-input stream that is actually HTML.  This leads to a security hole,
-first described in 2002 \cite{cssxss02} and rediscovered at least
-twice since then \cite{cssxss05,cssxss08}: a malicious site can load
-HTML documents as if they were style sheets, then use a variety of
-techniques to extract information from the page.  To date, all
-published attacks have required Javascript, and most have been
-specific to Internet Explorer.
+The CSS specification plans for future additions.  As long as the
+syntax of new CSS features conforms to the “forward-compatible parsing
+rules ” defined in \cite{syndata}, old browsers will skip over new
+features they do not understand, while continuing to honor what they
+do understand.  Web designers can thus build sites that take advantage
+of the very latest CSS features but “degrade gracefully” and remain
+usable with older browsers.  Unfortunately, the base grammar is so
+permissive that it can find valid style rules in an input stream that
+is actually HTML.  This leads to a security hole, first described in
+2002 \cite{cssxss02} and rediscovered at least twice since then
+\cite{cssxss05,cssxss08}: a malicious site can load HTML documents as
+if they were style sheets, then use a variety of techniques to extract
+information from the page.  To date, all published attacks have
+required Javascript, and most have been specific to Internet Explorer.
+
+\begin{figure*}[t]
+\begin{center}
+\includegraphics[width=5in]{victim-manipulation}
+\vskip 0.5em
+\setlength{\tabcolsep}{0.12in}
+\begin{tabular}{p{1.5in}p{1.5in}p{1.5in}}
+\centering
+HTML document; secret data is highlighted.&
+\centering
+Attacker injects CSS leader and trailer around secret.&
+\centering
+CSS parser skips most of the document, makes secret
+available via computed style.
+\end{tabular}
+\end{center}
+\caption{Anatomy of the attack.}
+\label{figure:victim}
+\end{figure*}
 
 In this paper, we present a general form of this attack that can be
 made to work in any browser that supports CSS, even if Javascript is
@@ -123,59 +140,61 @@ below).  Our modifications have no negative side effects for most
 websites, and have been adopted by Firefox, Google Chrome, Safari, and
 Opera.
 
-\paragraph{Organization}
-The rest of this paper is organized as
-follows. Section~\ref{sec:threatmodel} presents a threat model for
-cross-origin CSS attacks.  Section~\ref{sec:attacks} describes the
-attack in detail. Section~\ref{sec:defenses} proposes and evaluates
-defenses.  Section~\ref{sec:relatedwork} surveys related work.
-Section~\ref{sec:conclusion} concludes.
-
-% Content sniffing XSS~\cite{securecontentsniffing}
-%
-% JavaScript hijacking~\cite{jshijacking}
-
-% In the cross-origin CSS attack, the attacker injects CSS strings into the target domain that contains the secret content, instructs the victim's browser to import and parse the target document as a style sheet, and then exports the secret string from the computed style properties to the attacker.
-%
-% ?? mixi.jp post\_key theft
-
 \section{Threat Model} \label{sec:threatmodel}
-%We define a precise threat model, the web attacker, for reasoning the
-%cross-origin CSS attack. We assume that the attacker's goal is to steal a
-%victim user's secret content on an honest web site from another domain.
 
-The threat model for cross-origin CSS attacks is a ``web
-attacker''~\cite{jackson09thesis}, a malicious principal who owns a domain
-name and operates a web server. To study the browser's defense mechanisms, we
-assume that the victim user visits the attacker's web site. In addition, the
-web attacker is given the ability to inject semi-arbitrary strings into the
-target domain.
-%
-% We do not require social engineering, cross-site scripting vulnerabilities, and we do not assume that the victim's machine has been compromised by malicious software;
-% There are a number of stronger threat models that could  threats that we do not consider in this paper, such as phishing, DNS rebinding, and XSS.
-% (more description...?)
-% T
+The threat model for cross-origin CSS attacks is essentially the same
+as the threat model for other cross-origin attacks.  A \emph{web
+  attacker}~\cite{jackson09thesis} is a malicious principal who owns a
+domain name and operates a web server.  The web attacker's goal is to
+steal data from another web site (the \emph{target}) that should only
+be revealed to a particular user (the \emph{victim}) and not to the
+attacker.  Alternatively, the goal may be to forge requests to the
+target site using the victim's credentials.  Cross-origin CSS attacks
+only aid the first goal, by themselves; however, the stolen secret
+could easily be a session nonce, knowing which permits request
+forgery.
 
 \paragraph{Attacker Abilities}
-The web attacker can send and receive network messages over network protocols of the attacker's choice, but only from its own machines. Typically, the web attacker operates at least one machine as an HTTP server, which we refer to as \texttt{attacker.com}. The web attacker has no control over the victim's network connections. In particular, the web attacker cannot eavesdrop on unencrypted connections and steal session identifiers to hijack the victim's authenticated user session. Neither can the web attacker spoof network frames and impersonate another user to an honest web site.
-The web attacker is also incapable of installing malicious software on the victim's machine; otherwise, the malware could replace the browser and bypass any browser-based defenses.
+The web attacker can send and receive arbitrary network traffic, but
+only from its own servers.  It cannot modify, or even eavesdrop on,
+traffic to other sites, nor can it generate “spoofed” network frames
+that purport to be from some other site.
 
-\paragraph{User Behavior}
-We assume that the user visits the attacker's web site with a popular browser. In practice, this assumption can be supported by several techniques for attacking users, e.g. buying web advertisements or sending bulk e-mail to encourage visitors. By visiting \texttt{attacker.com}, the attacker can instruct the victim's browser to fetch external style sheets and also export data to remote servers. As long as the victim's session with an honest web site haven't expired, the attacker can instruct the victim's browser to issue requests with the victim's cookies.
-We do not assume that the victim behaves discloses any sensitive information
-while on the attacker's site; merely rendering the attacker's web content
-is sufficient.
+The web attacker is assumed to be able to entice the victim into
+visiting its site at the same time as the target site.  (In practice,
+this is easily done either by social engineering, or by manipulating
+an advertisement network.)  However, it cannot install malicious
+software on the victim's computer; if it could, all browser-level
+protection would be useless.  The attacker is also assumed to be able
+to inject semi-arbitrary strings into the page on the target site that
+contains the secret to be stolen.  (This may seem unlikely, but is in
+fact quite easy---for instance, \cite{cssxss08} does it by creating an
+account on the target site with a carefully crafted user handle.)
+
+\paragraph{Victim Behavior}
+We assume that the user visits the attacker's web site with a popular
+browser. In practice, this assumption can be supported by several
+techniques for attacking users, e.g. buying web advertisements or
+sending bulk e-mail to encourage visitors. By visiting
+\texttt{attacker.com}, the attacker can instruct the victim's browser
+to fetch external style sheets and also export data to remote
+servers. As long as the victim's session with an honest web site
+haven't expired, the attacker can instruct the victim's browser to
+issue requests with the victim's cookies.  We do not assume that the
+victim behaves discloses any sensitive information while on the
+attacker's site; merely rendering the attacker's web content is
+sufficient.
 
 \paragraph{Target Site Behavior}
-We assume that the attacker can inject semi-arbitrary strings into a target
-domain that contains the secret content, which we refer to as
-\texttt{target.com}. In practice, there are various methods to inject strings
-into the target domain, e.g. reflection of URL parameters. Specifically, we
-are interested in sites that allow injection of strings that can be
-interpreted as CSS syntax tokens, which are more common than sites that allow
-injection of arbitrary HTML and JavaScript Sites that allow injection of
-arbitrary HTML and JavaScript are already vulnerable to cross-site scripting
-attacks.
+We assume that the attacker can inject semi-arbitrary strings into a
+target domain that contains the secret content, which we refer to as
+\texttt{target.com}. In practice, there are various methods to inject
+strings into the target domain, e.g. reflection of URL
+parameters. Specifically, we are interested in sites that allow
+injection of strings that can be interpreted as CSS syntax tokens,
+which are more common than sites that allow injection of arbitrary
+HTML and JavaScript Sites that allow injection of arbitrary HTML and
+JavaScript are already vulnerable to cross-site scripting attacks.
 
 \section{Cross-Origin CSS Attacks} \label{sec:attacks}
 In this section, we introduce cross-origin CSS attacks. First, we provide some
@@ -277,7 +296,7 @@ In a cross-origin CSS attack, the attacker's main objective is to steal the vict
 \subsubsection{CSS String Injection}
 One might expect that a non-CSS document would contain numerous syntax errors would fail to parse as a valid style sheet. However, due to the error-tolerant CSS parsing behavior described in Section~\ref{sec:lax}, portions of a non-CSS document with valid CSS syntax can still be successfully parsed and recognized as style sheet rules. Thus, it is sufficient for the attacker to inject strings into the target document that will form a valid style rule. In practice, there are several methods that may allow a web attacker to inject strings into the target domain, e.g. reflection of user-controlled strings in URL parameters.
 
-We illustrate an example of CSS string injection in Figure~\ref{figure:injection}. Suppose that there is a sensitive content, represented with the string ``SECRET'', in an HTML document on an honest web site that the attacker wants to steal. Assuming that the attacker has sufficient influence over the web page to control the text preceding and succeeding the secret string, the CSS string injection can be constructed based on common CSS properties that have string type values, i.e. \texttt{font-family}, \texttt{background-image}, and \texttt{list-style-image}. Given the ability to inject arbitrary strings into the target domain, the HTML document can be crafted to contain a CSS property \texttt{font-family} as follows:
+We illustrate an example of CSS string injection in Figure~\ref{figure:victim}. Suppose that there is a sensitive content, represented with the string ``SECRET'', in an HTML document on an honest web site that the attacker wants to steal. Assuming that the attacker has sufficient influence over the web page to control the text preceding and succeeding the secret string, the CSS string injection can be constructed based on common CSS properties that have string type values, i.e. \texttt{font-family}, \texttt{background-image}, and \texttt{list-style-image}. Given the ability to inject arbitrary strings into the target domain, the HTML document can be crafted to contain a CSS property \texttt{font-family} as follows:
 \begin{itemize}
 \item CSS property opening string: \verb|{}BODY{font-family:"|
 \item CSS property termination string: \verb|"}|
@@ -718,3 +737,29 @@ request that the browser load arbitrary URLs; together with the
 mechanism for making visited links appear different than unvisited
 links, this enables \emph{history snooping}\todo{cite!}, which reveals
 what sites the user has visited.
+
+\paragraph{Organization}
+The rest of this paper is organized as
+follows. Section~\ref{sec:threatmodel} presents a threat model for
+cross-origin CSS attacks.  Section~\ref{sec:attacks} describes the
+attack in detail. Section~\ref{sec:defenses} proposes and evaluates
+defenses.  Section~\ref{sec:relatedwork} surveys related work.
+Section~\ref{sec:conclusion} concludes.
+
+% Content sniffing XSS~\cite{securecontentsniffing}
+%
+% JavaScript hijacking~\cite{jshijacking}
+
+% In the cross-origin CSS attack, the attacker injects CSS strings into the target domain that contains the secret content, instructs the victim's browser to import and parse the target document as a style sheet, and then exports the secret string from the computed style properties to the attacker.
+%
+% ?? mixi.jp post\_key theft
+
+%We define a precise threat model, the web attacker, for reasoning the
+%cross-origin CSS attack. We assume that the attacker's goal is to steal a
+%victim user's secret content on an honest web site from another domain.
+
+% We do not require social engineering, cross-site scripting vulnerabilities, and we do not assume that the victim's machine has been compromised by malicious software;
+% There are a number of stronger threat models that could  threats that we do not consider in this paper, such as phishing, DNS rebinding, and XSS.
+% (more description...?)
+% T
+
