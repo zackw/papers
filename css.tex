@@ -383,12 +383,11 @@ The CSS parser in the Internet Explorer accepts both newlines in CSS strings and
 \subsection{Example Attacks}
 In this section, we present several examples of cross-origin CSS attacks on popular web sites. First, we describe an attack on a popular movie database web site that leaks private messages of registered users, in the Internet Explorer browser. Then, we describe a cross-browser attack on a popular web mail application that leaks the subject headings of the received e-mails in the victim user's inbox, and even reveals secret CSRF tokens.
 
-\paragraph{IMDb} IMDb is a popular online database of movies and related information, which allows users to rate films and make posts on message boards. Some of the features for a registered account include adding users to their friends list and sending private messages to other users. Targeting the user's private messaging page, the attacker can mount an attack on the victim's inbox and steal the subject and body of all preceding private messages with the following steps:
+\paragraph{IMDb} IMDb is a popular online database of movies and related information, which allows users to rate films and make posts on message boards. Some of the features for a registered account include adding users to their friends list and sending private messages to other users. Targeting the user's private messaging page, the attacker can mount an attack with the following steps:
 \begin{enumerate}
 \item{The attacker sends an evil private message to the victim's account with the subject line:\\ \texttt{\{\}body\{font-family:`} }
-\item{While signed in to IMDb, the victim visits \texttt{attacker.com}, which steals content from the victim's private messaging inbox.}
+\item{While signed in to IMDb, the victim visits the attacking page on \texttt{attacker.com}, constructed as follows:}
 \end{enumerate}
-We chose to use single quotes for CSS string injection to avoid string termination due to the existance of double quotes in the target page. The attacker's evil page loads the victim's private messaging page as a style sheet resource and extracts the stolen data from the computed \texttt{font-family} style using JavaScript:
 \begin{verbatim}
 <HTML>
 <HEAD>
@@ -404,6 +403,9 @@ function steal() {
 </BODY>
 </HTML>
 \end{verbatim}
+
+The attacking page imports the victim's private messaging page as a style sheet resource. As long as the victim's session cookie has not expired, the browser will automatically sign in using the victim's cookie when fetching the page. The injected subject line in the inbox allows portions of the document to be parsed as a valid CSS construct. Due to the existance of double quotes in the target page, we chose to use single quotes in the CSS injection string to avoid string termination. The stolen HTML fragment would contain the subject and body of all preceding private messages, which can be extracted by reading the computed \texttt{background-image} style in JavaScript.
+
 Note that the target URL contains the victim's account string ``ur12345678'', which is public and can be simply fetched from any user profile link on the message board. In this example, a single injection point is sufficient due to the highly probable existence of the termination string. Such a vulnerability may be widespread on many low security sites.
 
 \paragraph{Yahoo! Mail} Yahoo! Mail is a free web mail service that lets users send and receive e-mails using any popular web browser with cookies and JavaScript enabled. After a user signs in with a valid account, the web site can authenticate the user with browser session cookies for as long as two weeks without signing out. Targeting the Yahoo! Mail for Mobile home page, the attacker can mount a cross-browser attack on victims that are signed in with the following steps:
@@ -412,7 +414,7 @@ Note that the target URL contains the victim's account string ``ur12345678'', wh
 \texttt{');\}} }
 \item{The attacker waits for sensitive e-mails to fill the victim's inbox.}
 \item{The attacker sends another evil e-mail to the victim's account with the subject line:\\ \texttt{\{\}body\{background-image:url(`}}
-\item{While signed into Yahoo! Mail for Mobile, the victim visits the attacking page, designed as follows:}
+\item{While signed into Yahoo! Mail for Mobile, the victim visits the attacking page, constructed as follows:}
 \end{enumerate}
 \begin{verbatim}
 <HTML>
@@ -423,7 +425,8 @@ function steal() {
   if(document.body.currentStyle) {
     alert(document.body.currentStyle[`backgroundImage']);
   } else {
-    alert(window.getComputedStyle(document.body, "").backgroundImage);
+    alert(window.getComputedStyle(document.body, "").
+backgroundImage);
   }
 }
 </SCRIPT>
@@ -433,7 +436,7 @@ function steal() {
 </HTML>
 \end{verbatim}
 
-The attacking page imports the Yahoo! Mail for Mobile page as a style sheet resource, which serves a single-line formatted HTML containing the victim user's inbox. As long as the session cookie has not expired, the browser will automatically sign in using the victim's cookie. The injected subject lines in the inbox allow portions of the document to be parsed as a valid CSS construct. The stolen HTML fragment would contain the subject headings of all e-mails delivered to the victim between the two evil e-mails, and can be extracted by reading the computed \texttt{background-image} style in JavaScript.
+The attacking page imports the Yahoo! Mail for Mobile page as a style sheet resource, which serves a single-line formatted HTML containing the victim user's inbox. Similarly, the injected subject lines in the inbox allow portions of the document to be parsed as a valid CSS construct. The stolen HTML fragment would contain the subject headings of all e-mails delivered to the victim between the two evil e-mails.
 
 The stolen HTML fragment also reveals a hidden ``mid'' value that should appear to be an unguessable key to a web attacker. Accordingly, it is reasonable for the mail application to rely on it as a secret token to defend CSRF attacks. This is indeed the case for the e-mail deletion operation, which relies on ``mid'' as a CSRF defense token.
 
@@ -500,6 +503,9 @@ Cross-Origin&Standards Mode&47,345&104&147&0&347\\
 \label{table:results}
 \end{table*}
 
+\paragraph{Results}
+From the top 100,000 web sites, our crawler logged a total of 260,069 CSS references, including 215,632 from HTML link tags and 44,437 from CSS import directives. These references include 206,051 same-origin resources and 54,018 cross-origin resources. We did not include data for sites that were unreachable during our evaluation, due to unresponding servers or domain name errors. Our results are shown in Table~\ref{table:results}.
+
 \begin{table}
 \centering
 \begin{tabular}{|c|c|c|} \hline
@@ -513,9 +519,6 @@ Other MIME types&42 (4.16\%)\\
 \caption{Common misconfigured MIME types for CSS files in top 100,000 Sites.}
 \label{table:MIME}
 \end{table}
-
-\paragraph{Results}
-From the top 100,000 web sites, our crawler logged a total of 260,069 CSS references, including 215,632 from HTML link tags and 44,437 from CSS import directives. These references include 206,051 same-origin resources and 54,018 cross-origin resources. We did not include data for sites that were unreachable during our evaluation, due to unresponding servers or domain name errors. Our results are shown in Table~\ref{table:results}.
 
 In the top 100,000 sites, we logged a total of 3,372 CSS references that did not specify the \verb|text/css| MIME type in the HTTP Content-Type response header. There were 2,363 of these CSS resources that returned a HTTP error status code, e.g. 400 Bad Request, 403 Forbidden, 404 Not Found, 500 Internal Server Error, 502 Bad Gateway or 503 Service Temporarily Unavailable. Note that these resources are unreachable, thus blocking them would have no affect to the rendering of the page. Excluding the responses with HTTP errors, there were 1,009 CSS resources that provided misconfigured Content-Type headers. The common misconfigured MIME types for CSS files in the top 100,000 sites are shown in Table~\ref{table:MIME}. There were as many as 715 CSS references that retrieved HTTP responses with the \verb|text/html| MIME type. Some of these \texttt{text/html} responses were less serious conditions, where the specified URL no longer exists and was redirected by servers to a landing page with HTTP status code 200. For HTTP responses with a missing Content-Type header, we considered them identical as setting the MIME type to an empty string. We logged a total of 178 CSS resources with an empty MIME type. Our crawler also collected 42 CSS resources with other less-frequent MIME types, e.g. \verb|application/x-javascript|. 
 
