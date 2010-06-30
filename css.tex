@@ -10,22 +10,22 @@
 \numberofauthors{4}
 \author{
 \alignauthor
-Chris Evans\\
-      \affaddr{Google}\\
-      \affaddr{cevans@google.com}
-\alignauthor
 Lin-Shung Huang\\
       \affaddr{Carnegie Mellon University}\\
       \affaddr{linshung.huang@sv.cmu.edu}
-\and
-\alignauthor
-Collin Jackson\\
-      \affaddr{Carnegie Mellon University}\\
-      \affaddr{collin.jackson@sv.cmu.edu}
 \alignauthor
 Zack Weinberg\\
       \affaddr{Mozilla}\\
       \affaddr{zweinberg@mozilla.com}
+\and
+\alignauthor
+Chris Evans\\
+      \affaddr{Google}\\
+      \affaddr{cevans@google.com}
+\alignauthor
+Collin Jackson\\
+      \affaddr{Carnegie Mellon University}\\
+      \affaddr{collin.jackson@sv.cmu.edu}
 }
 
 \newcommand{\todo}[1]{\textbf{[TODO: #1]}}
@@ -51,11 +51,11 @@ proposal has also been adopted in Opera.
 
 \section{Introduction}
 
-The Web was originally envisioned \cite{wwwproposal} as a means to
-collate a wide variety of human-readable, static documents, present
-them via a unified interface, and facilitate browsing through them by
-searching or via inter-document references. It has grown into a
-versatile platform for all kinds of computing tasks, progressively
+The World Wide Web was originally envisioned \cite{wwwproposal} as a
+means to collate a wide variety of human-readable, static documents,
+present them via a unified interface, and facilitate browsing through
+them by searching or via inter-document references. It has grown into
+a versatile platform for all kinds of computing tasks, progressively
 gaining support for data entry, client-side scripting, and
 application-specific network dialogues.  Web-hosted applications have
 supplanted traditional desktop applications for almost everything that
@@ -75,42 +75,41 @@ rarely-changing content like images may be hosted on servers dedicated
 to that purpose; popular script libraries (jQuery, Prototype, etc) may
 be shared among sites; pages may incorporate YouTube-hosted videos
 instead of just referring to them.  Browsers apply the same-origin
-rule even within what appears to the user to be one unified “page;”
+policy even within what appears to the user to be one unified “page;”
 for instance, scripts can only inspect the DOM tree for an
 \texttt{IFRAME}'s nested document if that document came from the same
 origin.
 
 Cascading style sheets (CSS) are the third principal component of Web
 documents; they define appearance, just as HTML defines content and
-Javascript behavior.  Of the three, CSS was invented last; proposals
+JavaScript behavior.  Of the three, CSS was invented last; proposals
 for author control of style were circulated as early as
 1993~\cite{css-history}, but the first complete specification dates to
 1996~\cite{css1} and was not implemented in a widely-used browser till
-1997~\cite{eich}.  Style sheets were originally considered no more
-dangerous than images: they can only change the visual appearance of
-the page, and they cannot contain script (except in Internet Explorer,
-which has led to exploits \cite{joyexploit}).  Thus, cross-origin
-constraints were originally not applied to style sheets.
-Unfortunately, even these limited capabilities are enough to allow
-some exploits.  For instance, \emph{clickjacking}
-\cite{clickjacking} uses styling and \texttt{IFRAME}s to trick
-the user into clicking a button that appears to control the current
-page, but actually has an effect on some other site.
+1997~\cite{eich}.  The CSS specification is continually being
+extended, and its original designers planned for this.  As long as new
+CSS features conform to the \emph{forward-compatible parsing rules}
+defined in \cite{syndata}, old browsers will skip over features they
+do not implement, while continuing to honor instructions that they do
+understand.  Web designers can thus build sites that take advantage of
+the very latest CSS features but “degrade gracefully” and remain
+usable with older browsers.  Unfortunately, the forward-compatible
+parsing rules are so permissive that they can find valid CSS
+constructs in an input stream that was not intended to be CSS at all;
+for instance, in an HTML document.
 
-The CSS specification plans for future additions.  As long as the
-syntax of new CSS features conforms to the “forward-compatible parsing
-rules ” defined in \cite{syndata}, old browsers will skip over new
-features they do not understand, while continuing to honor what they
-do understand.  Web designers can thus build sites that take advantage
-of the very latest CSS features but “degrade gracefully” and remain
-usable with older browsers.  Unfortunately, the base grammar is so
-permissive that it can find valid style rules in an input stream that
-is actually HTML.  This leads to a security hole, first described in
+This leads to a security hole, first described (to our knowledge) in
 2002 \cite{cssxss02} and rediscovered at least twice since then
-\cite{cssxss05,cssxss08}: a malicious site can load HTML documents as
-if they were style sheets, then use a variety of techniques to extract
-information from the page.  To date, all published attacks have
-required Javascript, and most have been specific to Internet Explorer.
+\cite{cssxss05,cssxss08}.  If a malicious site can inject chosen
+strings into a target webpage (whose structure, but not specific
+contents, are known) and then load that page as a style sheet, it can
+extract information by examining what the CSS parser makes of this
+“sheet.”  even if the target page cannot be retrieved
+without presenting login credentials, because the browser will present
+any credentials (e.g.\ HTTP cookies) it has stored for the target
+server when it does the load.  However, to date, all published attacks
+of this type have required Javascript, and most have been specific to
+Internet Explorer.
 
 \begin{figure*}[t]
 \begin{center}
@@ -131,7 +130,7 @@ available via computed style.
 \label{figure:victim}
 \end{figure*}
 
-In this paper, we present a general form of this attack that can be
+In this paper, we present a general form of the attack that can be
 made to work in any browser that supports CSS, even if Javascript is
 disabled or unsupported.  We then propose and implement modifications
 to browser handling of CSS that completely block the attack, as long
@@ -140,70 +139,62 @@ below).  Our modifications have no negative side effects for most
 websites, and have been adopted by Firefox, Google Chrome, Safari, and
 Opera.
 
+\paragraph{Organization}
+The rest of this paper is organized as follows. Section~\ref{sec:threatmodel} presents a threat model for cross-origin CSS attacks.
+Section~\ref{sec:attacks} describes the attack in detail. Section~\ref{sec:defenses} proposes and evaluates defenses.
+Section~\ref{sec:relatedwork} surveys related work.
+Section~\ref{sec:conclusion} concludes.
+
 \section{Threat Model} \label{sec:threatmodel}
 
-The threat model for cross-origin CSS attacks is essentially the same
-as the threat model for other cross-origin attacks.  A \emph{web
-  attacker}~\cite{jackson09thesis} is a malicious principal who owns a
-domain name and operates a web server.  The web attacker's goal is to
-steal data from another web site (the \emph{target}) that should only
-be revealed to a particular user (the \emph{victim}) and not to the
-attacker.  Alternatively, the goal may be to forge requests to the
-target site using the victim's credentials.  Cross-origin CSS attacks
-only aid the first goal, by themselves; however, the stolen secret
-could easily be a session nonce, knowing which permits request
-forgery.
+The threat model for cross-origin data theft with CSS is essentially
+the same as the threat model for other cross-origin attacks.  A
+\emph{web attacker}~\cite{jackson09thesis} is a malicious principal
+who owns a domain name and operates a web server.  The web attacker's
+goal is to steal data from another web site (the \emph{target}) that
+should only be revealed to a particular user (the \emph{victim}) and
+not to the attacker.  Alternatively, the goal may be to forge requests
+to the target site using the victim's credentials.  Cross-origin CSS
+attacks directly facilitate the first goal, and may indirectly
+facilitate the second goal by giving the attacker access to session
+credentials.
 
-\paragraph{Attacker Abilities}
 The web attacker can send and receive arbitrary network traffic, but
 only from its own servers.  It cannot modify, or even eavesdrop on,
 traffic to other sites, nor can it generate “spoofed” network frames
-that purport to be from some other site.
+that purport to be from some other site.  Also, it cannot install
+malicious software on the victim's computer; if it could, all
+browser-based defenses would be useless.
 
-The web attacker is assumed to be able to entice the victim into
-visiting its site at the same time as the target site.  (In practice,
-this is easily done either by social engineering, or by manipulating
-an advertisement network.)  However, it cannot install malicious
-software on the victim's computer; if it could, all browser-level
-protection would be useless.  The attacker is also assumed to be able
-to inject semi-arbitrary strings into the page on the target site that
-contains the secret to be stolen.  (This may seem unlikely, but is in
-fact quite easy---for instance, \cite{cssxss08} does it by creating an
-account on the target site with a carefully crafted user handle.)
+The web attacker can inject text strings into the target site,
+provided that they pass state-of-the-art server-side XSS filters such
+as \todo{[cite: xss filters]}.  This may seem unlikely, but is readily
+done in practice; for instance, in \cite{cssxss08} the attacker
+created an account on the target site with a carefully crafted user
+handle.  In general, a cross-site CSS attack will require the attacker
+to inject two strings, one on each side of the secret to be stolen;
+however, depending on the structure of the target page, one string may
+be sufficient.
 
-\paragraph{Victim Behavior}
-We assume that the user visits the attacker's web site with a popular
-browser. In practice, this assumption can be supported by several
-techniques for attacking users, e.g. buying web advertisements or
-sending bulk e-mail to encourage visitors. By visiting
-\texttt{attacker.com}, the attacker can instruct the victim's browser
-to fetch external style sheets and also export data to remote
-servers. As long as the victim's session with an honest web site
-haven't expired, the attacker can instruct the victim's browser to
-issue requests with the victim's cookies.  We do not assume that the
-victim behaves discloses any sensitive information while on the
-attacker's site; merely rendering the attacker's web content is
-sufficient.
-
-\paragraph{Target Site Behavior}
-We assume that the attacker can inject semi-arbitrary strings into a
-target domain that contains the secret content, which we refer to as
-\texttt{target.com}. In practice, there are various methods to inject
-strings into the target domain, e.g. reflection of URL
-parameters. Specifically, we are interested in sites that allow
-injection of strings that can be interpreted as CSS syntax tokens,
-which are more common than sites that allow injection of arbitrary
-HTML and JavaScript Sites that allow injection of arbitrary HTML and
-JavaScript are already vulnerable to cross-site scripting attacks.
+Finally, the web attacker can entice the victim into visiting its
+site; this is easily done either by social engineering, or by
+manipulating an advertisement network.  We do not assume that the
+victim discloses any sensitive information while on the attacker's
+site; merely rendering the attacker's web content is sufficient.
 
 \section{Cross-Origin CSS Attacks} \label{sec:attacks}
-In this section, we introduce cross-origin CSS attacks. First, we provide some
-relevant background information on browser behavior. Next, we describe in
-detail the steps of the attack. Then, we discuss the restrictions of
-constructing this attack and suggest general areas that are exploitable.
-Finally, we demonstrate attacks against several popular web applications as a proof of concept.
 
-\subsection{Background}
+In this section, we present cross-origin CSS attacks in detail.
+First, we describe three aspects of browser behavior that, together,
+make these attacks possible.  Second, we lay out the steps of an
+attack on a hypothetical website.  Third, we discuss constraints on
+practical executions of the attack.  Finally, we demonstrate that the
+attack can be carried out against several popular web applications.
+
+\subsection{Browser Behavior}
+
+Cross-origin CSS attacks are possible because of existing
+characteristics of the 
 
 In this section, we describe three aspects of browser behavior that are required for cross-origin CSS attacks: session authentication, cross-origin resources, and error-tolerant style sheet parsing.
 
@@ -438,7 +429,7 @@ backgroundImage);
 
 The attacking page imports the Yahoo! Mail for Mobile page as a style sheet resource, which serves a single-line formatted HTML containing the victim user's inbox. Similarly, the injected subject lines in the inbox allow portions of the document to be parsed as a valid CSS construct. The stolen HTML fragment would contain the subject headings of all e-mails delivered to the victim between the two evil e-mails.
 
-The stolen HTML fragment also reveals a hidden ``mid'' value that should appear to be an unguessable key to a web attacker. Accordingly, it is reasonable for the mail application to rely on it as a secret token to defend CSRF attacks. This is indeed the case for the e-mail deletion operation, which relies on ``mid'' as a CSRF defense token.
+The stolen HTML fragment also reveals a hidden input value that appears to be an unguessable key. We believe that the mail application relies on this value as a secret token to defend CSRF attacks. This is indeed the case for the e-mail deletion operation, which is accepted only if the correct hidden input value is provided.
 
 \paragraph{Hotmail}
 We found that Windows Live Hotmail was vulnerable to a nearly identical attack as Yahoo! Mail. By sending two evil e-mails to the victim's Hotmail account and importing the mobile mail page ``\texttt{http://mail.live.com/m/}'' as a style sheet resource, an attacker can read secret messages and steal secret tokens. Due to the use of newlines in the stolen HTML fragment (unlike Yahoo! Mail for Mobile), this attack is limited to the Internet Explorer browser.
@@ -556,7 +547,7 @@ Other MIME types&C&S&C&C&C\\
 \end{table*}
 
 \subsubsection{Adoption}
-Our proposal have been adopted by several major browsers, including Google Chrome, Opera, Safari and Firefox. Our proposal requires no changes to existing web servers and only modifies the browser. We implemented a patch for the conservative approach of cross-origin CSS loading in WebKit, the open source web browser engine component integrated in Safari and Google Chrome. The WebKit patch was deployed first in Google Chrome~4.0.249.78, and also accepted in Safari~4.0.5. Note that the cross-origin CSS raw text leak is tightened by this patch because read access to cross-origin CSS raw text is limited to well-formed imports. Inspired by our WebKit patch, the exact same heuristic of our proposal was adopted in Opera~10.10. We implemented both the strict approach and the conservative approach for cross-origin CSS loading in Mozilla Firefox. Mozilla has deployed the conservative approach in Firefox~3.6.5 and the strict approach in alpha builds of Firefox~3.7.
+Our proposal has been adopted by several major browsers, including Google Chrome, Opera, Safari and Firefox. Our proposal requires no changes to existing web servers and only modifies the browser. We implemented a patch for the conservative approach of cross-origin CSS loading in WebKit, the open source web browser engine component integrated in Safari and Google Chrome. The WebKit patch was deployed first in Google Chrome~4.0.249.78, and also accepted in Safari~4.0.5. Note that the cross-origin CSS raw text leak is tightened by this patch because read access to cross-origin CSS raw text is limited to well-formed imports. Inspired by our WebKit patch, the exact same heuristic of our proposal was adopted in Opera~10.10. We implemented both the strict approach and the conservative approach for cross-origin CSS loading in Mozilla Firefox. Mozilla has deployed the conservative approach in Firefox~3.6.5 and the strict approach in alpha builds of Firefox~3.7.
 
 The interpretation of valid MIME types for cross-origin CSS files differs slightly on each browser, as shown in Table~\ref{table:adoption}. In addition to the \texttt{text/css} MIME type, Firefox and WebKit-based browsers also accept files with an empty MIME type or the \texttt{application/x-unknown-content-type} MIME type, in which some servers attempt to trigger the browser's content-sniffing algorithm. We noticed that Firefox treats some unknown or bogus MIME types (strings that lack a slash e.g. \texttt{text}) as valid MIME types for CSS files. Other internet media types (e.g. \texttt{image/gif}) should be invalid for CSS files, with the exception of \texttt{text/css}.
 
