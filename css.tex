@@ -4,8 +4,13 @@
 \usepackage[utf8]{inputenc}
 \usepackage{microtype}
 \usepackage{booktabs}
+\usepackage{upquote}
 \hyphenation{brow-ser brow-sers tra-dit-ion-al ja-va-script}
 \begin{document}
+% fix some inappropriately large gaps - must be after begin document
+\itemsep 0pt
+\partopsep 0pt
+\topsep 0pt
 
 \title{Protecting Browsers from Cross-Origin CSS Attacks}
 \numberofauthors{4}
@@ -244,6 +249,12 @@ features they do not understand.  When skipping ahead, the browser
 uses only a few simple grammar rules:
 
 \begin{itemize}
+\item Depending on where the syntax error occurred, the next syntactic
+  construct might begin after the next semicolon, after going up one
+  brace level, or after the next brace-enclosed block.
+\item While skipping, parentheses, square brackets, and curly braces
+  must still be properly balanced and nested.
+\item Unlike in HTML, angle brackets are not expected to balance.
 \item \verb|/* ... */| is a comment to be ignored, as in JavaScript.
   However, unlike JavaScript, \verb|//| does \emph{not} indicate the
   beginning of a single-line comment.
@@ -251,18 +262,17 @@ uses only a few simple grammar rules:
   backslash escapes are a little different, but this doesn't matter
   for our purposes.  Internet Explorer permits strings to extend past
   a line break, but in all other browsers this is a syntax error.
-\item Parentheses, square brackets, and curly braces must be properly
-  balanced and nested.
-\item Unlike in HTML, angle brackets are not expected to balance.
 \item The end of a style sheet closes all open constructs
   \emph{without error}.
-\item Depending on where the syntax error occurred, the next syntactic
-  construct might begin after the next semicolon, after going up one
-  brace level, or after the next brace-enclosed block.
 \end{itemize}
 
-As shown in figure~\ref{figure:victim}, these rules allow a valid HTML
-document to be interpreted as partially-valid CSS.
+The left angle bracket, \texttt{<}, so common in HTML, has no meaning
+in CSS; it will invariably cause a syntax error.  (The right angle
+bracket, \texttt{>}, has meaning within CSS selectors.)  Thus, a CSS
+parser encountering an HTML document will go into skip-ahead mode on
+the very first tag in the document, and it probably won't find
+something that qualifies as the “beginning of the next syntactic
+construct” before the end of the file.
 
 \subsubsection{Content Sniffing} \label{sec:mime}
 The HTTP \texttt{Content-Type} header is supposed to indicate the type
@@ -354,14 +364,16 @@ arranged to insert two strings into the document:
 \end{itemize}
 The target site has wrapped each of these in an HTML \verb|<span>|,
 which is harmless to the attacker's purpose.  The opening string has
-three components: The two-character synchronization sequence \verb|{}|
-is enough to end error recovery for many HTML documents; it will only
-fail if there is something before the injection point that must be
-balanced---an unclosed string or CSS comment, or an unmatched \verb|{|
-\verb|[| or \verb|(|.  If the attacker can predict what comes before
-the injection point, it can tailor the synchronization sequence to
-match.  \verb|#f{font-family:| is the beginning of a valid CSS style
-rule, declaring the font family for an element in the attacker's
+three components: The attacker can safely assume that the CSS parser
+is in error recovery mode, looking for a brace-enclosed block, when it
+encounters the two-character synchronization sequence \verb|{}|.  This
+sequence will take the CSS parser out of error recovery, unless there
+is something before the injection point that must be balanced---an
+unclosed string or CSS comment, or an unmatched \verb|{| \verb|[| or
+\verb|(|.  If the attacker can predict what comes before the injection
+point, it can tailor the synchronization sequence to match.  The next
+component, \verb|#f{font-family:| is the beginning of a valid CSS
+style rule, declaring the font family for an element in the attacker's
 document (with ID \texttt{f}).  The \texttt{font-family} property
 takes a string constant as its value; thus the final component of the
 opening string is a single quote character, \verb|'|.  The CSS parser
@@ -382,13 +394,13 @@ When the victim user visits \texttt{attacker.com}, the attacker's page
 instructs the victim's browser to fetch and load the target document,
 with its injected strings, as an external style sheet.  This can be
 done with the \texttt{link} tag~\cite{html}:
-\begin{verbatim}
-<LINK REL="stylesheet" HREF="http://target.com">
-\end{verbatim}
+
+\verb|<LINK REL="stylesheet" HREF="http://target.com">|
+
 or with the CSS “import” directive, in an internal style sheet:
-\begin{verbatim}
-<STYLE>@import url(http://target.com);</STYLE>
-\end{verbatim}
+
+\verb|<STYLE>@import url(http://target.com);</STYLE>|
+
 The attacker must ensure that their page is in “quirks mode,” but this
 is easy to do: simply do not begin the page with any \verb|<!DOCTYPE|
 declaration, and do not serve it as XHTML.
@@ -447,102 +459,221 @@ As long as there is an element in the attacking page that matches this
 rule, the browser will issue a GET request to the attacker's server
 and provide the secret to be stolen as the query string.  This
 approach is somewhat less convenient than the JavaScript-based ones
-for bootstrapping a CSRF attack, but perhaps \emph{more} convenient if
-the only goal is to steal data, since one need not worry about
-client-side JavaScript incompatibilities.  Cross-origin form
-submission does not require JavaScript, so a clickjacking-type CSRF
-attack~\cite{clickjacking} is still possible.
+for bootstrapping a CSRF attack, since the secret has to be sent back
+down from the server before it can be used, but a
+clickjacking~\cite{clickjacking} CSRF attack would still be possible.
+It is perhaps \emph{more} convenient if the only goal is to steal
+data, since the attacking page can be simpler.
 
 \subsection{Attack Limitations}
-There are a few restrictions that can hinder the attacker's ability to conduct a cross-origin CSS attack.
+At present, we are not aware of anyone deliberately designing their
+HTML or their server-side filters to block cross-origin CSS attacks,
+but they can still be thwarted by common characteristics of site
+structure or by filters aiming to block JavaScript attacks.
 
-\subsubsection{Insufficient Injection Points}
-The first and most crucial requirement of the cross-origin CSS attack is to contain the secret data into a CSS property declaration. In order for the CSS parser to properly parse the evil CSS rule, certain symbols must be inserted at the beginning and at the end of the stolen string. In general, the attacker must have sufficient influence over the target document to control two injection points to insert the CSS property opening strings and termination strings, respectively. Typically, social web sites are relatively more susceptible to this attack since the pages often contain user-controlled strings such as comments on photos. For some web pages, a second injection is not required because the termination string happens to exist later in the document. This is possible since the termination string can be as short as just a quotation mark and an ending bracket.
+\subsubsection{Injection points}
+The secret to be stolen is encapsulated within a CSS string constant,
+within a property value, within a style rule.  To do this, the
+attacker must inject \emph{two} strings into the document containing
+the secret: one to begin the rule, and one to end it.  (By contrast,
+JavaScript injection attacks usually require injecting only one
+string.)  Sites that accumulate user-submitted text (blog comments,
+for instance) are relatively more vulnerable to this attack; the
+attacker can inject one string, wait a while, and then inject another.
+Also, the string that must appear after the secret is very
+simple---often just a close quote and a close bracket---and may
+already be present in the target page; this was the case
+in~\cite{cssxss08}.
 
-\subsubsection{Character Escapes} \label{sec:escapes}
-In the CSS specification~\cite{cssspec}, strings can either be written with double quotes or with single quotes. Double quotes cannot occur inside double quotes, and the same applies for single quotes. Therefore, the attacker has the choice to inject either single or double quotes depending on the occurrence of quotes in the secret data. In a context where both quotes are escaped, it becomes more difficult to inject a CSS string. However, a variation of the attack can bypass this restriction by injecting the CSS property \texttt{background-image}. For the \texttt{background-image} property, the URL value is written with the functional notation \texttt{url()}, which does not require the use of single or double quotes around the URL string itself. The CSS specification does define that certain characters must be escaped in an unquoted URL, e.g. parentheses, commas, white spaces, single quotes and double quotes. However, in Internet Explorer, the CSS parser does not require any of these characters to be escaped in an unquoted URL and will parse until it encounters a closing parentheses and a semicolon.
+\subsubsection{Quotes}
+CSS string constants can be written with single or double quotes.
+Double quotes cannot occur inside a double-quoted string, and single
+quotes cannot occur inside a single-quoted string, unless they are
+escaped with backslashes.  Thus, if the secret to be stolen contains
+single quotes, the attacker must use double quotes in their injected
+strings, and vice versa.  If the secret contains both types of quotes,
+or the attacker cannot predict which type of quotes it will contain,
+the attack will fail.
 
-\paragraph{Forcing UTF-7}
-The requirement for quotes not to get escaped can sometimes be bypassed in browsers that support UTF-7 encoding, including Firefox and Safari. If the target web sites fails to specify a character set in the HTTP Content-Type header, the attacker's evil page can force the imported remote resource to be parsed as UTF-7 encoding:
-\begin{verbatim}
-<LINK REL="stylesheet" HREF="http://target.com"
-CHARSET="utf-7">
-\end{verbatim}
-By forcing UTF7, either a single or double quote may be injected by rendering it in the UTF-7 character set, i.e. ``\texttt{+ACc-}'' for single quote and ``\texttt{+ACI-}'' for double quote. This will cause the injection to survive any output escaping of the web application. A significant number of web sites actually do not specify character sets in their HTTP responses; we found that only 584 out of the top 1,000 web sites ranked by Alexa~\cite{alexa} specified character sets for their home pages via the HTTP Content-Type header. Some web sites specify the character set information using meta tags with the \texttt{http-equiv} attribute in the HTML head element:
-\begin{verbatim}
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html;
-charset=utf-8">
-\end{verbatim}
-Browsers may use meta tags to refine the information provided by the actual headers, but can also ignore it. If a document declares a character set in a meta tag but not in the response header, the referring page can override the character set with the \texttt{charset} attribute in the parent link tag. Thus, we recommend that sites always use HTTP headers to specify the MIME type and character set of documents.
+If the “without Javascript” variant of the attack is in use, and the
+attack only needs to work in Internet Explorer, the attacker may
+instead use the unquoted form of \texttt{url()}.  This cannot contain
+unescaped parentheses, but in IE it may contain unescaped quotes.
 
 \subsubsection{Newlines}
-In CSS, a string cannot directly contain a newline. To include a newline in a string, the line feed character must be escaped. Therefore, another barrier of this attack is that any un-escaped newline in the stolen string will break the CSS parsing. This is a very common condition in many web pages, which avoids potentially serious attacks. However, many rich-functionality web sites are often exploitable due to serving cookie-authenticated URLs with JSON or XML responses that commonly lack newlines. Some web sites even allow users to control the formatting of server responses, e.g. disabling pretty printing, which may be extremely dangerous.
-%\paragraph{Internet Explorer}
-The CSS parser in the Internet Explorer accepts both newlines in CSS strings and newlines in unquoted URL strings, regardless of whether they are escaped or not. This behavior makes attacks significantly easier to construct in Internet Explorer.
+CSS string constants and unquoted \texttt{url()}s cannot contain
+newlines, unless they are escaped with backslashes.  Therefore, any
+newline within the secret will cause the attack to fail.  HTML pages
+tend to contain many newlines; this, all by itself, protects many
+potential target sites from CSS data theft attacks.  However,
+rich-functionality sites often offer URL-based APIs that deliver
+confidential information in a custom JSON or XML format, with no
+newlines; these APIs may be vulnerable to CSS data theft even if the
+human-visible site isn't.  Some sites even allow their users to
+control the formatting of HTML server responses, e.g.\ to disable
+pretty-printing; the attacker may be able to do the same.
+
+Internet Explorer permits unescaped newlines in CSS string constants
+and unquoted \texttt{url()}s.  This makes attacks far easier to
+construct if the victim user is known to use IE.
+
+\subsubsection{Server-side filtering} \label{sec:escapes}
+The present generation of server-side filters that aim to remove
+malicious constructs from user-submitted content usually look for
+dangerous HTML attributes and/or keywords peculiar to JavaScript.
+These will not block cross-origin CSS attacks, because the injected
+strings won't be nested within HTML elements, and CSS shares very few
+keywords with JavaScript.
+
+Some filters also replace particular punctuation characters with
+equivalent HTML entities.  Single and double quotes are often
+replaced, because of their significance in both HTML and JavaScript.
+If \emph{any} of the punctuation in the injected strings is replaced
+with an entity, the attack will fail.
+
+The attacker may be able to defeat character replacement by
+pre-encoding the replaced characters in UTF-7~\cite{utf7}.  For
+instance, if the target site replaces single quotes with entities, but
+leaves the other punctuation alone, the injected strings would become
+\begin{itemize}
+\item \verb|{}#f{font-family:+ACc-| before the secret
+\item \verb|+ACI-;}| after the secret
+\end{itemize}
+The attacker would then request UTF-7 decoding from the CSS parser,
+by specifying a character set in their \verb|link| tag:
+
+\verb|<LINK REL="stylesheet" HREF="http://target.com"|\\
+\verb| CHARSET="utf-7">|
+
+This trick does not work if the target site specifies a character set
+in its \texttt{Content-Type} header.  Unfortunately, only 584 out of
+the top 1,000 web sites ranked by Alexa~\cite{alexa} specify character
+sets for their home pages in their \texttt{Content-Type} headers.
+Many of the others do provide character set information in a
+\verb|meta| tag, but the CSS parser pays no attention to HTML
+\verb|meta| tags, so that will not thwart an attacker's specification
+of UTF-7 in a \verb|link| tag.  (Here we see another reason sites
+should always provide correct \texttt{Content-Type} headers.)
+
 
 \subsection{Example Attacks} \label{sec:demos}
-In this section, we present several examples of cross-origin CSS attacks on popular web sites. First, we describe an attack on a popular movie database web site that leaks private messages of registered users, in the Internet Explorer browser. Then, we describe a cross-browser attack on a popular web mail application that leaks the subject headings of the received e-mails in the victim user's inbox, and even reveals secret CSRF tokens.
+We have successfully carried out cross-origin CSS attacks on several
+popular websites.
 
-\paragraph{IMDb} IMDb is a popular online database of movies and related information, which allows users to rate films and make posts on message boards. Some of the features for a registered account include adding users to their friends list and sending private messages to other users. Targeting the user's private messaging page, the attacker can mount an attack with the following steps:
+\paragraph{IMDb}
+IMDb is an online database of movies and related information, which
+allows registered users to rate films, make posts on message boards,
+and send private messages to each other.  An attacker with an account
+on the site can steal the text of private messages to a victim user,
+with these steps:
+
 \begin{enumerate}
-\item{The attacker sends an evil private message to the victim's account with the subject line:\\ \texttt{\{\}body\{font-family:`} }
-\item{While signed in to IMDb, the victim visits the attacking page on \texttt{attacker.com}, constructed as follows:}
-\end{enumerate}
+\item Send a private message to the victim's account, with the subject
+  line: \verb|{}body{font-family:'|
+\item Induce the victim to visit \texttt{attacker.com} while signed
+  into IMDb; the attacking page is as follows:
 \begin{verbatim}
-<HTML>
-<HEAD>
-<LINK REL="stylesheet" HREF="http://www.imdb.com/
-user/ur12345678/boards/pm/">
-<SCRIPT>
+<html>
+<head>
+<link rel="stylesheet"
+     href="http://www.imdb.com/user/
+           ur12345678/boards/pm/">
+<script>
 function steal() {
-  alert(document.body.currentStyle[`fontFamily']);
+  alert(document.body.
+    currentStyle["fontFamily"]);
 }
-</SCRIPT>
-</HEAD>
-<BODY onLoad="steal()">
-</BODY>
-</HTML>
+</script>
+</head>
+<body onload="steal()">
+</body>
+</html>
 \end{verbatim}
-
-The attacking page imports the victim's private messaging page as a style sheet resource. As long as the victim's session cookie has not expired, the browser will automatically sign in using the victim's cookie when fetching the page. The injected subject line in the inbox allows portions of the document to be parsed as a valid CSS construct. Due to the existance of double quotes in the target page, we chose to use single quotes in the CSS injection string to avoid string termination. The stolen HTML fragment would contain the subject and body of all preceding private messages, which can be extracted by reading the computed \texttt{background-image} style in JavaScript.
-
-Note that the target URL contains the victim's account string ``ur12345678'', which is public and can be simply fetched from any user profile link on the message board. In this example, a single injection point is sufficient due to the highly probable existence of the termination string. Such a vulnerability may be widespread on many low security sites.
-
-\paragraph{Yahoo! Mail} Yahoo! Mail is a free web mail service that lets users send and receive e-mails using any popular web browser with cookies and JavaScript enabled. After a user signs in with a valid account, the web site can authenticate the user with browser session cookies for as long as two weeks without signing out. Targeting the Yahoo! Mail for Mobile home page, the attacker can mount a cross-browser attack on victims that are signed in with the following steps:
-\begin{enumerate}
-\item{The attacker sends an evil e-mail to the victim's account with the subject line:\\
-\texttt{');\}} }
-\item{The attacker waits for sensitive e-mails to fill the victim's inbox.}
-\item{The attacker sends another evil e-mail to the victim's account with the subject line:\\ \texttt{\{\}body\{background-image:url(`}}
-\item{While signed into Yahoo! Mail for Mobile, the victim visits the attacking page, constructed as follows:}
 \end{enumerate}
+
+The attacker must know the victim's account ID (\texttt{ur12345678} in
+the example); this is public information that can be learned from the
+victim's user profile page, even if one is not logged in.  The browser
+will retrieve the victim's private messaging page, using the
+appropriate credentials from the victim's IMDb session, and process it
+as a style sheet.  The private message sent in step 1 will cause a
+fragment of HTML, including the full text of earlier private messages
+to the victim, to be absorbed as a CSS property value, which is then
+revealed to JavaScript via \texttt{currentStyle}.
+
+This attack works only in IE, due to newlines in the HTML for the
+private messaging page.  This is why the JavaScript above uses only
+the IE-specific mechanism for retrieving the computed style.  It is
+not necessary to inject a second string after the text to be stolen,
+because the end of the page serves that purpose (recall that end of
+style sheet closes open CSS constructs without error).
+
+\paragraph{Yahoo! Mail}
+Yahoo! Mail is a popular web-based email service.  Its session cookies
+persist for up to two weeks if users do not actively log out.  An
+attacker can steal subject lines and CSRF tokens from a victim's email
+inbox with these steps:
+
+\begin{enumerate}
+\item Send an email to the victim with the subject line:
+  \verb|');}|
+\item Wait for some time while the victim receives other messages.
+\item Send another email to the victim with the subject line:
+  \verb|{}body{background-image:url('|
+\item Induce the victim to visit \texttt{attacker.com} while signed
+  into Yahoo! Mail.  The attacking page is as follows:
 \begin{verbatim}
-<HTML>
-<HEAD>
-<LINK REL="stylesheet" HREF="http://m.yahoo.com/mail">
-<SCRIPT>
+<html>
+<head>
+<link rel="stylesheet"
+     href="http://m.yahoo.com/mail">
+<script>
 function steal() {
   if(document.body.currentStyle) {
-    alert(document.body.currentStyle[`backgroundImage']);
+    alert(document.body.
+      currentStyle["backgroundImage"]);
   } else {
-    alert(window.getComputedStyle(document.body, "").
-backgroundImage);
+    alert(getComputedStyle(document.body, "").
+      backgroundImage);
   }
 }
-</SCRIPT>
-</HEAD>
-<BODY onLoad="steal()">
-</BODY>
-</HTML>
+</script>
+</head>
+<body onload="steal()">
+</body>
+</html>
 \end{verbatim}
+\end{enumerate}
 
-The attacking page imports the Yahoo! Mail for Mobile page as a style sheet resource, which serves a single-line formatted HTML containing the victim user's inbox. Similarly, the injected subject lines in the inbox allow portions of the document to be parsed as a valid CSS construct. The stolen HTML fragment would contain the subject headings of all e-mails delivered to the victim between the two evil e-mails.
+We use \texttt{background-image} instead of \texttt{font-family} in
+this attack to illustrate the variety of CSS properties that can be
+used.  The attacking page requests the mobile version of the site by
+loading \url{http://m.yahoo.com/mail} rather than
+\url{http://www.yahoo.com/mail}.  To reduce bandwidth requirements,
+the mobile site has all unnecessary whitespace removed from its HTML,
+including newlines; this allows the CSS portion of the attack to
+succeed in more browsers, hence the JavaScript must detect which of
+the two methods for retrieving computed style is supported.
 
-The stolen HTML fragment also reveals a hidden input value that appears to be an unguessable key. We believe that the mail application relies on this value as a secret token to defend CSRF attacks. This is indeed the case for the e-mail deletion operation, which is accepted only if the correct hidden input value is provided.
+The stolen HTML fragment contains the subject lines of every email
+delivered to the victim in between the two attack messages.  It also
+contains a hidden, unguessable token for each message; knowing these
+tokens allows the attacker to delete messages via CSRF.
 
 \paragraph{Hotmail}
-We found that Windows Live Hotmail was vulnerable to a nearly identical attack as Yahoo! Mail. By sending two evil e-mails to the victim's Hotmail account and importing the mobile mail page ``\texttt{http://mail.live.com/m/}'' as a style sheet resource, an attacker can read secret messages and steal secret tokens. Due to the use of newlines in the stolen HTML fragment (unlike Yahoo! Mail for Mobile), this attack is limited to the Internet Explorer browser.
-The existence of nearly identical attacks demonstrates the general nature of the cross-origin CSS vulnerabilities. We expect that many social networking sites are vulnerable to variants of this attack as well, because the attacker can leave arbitrary text comments that are rendered somewhere on the victim's view of the page.
+Windows Live Hotmail is another web-based email service, operated by
+Microsoft rather than Yahoo!.  It is vulnerable to nearly the same
+attack as Yahoo! Mail: we can read messages and acquire CSRF tokens by
+sending two emails to a victim Hotmail account with crafted subject
+lines, then loading the mobile Hotmail website as a style sheet.
+Unlike Yahoo! Mail, Hotmail delivers HTML containing newlines, which
+limits the attack to Internet Explorer.
+
+The existence of nearly identical attacks on unrelated websites
+illustrates the general nature of cross-origin CSS vulnerabilities. We
+expect that many social networking sites are vulnerable to variants of
+this attack as well, because the attacker can leave arbitrary text
+comments that are rendered somewhere on the victim's view of the page.
 
 \section{Defenses} \label{sec:defenses}
 In this section, we describe the defenses against cross-origin CSS attacks.
