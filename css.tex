@@ -5,12 +5,27 @@
 \usepackage{microtype}
 \usepackage{booktabs}
 \usepackage{upquote}
-\hyphenation{brow-ser brow-sers tra-dit-ion-al ja-va-script}
+\hyphenation{brow-ser brow-sers tra-dit-ion-al ja-va-script Web-Kit}
 \begin{document}
-% fix some inappropriately large gaps - must be after begin document
+% fix some inappropriately large gaps - some of this must be after
+% begin document
 \itemsep 0pt
 \partopsep 0pt
 \topsep 0pt
+\makeatletter
+\def\paragraph{%
+    \@startsection{paragraph}{4}{\z@}{\z@ \@plus \p@}{-5\p@}{\subsecfnt}}
+\makeatother
+\renewenvironment{itemize}{%
+ \begin{list}{$\bullet$}
+  {\setlength{\itemsep}{0pt}
+   \setlength{\parsep}{3pt}
+   \setlength{\topsep}{3pt}
+   \setlength{\partopsep}{0pt}
+   \setlength{\leftmargin}{1.5em}
+   \setlength{\labelwidth}{1em}
+   \setlength{\labelsep}{0.5em}}}
+  {\end{list}}
 
 \title{Protecting Browsers from Cross-Origin CSS Attacks}
 \numberofauthors{4}
@@ -268,11 +283,10 @@ uses only a few simple grammar rules:
 
 The left angle bracket, \texttt{<}, so common in HTML, has no meaning
 in CSS; it will invariably cause a syntax error.  (The right angle
-bracket, \texttt{>}, has meaning within CSS selectors.)  Thus, a CSS
+bracket, \texttt{>}, can appear within CSS selectors.)  Thus, a CSS
 parser encountering an HTML document will go into skip-ahead mode on
-the very first tag in the document, and it probably won't find
-something that qualifies as the “beginning of the next syntactic
-construct” before the end of the file.
+the very first tag in the document, and will probably stay there until
+the end of the file.
 
 \subsubsection{Content Sniffing} \label{sec:mime}
 The HTTP \texttt{Content-Type} header is supposed to indicate the type
@@ -465,13 +479,13 @@ clickjacking~\cite{clickjacking} CSRF attack would still be possible.
 It is perhaps \emph{more} convenient if the only goal is to steal
 data, since the attacking page can be simpler.
 
-\subsection{Attack Limitations}
+\subsection{Attack Limitations} \label{sec:limits}
 At present, we are not aware of anyone deliberately designing their
 HTML or their server-side filters to block cross-origin CSS attacks,
 but they can still be thwarted by common characteristics of site
 structure or by filters aiming to block JavaScript attacks.
 
-\subsubsection{Injection points}
+\paragraph{Injection points}
 The secret to be stolen is encapsulated within a CSS string constant,
 within a property value, within a style rule.  To do this, the
 attacker must inject \emph{two} strings into the document containing
@@ -485,7 +499,7 @@ simple---often just a close quote and a close bracket---and may
 already be present in the target page; this was the case
 in~\cite{cssxss08}.
 
-\subsubsection{Quotes}
+\paragraph{Quotes}
 CSS string constants can be written with single or double quotes.
 Double quotes cannot occur inside a double-quoted string, and single
 quotes cannot occur inside a single-quoted string, unless they are
@@ -500,7 +514,7 @@ attack only needs to work in Internet Explorer, the attacker may
 instead use the unquoted form of \texttt{url()}.  This cannot contain
 unescaped parentheses, but in IE it may contain unescaped quotes.
 
-\subsubsection{Newlines}
+\paragraph{Newlines}
 CSS string constants and unquoted \texttt{url()}s cannot contain
 newlines, unless they are escaped with backslashes.  Therefore, any
 newline within the secret will cause the attack to fail.  HTML pages
@@ -517,7 +531,7 @@ Internet Explorer permits unescaped newlines in CSS string constants
 and unquoted \texttt{url()}s.  This makes attacks far easier to
 construct if the victim user is known to use IE.
 
-\subsubsection{Server-side filtering} \label{sec:escapes}
+\paragraph{Server-side filtering}
 The present generation of server-side filters that aim to remove
 malicious constructs from user-submitted content usually look for
 dangerous HTML attributes and/or keywords peculiar to JavaScript.
@@ -666,8 +680,8 @@ Microsoft rather than Yahoo!.  It is vulnerable to nearly the same
 attack as Yahoo! Mail: we can read messages and acquire CSRF tokens by
 sending two emails to a victim Hotmail account with crafted subject
 lines, then loading the mobile Hotmail website as a style sheet.
-Unlike Yahoo! Mail, Hotmail delivers HTML containing newlines, which
-limits the attack to Internet Explorer.
+Unlike the mobile version of Yahoo! Mail, Hotmail delivers HTML
+containing newlines, which limits the attack to Internet Explorer.
 
 The existence of nearly identical attacks on unrelated websites
 illustrates the general nature of cross-origin CSS vulnerabilities. We
@@ -675,197 +689,341 @@ expect that many social networking sites are vulnerable to variants of
 this attack as well, because the attacker can leave arbitrary text
 comments that are rendered somewhere on the victim's view of the page.
 
-\section{Defenses} \label{sec:defenses}
-In this section, we describe the defenses against cross-origin CSS attacks.
-First, we propose to apply stricter browser requirements for loading
-cross-origin CSS resources. Next, we present an evaluation of web site
-compatibility for our proposal. Finally, we state the progress of adoption for
-our proposal in major browsers and discuss the remaining issues.
+\section{Client-Side Defense} \label{sec:defenses}
 
-\subsection{Proposal: Restrictions on Loading Cross-Origin CSS} \label{sec:proposal}
-To prevent cross-origin
-CSS attacks, we propose that browsers should apply stricter checking when
-loading cross-origin CSS files. In fact, most modern browsers support a
-standards-compliant mode, which requires the correct MIME type when loading CSS
-files. However, this mode is only enabled when the web developer declares a
-document type definition (DTD), e.g. \verb|<!DOCTYPE html>|, in the referring
-document. When no DTD is present, the browser renders the document in
-``quirks'' mode for better backward-compatibility. Of course, in a
-cross-origin CSS attack, the attacker is perfectly willing to omit the DTD in
-order to trigger quirks mode.
+In this section, we propose a client-side defense against cross-origin
+CSS attacks, evaluate it for compatibility with existing web sites,
+and review its adoption by major browsers.
 
-Our proposed defense, therefore, is to enforce MIME type checking for
-cross-origin CSS files, even in quirks mode. We describe two variants on this
-proposal: a strict approach that does not allow any MIME type mismatches, and
-a conservative approach that maximizes web site compatibility by allowing
-apparently benign MIME type mismatches.
-
-\subsubsection{Strict Approach}
-In the cross-origin CSS attack, the attacker's evil web page confuses the victim's browser to parse the injected target document as a style sheet. If browsers strictly required external style sheets to specify the \texttt{text/css} MIME type, malicious web sites would not be able to import crafted HTML documents as style sheets. One effective solution is to let browsers always check the MIME type for cross-origin CSS resources and block CSS loads with an invalid MIME type. When strict MIME type checking is enforced, at least for cross-origin CSS loads (if not globally), browsers would be able to protect non-CSS target documents from being stolen.
-
-The major concern of the strict approach is that any misconfigured cross-origin resources that fail to specify a valid MIME type would be blocked. Strict MIME type checking relies on web developers to correctly deploy their web sites and provide valid MIME types. Unless every web developer properly configures their servers to send the correct Content-Type response header, the strict approach will inevitably introduce false positives and block CSS imports on non-attacking web sites.
-
-\subsubsection{Conservative Approach}
-To address web site compatibility concerns, we also propose a conservative approach that blocks most attacks while tolerating some common MIME type misconfigurations. In order to reduce false positives in the strict MIME type approach, an additional level of checking is applied to cross-origin CSS resources that have invalid MIME types. When a valid MIME type is not provided, the browser will try to parse the cross-origin CSS but rejects the style sheet upon encountering the first syntax error. This simple parsing test helps to determine whether the imported CSS file is an injected target document. Therefore, the devised solution blocks CSS loads only when all of the following conditions are met:
-\begin{itemize}
-\item{The CSS resource is a cross-origin load.}
-\item{The CSS resource has an invalid MIME type for CSS.}
-\item{The alleged CSS file does not start with a syntactically valid CSS construct.}
-\end{itemize}
-The above rules will block most cross-origin CSS attacks because the target documents that are not CSS files have headers that will cause a broken first CSS descriptor, e.g. HTML or XML headers. We also assume that a legitimate CSS file will unlikely have a syntax error at the beginning of the file and a broken MIME type, thus this heuristic should not break, or affect the rendering, of most existing sites. Only the cross-origin CSS files that have an invalid MIME type and start with malformed syntax are determined as an attacked document and should be rejected.
-
-\subsubsection{Experiment}
-To evaluate the compatibility of our proposed defense of stricter cross-origin CSS loading, we conducted an experiment to measure how often web servers fail to provide the correct MIME type for CSS files and whether these CSS files are syntactically well-formed when loaded cross-origin.
-
-\paragraph{Design}
-To measure how often web servers fail to provide the correct MIME type for CSS files, we collected metrics by crawling the top 100,000 web sites ranked by Alexa~\cite{alexa} and scanned through all of the style sheet resources in their home pages. We are interested in all cross-origin CSS loads including using HTML link tags and CSS import directives. Furthermore, some web sites dynamically add CSS links using JavaScript while the page loads. To achieve a more thorough scan for these CSS loads, we directly rendered these web pages with an instrumented WebKit browser while recording information of all CSS loads until the web page finishes loading.
+\subsection{Proposal: Restrictions on Loading Cross-Origin CSS}
+   \label{sec:proposal}
 
 \begin{table*}
 \centering
-\begin{tabular}{|c|c|c|c|c|c|c|} \hline
-\multicolumn{2}{|c|}{}&\multicolumn{2}{|c|}{Valid MIME}&\multicolumn{3}{|c|}{Invalid MIME}\\
-\cline{3-7}\multicolumn{2}{|c|}{}&Well-Formed&Malformed&Well-Formed&Malformed&HTTP Error\\ \hline
-Same-Origin&Standards Mode&178,017&506&424&1&1,497\\ 
-\cline{2-7}&Quirks Mode&24,445&332&304&59&466\\ \hline
-Cross-Origin&Standards Mode&47,345&104&147&0&347\\
-\cline{2-7}&Quirks Mode&5,891&57&74&0&53\\ \hline
+\def\m#1#2{\multicolumn{#1}{c}{#2}}
+\begin{tabular}{crrrrrrr}
+\toprule
+  Requesting&      \m1{Page}&        &           &      \m2{Correct type}&    \m2{Incorrect type}\\
+      server& \m1{rendering}&   Total& HTTP error& Well-formed& Malformed& Well-formed& Malformed\\
+\midrule
+            &          Total& 260,069&      2,363&     255,698&       999&         949&        60\\
+\addlinespace
+ Same-Origin& Standards Mode& 180,445&      1,497&     178,017&       506&         424&         1\\
+            &    Quirks Mode&  25,606&        466&      24,445&       332&         304&        59\\
+\addlinespace
+Cross-Origin& Standards Mode&  47,943&        347&      47,345&       104&         147&         0\\
+            &    Quirks Mode&   6,075&         53&       5,891&        57&          74&         0\\
+\bottomrule
 \end{tabular}
-\caption{Categorization of CSS references for the top 100,000 sites.}
+\caption{Categorization of CSS references for Alexa 100,000 sites.}
 \label{table:results}
 \end{table*}
 
-\paragraph{Results}
-From the top 100,000 web sites, our crawler logged a total of 260,069 CSS references, including 215,632 from HTML link tags and 44,437 from CSS import directives. These references include 206,051 same-origin resources and 54,018 cross-origin resources. We did not include data for sites that were unreachable during our evaluation, due to unresponding servers or domain name errors. Our results are shown in Table~\ref{table:results}.
-
-\begin{table}
+\begin{table}[b]
 \centering
-\begin{tabular}{|c|c|c|} \hline
-Content-Type&Number of CSS files\\ \hline
-\texttt{text/html}&715 (70.86\%)\\ \hline
-Empty &178 (17.64\%)\\ \hline
-\texttt{text/plain}&45 (4.46\%)\\ \hline
-\texttt{application/octet-stream}&29 (2.87\%)\\ \hline
-Other MIME types&42 (4.16\%)\\
-\hline\end{tabular}
-\caption{Common misconfigured MIME types for CSS files in top 100,000 Sites.}
+\begin{tabular}{lrr}
+\toprule
+\multicolumn{1}{c}{Incorrect \texttt{Content-Type}}&
+\multicolumn{2}{c}{Occurrences}\\
+\midrule
+               \texttt{text/html}& 715& (71\%)\\
+              \texttt{text/plain}&  45&  (4\%)\\
+\texttt{application/octet-stream}&  29&  (3\%)\\
+                            other&  42&  (4\%)\\
+                           absent& 178& (18\%)\\
+\bottomrule
+\end{tabular}
+\caption{Incorrect content types observed for CSS.}
 \label{table:MIME}
 \end{table}
 
-In the top 100,000 sites, we logged a total of 3,372 CSS references that did not specify the \verb|text/css| MIME type in the HTTP Content-Type response header. There were 2,363 of these CSS resources that returned a HTTP error status code, e.g. 400 Bad Request, 403 Forbidden, 404 Not Found, 500 Internal Server Error, 502 Bad Gateway or 503 Service Temporarily Unavailable. Note that these resources are unreachable, thus blocking them would have no affect to the rendering of the page. Excluding the responses with HTTP errors, there were 1,009 CSS resources that provided misconfigured Content-Type headers. The common misconfigured MIME types for CSS files in the top 100,000 sites are shown in Table~\ref{table:MIME}. There were as many as 715 CSS references that retrieved HTTP responses with the \verb|text/html| MIME type. Some of these \texttt{text/html} responses were less serious conditions, where the specified URL no longer exists and was redirected by servers to a landing page with HTTP status code 200. For HTTP responses with a missing Content-Type header, we considered them identical as setting the MIME type to an empty string. We logged a total of 178 CSS resources with an empty MIME type. Our crawler also collected 42 CSS resources with other less-frequent MIME types, e.g. \verb|application/x-javascript|. 
+Cross-origin CSS attacks only work because the browser will attempt to
+parse \emph{anything} that was requested by a stylesheet \verb|link|
+or \verb|@import| as if it were CSS.  This is a backward compatibility
+feature, part of the “quirks mode” applied to HTML documents that do
+not include a proper document type definition (DTD).  In the
+“standards mode” recommended for new content, style sheets will only
+be processed if they are labeled with the HTTP header
+\verb|Content-Type: text/css|.
 
-By checking the DTD of the referring document, our crawler logged whether the standards mode or quirks mode was triggered for parsing each CSS resource. We observed that standards mode was widely used on 68,378 web pages, where we found 2,416 CSS resources that had invalid MIME types that were already blocked by standards mode, as mentioned in Section~\ref{sec:proposal}. On web pages rendered in quirks mode, we found 72 cross-origin CSS resources with invalid MIME types (excluding HTTP errors) that would be blocked by our strict approach proposal.
+The attacker, of course, controls whether or not the attacking page is
+in quirks mode.  However, the attacker has no control over the
+\verb|Content-Type| header labeling the \emph{target} page; that's
+generated by the target site's server.  Therefore, our proposed
+defense is to enforce \verb|Content-Type| checking for style sheets
+loaded cross-origin, even if the requesting page is in quirks mode.
 
-Our crawler reported that 1,059 (0.41\%) CSS resources were syntactically malformed, in which the browser failed to parse a valid CSS construct at the beginning of the CSS file. One of the common syntax errors is to start the CSS file with an HTML style tag. None of the cross-origin CSS resources with invalid MIME types were syntactically malformed.
+\subsubsection{Strict Enforcement}
+The simplest and strictest version of this defense is to refuse to
+load any style sheet cross-origin, unless it is labeled with
+\verb|Content-Type: text/css|).  Unfortunately, this will also block
+legitimate requests for cross-origin style sheets, when the server
+providing the style sheet is misconfigured.  As we mentioned above,
+\verb|Content-Type| misconfigurations are common, so the strict
+defense may be too risky for browser vendors to adopt.
 
-%We ran a scan across the top 500,000 URLs looking for cross-origin loads of CSS with an invalid MIME type. Valid MIME types are defined as text/css, application/x-unknown-content-type, and empty. There were a total of 140 URLs detected that referenced cross-origin CSS with broken MIME types. There were 60 URLs that would be considered as broken, including 13 with text/plain, 15 with text/html, 31 with application/css, and 1 with application/x-pointplus. If we apply the heuristics of the conservative approach, only one URL that served text/html MIME would fail to load, which was severely broken because it had valid CSS rules after a style tag.
+\subsubsection{Tolerant Enforcement}
+To address this concern, we also propose a version of the defense that
+tolerates common misconfigurations.  When the browser encounters a
+cross-origin style sheet labeled with the wrong \verb|Content-Type|, it
+begins parsing the sheet as CSS, but if a syntax error is encountered
+before the first complete style rule is processed, it stops and
+discards the sheet.
 
-\paragraph{Discussion}
-In the top 100,000 web sites, we observed a total of 1,009 CSS resources that didn't serve the correct MIME type (excluding responses with HTTP errors). Most misconfigured servers incorrectly send the \texttt{text/html} MIME type regardless of the served content type. We also observed that 68.38\% sites trigger standards mode, which already blocks 2,416 CSS resources with invalid MIME types.
+This rule still blocks most cross-origin CSS attacks, which attempt to
+load an HTML document as CSS; it is almost certain that the first
+thing in the file will be \verb|<html>| or \verb|<!DOCTYPE|, either of
+which is a syntax error to CSS.  But sites using misconfigured servers
+that label style sheets with the wrong \verb|Content-Type| will
+continue to work as long as the first thing in the file is a
+well-formed CSS rule.
 
-Based on our evaluation results, deploying the strict approach of our proposal would block a total of 74 cross-origin CSS resources on 62 (0.06\%) of the top 100,000 sites. In some cases, the server was redirecting a request for an unavailable CSS file to an HTML landing page, thus the impact of blocking these CSS loads is less serious. Although this fraction may seem low, browser vendors have historically been reluctant to deploy changes that break popular web sites. 
+\subsubsection{Experiment}
+We surveyed the public Web to determine how often servers fail to
+provide the correct MIME type for CSS files, how many of those
+improperly-labeled style sheets are requested from a different origin,
+and how many of those begin with a CSS syntax error.
 
-In our results, none of the cross-origin CSS files with invalid MIME types were syntactically malformed. Thus, applying the conservative approach did not induce false positives and would not affect the rendering of any of the top 100,000 sites. We suggest that the conservative approach is practical solution for browser vendors because it maximizes web site compatibility while defending the cross-origin CSS attack.
+\paragraph{Design}
+Using an instrumented browser based on WebKit~\cite{webkit}, we
+crawled the top 100,000 web sites ranked by Alexa~\cite{alexa} and
+identified all of the style sheet resources used by their front pages.
+Our instrumentation reported every style sheet requested while the
+page itself was loading.  This allowed us to identify sheets used
+indirectly via CSS \verb|@import| directives, and sheets added by
+JavaScript during page load, as well as those mentioned directly in
+the HTML.
 
-Due to practical limitations of our automated scanning, all of the tested links were unauthenticated. It is possible that more sites will be broken after logging in.
-
+% This table is here rather than with “Adoption” so it'll come out in
+% the right place in the printed document.
 \begin{table*}
 \centering
-\begin{tabular}{|c|c|c|c|c|c|} \hline
-Content-Type&Firefox 3.6&Firefox 3.7&Opera&Safari&Chrome\\ \hline
-Empty&&&C&&\\ \hline
-\texttt{application/x-unknown-content-type}&&&C&&\\ \hline
-Bogus&&&C&C&C \\ \hline
-\texttt{*/*}&&&C&C&C \\ \hline
-\texttt{text/html}&C&S&C&C&C\\ \hline
-\texttt{text/plain}&C&S&C&C&C\\ \hline
-\texttt{application/octet-stream}&C&S&C&C&C\\ \hline
-Other MIME types&C&S&C&C&C\\
-%excluding \texttt{text/css}&&&&\\
-\hline\end{tabular}
-\caption{Adoption of proposal in major browsers. The `S' and `C' represent the strict approach and conservative approach, respectively.}
-\label{table:adoption}
+\begin{tabular}{lccccccc}
+\toprule
+\multicolumn{1}{c}{\texttt{Content-Type}}
+&Opera&Safari&Chrome&Firefox 3.5/3.6&Firefox 4&IE 7/8&IE 9\\
+\midrule
+\texttt{text/html},
+other well-formed non-CSS                   & T & T & T & T & S & ? & ?\\
+\texttt{*/*}, other ill-formed values       & T & T & T &   &   & ? & ?\\
+Header absent                               & T &   &   &   &   & ? & ?\\
+\texttt{application/x-unknown-content-type} & T &   &   &   &   & ? & ?\\
+\bottomrule
+\multicolumn{8}{r}{\vrule height10pt width0pt\relax\itshape
+  S = strict defense; T = tolerant defense; blank = no defense.}
+\end{tabular}
+\caption{The effect of missing or ill-formed
+  Content-Type}\label{table:adoption}
 \end{table*}
 
+\paragraph{Results}
+From these 100,000 web sites, our crawler logged a total of 260,069
+CSS references, of which 206,051 were same-origin and 54,018
+cross-origin.  We did not include data for sites that were unreachable
+during our evaluation, due to unresponding servers or domain name
+errors. Our results are shown in Table~\ref{table:results}.
+
+Of these 260,069 requested style sheets, 2,363 returned an HTTP error
+(e.g.\ 400 Bad Request, 404 Not Found, or 500 Internal Server Error)
+rather than a style sheet.  All current browsers discard a style sheet
+when they receive an HTTP error, so we did not analyze the body or
+\verb|Content-Type| header for these responses.
+
+Of the remaining 257,706 sheets, only 1,009 were labeled with an
+incorrect \verb|Content-Type| header (that is, anything but
+\verb|Content-Type: text/css|.  We summarize the incorrect headers we
+observed in Table~\ref{table:MIME}; \verb|text/html| is the most
+common value, accounting for 71\% of errors.  Some of these
+\verb|text/html| responses were HTML landing pages produced (with a
+200~OK response code) because the desired style sheet no longer
+existed; the \verb|Content-Type| is correct in this case, but the
+server is still misconfigured, as it should have produced an HTTP
+error.  Style sheets labeled with the generic types \verb|text/plain|
+and \verb|application/octet-stream| make up a further 7\% of the
+total, and a few other specific types appeared,
+e.g.~\verb|application/x-javascript|.
+
+The second most common error, accounting for 18\% of the total, is to
+provide no \verb|Content-Type| header at all, or a header with no
+value; these are listed together in table~\ref{table:MIME} as
+“absent.”  An absent \verb|Content-Type| header is functionally
+different from one with the wrong value; even in standards mode, a
+style sheet with an absent \verb|Content-Type| will be processed as
+CSS.  See section~\ref{sec:missing} for further discussion of absent
+types.
+
+The crawler logged whether standards or quirks mode was in effect for
+each HTML page that loaded a CSS resource.  Quirks mode is in effect
+for a substantial minority of the 100,000 sites crawled, but of the
+260,069 requests for CSS, only 31,681 came from sites in quirks mode.
+In standards mode, style sheets are always discarded if they are
+labeled with the wrong \verb|Content-Type|; we observed 572 such
+futile requests in our sample.  From sites in quirks mode, there were
+437 requests for sheets that were labeled with the wrong type; these
+sheets are honored.
+
+The crawler also recorded whether a style sheet was served from the
+same origin as the requesting HTML document.  \todo{If an external
+  sheet imported another sheet, was the crawler's origin check
+  relative to the importing sheet or relative to the original HTML?}
+It is most common to serve style sheets from the same origin as the
+HTML, but we did observe 54,018 cross-origin requests, 6,075 of which
+were for pages in quirks mode.  Only 74 of those cross-origin requests
+were labeled with the wrong \verb|Content-Type|.
+
+Finally, the crawler checked whether each sheet began with a
+well-formed CSS construct.  1,059 sheets (0.41\% of the sample) were
+not well-formed.  (It is interesting to note that a common error among
+these ill-formed sheets is to start the file with an HTML
+\verb|<style>| tag.)  Only 60 sheets were both malformed and labeled
+with an incorrect \verb|Content-Type|, and none of these were served
+cross-origin.
+
+\paragraph{Discussion}
+Within the Alexa top 100,000 web sites, we observed a total of 1,009
+CSS resources labeled with an incorrect MIME type (excluding responses
+with HTTP errors).  Of these, 572 are associated with sites being
+rendered in standards mode, and are therefore already being ignored.
+Of the remaining 437 style sheets, 74 are loaded cross-origin; these
+are the sheets that would be rejected by the strict defense, breaking
+no more than 0.06\% of the Alexa sites.  \todo{Was each of these 74
+  \emph{sheets} associated with a different \emph{site}?}
+This is a tiny number, but browser vendors have historically been
+reluctant to deploy changes that break popular web sites.  Our
+tolerant defense, which accepts cross-origin, mislabeled sheets unless
+they are also malformed, would not break any of the Alexa sites.
+
+Many of the Alexa top 100,000 sites provide additional content to
+registered users.  We did not attempt to create accounts on any of the
+sites; our results are strictly for unauthenticated access.  It is
+possible that more sites would be broken (by either form of the
+defense) if viewed by an authenticated user.
+
 \subsubsection{Adoption}
-Our proposal has been adopted by several major browsers, including Google Chrome, Opera, Safari and Firefox. Our proposal requires no changes to existing web servers and only modifies the browser. We implemented a patch for the conservative approach of cross-origin CSS loading in WebKit, the open source web browser engine component integrated in Safari and Google Chrome. The WebKit patch was deployed first in Google Chrome~4.0.249.78, and also accepted in Safari~4.0.5. Note that the cross-origin CSS raw text leak is tightened by this patch because read access to cross-origin CSS raw text is limited to well-formed imports. Inspired by our WebKit patch, the exact same heuristic of our proposal was adopted in Opera~10.10. We implemented both the strict approach and the conservative approach for cross-origin CSS loading in Mozilla Firefox. Mozilla has deployed the conservative approach in Firefox~3.6.5 and the strict approach in alpha builds of Firefox~3.7.
+Our proposal has already been adopted by several major browsers.  We
+implemented the tolerant defense for WebKit, and both the tolerant and
+strict defenses for Mozilla's Gecko engine.  The tolerant defense has
+been deployed in Google Chrome (version~4.0.249.78), Safari
+(version~4.0.5), and both Firefox~3.5.11 and~3.6.7.  Firefox~4 instead
+offers the strict defense, which Mozilla considers preferable in the
+long term.  Inspired by our WebKit patch, Opera has also implemented
+the tolerant defense for version~10.10 of their browser.
 
-The interpretation of valid MIME types for cross-origin CSS files differs slightly on each browser, as shown in Table~\ref{table:adoption}. In addition to the \texttt{text/css} MIME type, Firefox and WebKit-based browsers also accept files with an empty MIME type or the \texttt{application/x-unknown-content-type} MIME type, in which some servers attempt to trigger the browser's content-sniffing algorithm. We noticed that Firefox treats some unknown or bogus MIME types (strings that lack a slash e.g. \texttt{text}) as valid MIME types for CSS files. Other internet media types (e.g. \texttt{image/gif}) should be invalid for CSS files, with the exception of \texttt{text/css}.
+\subsubsection{Missing or Ill-Formed Content Types}\label{sec:missing}
+To be fully reliable, our proposed defenses should be applied whenever
+a style sheet lacks the \verb|Content-Type: text/css| label, including
+when the \texttt{Content-Type} header is missing or has an ill-formed
+value.  Recall from Table~\ref{table:MIME} that we saw 178 CSS
+resources that lacked a Content-Type header in our survey.  However,
+as shown in Table~\ref{table:adoption}, most browsers---with the
+notable exception of Opera---do accept cross-origin style sheets if
+they lack a \texttt{Content-Type} header, even in standards mode.
+Firefox ignores \texttt{Content-Type} headers that it cannot parse
+(e.g.~\verb|Content-Type: */*|) and will therefore also accept a
+cross-origin style sheet with an unparseable \texttt{Content-Type}.
+Finally, Webkit and Firefox both treat the special type
+\texttt{application/x-unknown-content-type} the same as the absence of
+a header.
 
-\subsubsection{Missing Content Types}
-
-One remaining issue that is not yet addressed by our proposal is that some web
-applications send a Content-Type of \verb|application/x-unknown-content|
-or omit the Content-Type header entirely. 
-This scenario is not very common for HTML documents but we did see 178 CSS resources that lacked a Content-Type header in our experiment. Most browsers,
-with the notable exception of Opera, do attempt to load cross-origin
-style sheets with an empty MIME type even in standards mode. 
-This behavior could open up a server
-to attack if it fails to set a Content-Type header on its HTML documents. We
-have not yet observed any web servers in the wild that are affected by this
-vulnerability, but browsers may wish to follow Opera's lead and block such
-style sheets when loaded across origins. In any case, we recommend that web
-applications always properly set a Content-Type header.
+These gaps in the defense could open up a target server to attack, if
+it fails to set a \texttt{Content-Type} header on its HTML
+documents. We have not yet observed any web servers in the wild that
+are affected by this vulnerability, but browsers may wish to follow
+Opera's lead and block such style sheets when loaded across
+origins. In any case, we recommend that servers always provide a
+correct Content-Type header.
 
 \subsection{Other Client-Side Approaches}
-There are other defensive approaches that can be deployed in browsers without modifying web servers including globally blocking cookies and tightening DOM access.  We argue that all of these approaches could either be circumvented with a variation of the attack, or would significantly reduce web site compatibility.
+Other defensive approaches could be deployed in browsers without
+modifying web servers, but we claim that all of them could easily be
+circumvented, or else would significantly reduce web compatibility.
 
 \paragraph{Block Cookies}
-Browsers give users the option of disabling cookies
-and always send anonymous requests, thus can prevent web attackers from
-stealing content on any cookie-authenticated URLs. Additionally, some browsers
-restrict cross-origin resources from setting or reading cookies (``third-party
-cookie blocking''). However, some sites use session cookies for cross-origin
-resources, which is why browser third-party cookie blocking typically only
-blocks incoming cookies, rather than outbound
-cookies~\cite{jackson06thirdpartycookies}. This third-party cookie blocking
-behavior is insufficient to stop the cross-origin CSS attack, since the
-attacker can still hijack the user's existing authenticated session.
+If HTTP cookies are disabled in the browser, web attackers cannot
+steal content from cookie-authenticated sites.  However, completely
+disabling cookies renders many sites unusable.  Some browsers have the
+option to block only “third-party” cookies, which prevents cookies
+from being \emph{set} by a cross-origin load.  Unfortunately, this
+mode typically does not block cookies from being \emph{sent} with a
+cross-origin load, because some sites require session cookies for
+cross-origin resources~\cite{jackson06thirdpartycookies}.  Blocking
+only cookie sets does not block cross-origin CSS attacks.
 
 \paragraph{Block JavaScript Style APIs}
-The same-origin policy for DOM access restricts the ability for JavaScript to
-access DOM properties and methods across domains. To prevent the cross-origin
-CSS attack, browsers could block DOM access to style sheet text and computed
-styles loaded from cross-origin style sheets, at least when the CSS file is
-malformed or has incorrect MIME type. This restriction would stop some
-attacks, but the attacker could still bypass this limitation with
-\texttt{background-image} property injection technique described in
-Section~\ref{sec:extraction}.
+Many browsers already prevent JavaScript from reading parsed style
+rules when those rules were loaded cross-origin; this could be done
+more thoroughly, and they could also prevent access to computed style
+when the chosen value came from a cross-origin sheet.  These changes
+would stop some attacks, but an attacker could still use the
+\texttt{background-image} approach that does not require JavaScript.
 
-%\paragraph{Stricter CSS Parsing}
-%CSS parsers are tolerant of syntax errors and will resume parsing after syntax errors. The cross-origin CSS attack could be mitigated if the browser's CSS parser rejected the style sheet on the first syntax error, as it does with script libraries. However, this approach would require all web developers to strictly write well formed CSS, and would immediately break many existing web sites.
+\paragraph{Stricter CSS Parsing}
+Cross-origin CSS attacks would be much more difficult if the CSS
+parser threw away the entire style sheet on any syntax error.
+Unfortunately, this would ruin CSS's forward compatibility feature,
+and would break many existing web sites.
 
-\subsection{Server-side Mitigations}
-In this section, we consider approaches that can be adopted by web servers
-without requiring changes to current browsers. Web applications may wish to
-adopt such mitigations to protect users of browsers that have not yet adopted
-our proposed defenses, such as Internet Explorer.
+\subsection{Server-side Mitigation}
+Web sites have several options for rendering themselves less
+vulnerable to cross-origin CSS attacks.  Despite the rapid uptake of
+our proposed client-side defense, we still recommend that site
+maintainers consider these server-side mitigations, to protect site
+users who are still using a browser with no defense.
 
 \paragraph{Newlines}
-In the CSS specification, strings and URLs cannot directly contain newlines.
-In most browsers, newlines will break CSS parsing, preventing the attacker from loading the cross-origin data.
-Thus, web applications that surround potential injection points with
-newlines may interfere the cross-origin CSS attack.
-However, the Internet Explorer allows newlines within CSS
-property strings, making newlines an ineffective server-side mitigation for this browser.
+The CSS specification does not allow strings and URLs to contain
+newlines.  Most browsers honor this rule, so sites can defend against
+cross-origin CSS attacks by inserting newlines before and after
+potential injection points.  However, this does not protect users of
+Internet Explorer, which at the time of writing is the only major
+browser not to have adopted a defense.
 
 \paragraph{HTML encoding}
-Another mitigation for web applications would be to HTML-encode potential attack characters in user-controlled content. For example, the CSS parsing for a string would break if it was not written in quotes. However, the attacker could bypass this barrier by injecting the \texttt{background-image} property which allows embedding strings within the \texttt{url()} notation without using quotes. We expect that escaping curly braces using \verb|&#123;| and \verb|&#125;| would be more successful; however most HTML encoding utility functions such as \verb|html_encode| in Ruby and \verb|htmlentities| in PHP refuse to encode these characters.
+As we mentioned in section~\ref{sec:limits}, CSS-based attacks can be
+prevented by replacing the punctuation within the injected strings
+with HTML entities.  Existing filters often already do this for
+quotation marks, but quotation marks are not required for the attack;
+the attacker could use an unquoted \texttt{url()} instead.  We
+recommend escaping curly braces in user-submitted content as well,
+using \verb|&#123;| and \verb|&#125;|.  This will block all known
+forms of the attack, as long as the attacker cannot force UTF-7
+encoding (see below).  Unfortunately, at present, most server-side
+languages' utility functions for entity-encoding punctuation will not
+encode these characters.
 
-\paragraph{Declare Character Set Using HTTP Headers}
-We observe that only 584 of the top 1,000 web sites declared a character set
-for their home pages using the HTTP Content-Type header. A missing character set
-may allow attacker to bypass encoding of quotes and curly braces by forcing
-the UTF-7 character set, as described in Section~\ref{sec:escapes}. We
-recommend that web applications always set document character sets using the HTTP Content-Type header.
+\paragraph{Content-Type}
+Our browser-side defense is ineffective for target sites that do not
+label all HTTP responses, especially those that contain confidential
+information, with the proper \texttt{Content-Type} header, as
+discussed in section~\ref{sec:missing}.  It is also important to
+ensure that the \texttt{Content-Type} header includes a character set
+declaration.  Otherwise, in a browser with no defense, the attacker
+may be able to defeat HTML entity encoding of quotes and curly braces
+by forcing the target page to be interpreted as UTF-7.  Declaring the
+character set in a \texttt{meta} tag inside the document is not good
+enough, because the CSS parser will not recognize that tag.
 
-\paragraph{Don't Use Ambient Authentication}
-A more effective server-side mitigation is to avoid the use of ambient authentication, including HTTP authentication and session cookies. One solution is the web-key authentication scheme~\cite{webkey} which explicitly embeds user permissions in URLs without using cookies for authentication. This approach can mitigate the attack since the attacker does not know the unguessable URL.
+If it is impossible to get a character set declaration into the HTTP
+headers for some reason, entity-encoding plus signs as \verb|&#43;|
+would also prevent the attacker from using UTF-7.
+
+\paragraph{Avoid Ambient Authentication}
+Cross-site attacks rely on the browser transmitting “ambient”
+authentication information, such as HTTP credentials or session
+cookies, with any request to the target site.  A site that makes no
+use of these is less vulnerable.  One possible alternative is the
+web-key authentication scheme~\cite{webkey}, which embeds credentials
+in site URLs instead of cookies.  The attacker is foiled, as they
+cannot guess these URLs.  However, if a URL with a credential becomes
+visible to the victim user (e.g.\ via the location bar), they might be
+tricked into revealing it.
 
 \section{Related Work} \label{sec:relatedwork}
-In this section, we review current browser defense techniques that are used to
-defend against similar attacks: content-sniffing XSS and JavaScript hijacking.
-We also consider recent research proposals for secure web browsers and their
-protection against the cross-origin CSS attack.
+In this section, we review current browser defense techniques that are
+used to defend against similar attacks: content-sniffing XSS and
+JavaScript hijacking.  We also consider recent research proposals for
+secure web browsers and their protection against the cross-origin CSS
+attack.
 
 \subsection{Content-Sniffing XSS Defenses}
 In a content-sniffing XSS attack, the attacker uploads a crafted chameleon
