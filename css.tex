@@ -687,23 +687,23 @@ alternative client-side defenses and complementary server-side measures.
 
 \begin{table*}
 \centering
-\def\m#1#2{\multicolumn{#1}{c}{#2}}
-\begin{tabular}{crrrrrrr}
-\toprule
+\def\m#1#2{\multicolumn{#1}{|c|}{#2}}
+\begin{tabular}{|c|r|r|r|rr|rr|}
+\hline
   Requesting&      \m1{Page}&        &           &      \m2{Correct type}&    \m2{Incorrect type}\\
       server& \m1{rendering}&   Total& HTTP error& Well-formed& Malformed& Well-formed& Malformed\\
-\midrule
+\hline
  Same-Origin& Standards Mode& 180,445&      1,497&     178,017&       506&         424&         1\\
             &    Quirks Mode&  25,606&        466&      24,445&       332&         304&        59\\
-\addlinespace
+\hline
 Cross-Origin& Standards Mode&  47,943&        347&      47,345&       104&         147&         0\\
             &    Quirks Mode&   6,075&         53&       5,891&        57&          74&         0\\
-\addlinespace
+\hline
             &          Total& 260,069&      2,363&     255,698&       999&         949&        60\\
-\bottomrule
+\hline
 \end{tabular}
 \caption{Categorization of CSS references for the Alexa top 100,000 sites.}
-\todo{need the lines back!}
+%\todo{need the lines back!}
 \label{table:results}
 \end{table*}
 
@@ -725,7 +725,7 @@ client-side defense is to enforce content type checking for style
 sheets loaded cross-origin, even if the requesting page is in quirks
 mode. We describe two variants on this proposal.  Strict enforcement
 only allows cross-origin CSS loads with the correct content type.
-Tolerant enforcement allows apparently benign content type mismatches
+Minimal enforcement allows apparently benign content type mismatches
 in order to maximize web site compatibility.
 
 \subsubsection{Strict Enforcement} \label{sec:strict}
@@ -742,9 +742,9 @@ misconfigured.  Unfortunately, content type misconfigurations are
 common, so strict enforcement may be too risky for browser vendors to
 adopt.
 
-\subsubsection{Tolerant Enforcement}
-To address this concern, we also propose a more conservative solution:
-tolerant enforcement blocks a CSS resource if and only if it is loaded
+\subsubsection{Minimal Enforcement}
+To address this concern, we also propose a more tolerant solution:
+minimal enforcement blocks a CSS resource if and only if it is loaded
 cross-origin, has an invalid content type, and is syntactically
 malformed. When the browser encounters a cross-origin style sheet
 labeled with the wrong content type, it begins parsing the sheet as
@@ -804,13 +804,13 @@ the HTML.
 &Opera&Safari&Chrome&Firefox 3.5/3.6&Firefox 4&IE 8&\\
 \midrule
 \texttt{text/html},
-other well-formed non-CSS                   & T & T & T & T & S &  & \\
-\texttt{*/*}, other ill-formed values       & T & T & T &   &   &  & \\
-Header missing                               & T &   &   &   &   &  & \\
-\texttt{application/x-unknown-content-type} & T &   &   &   &   &  & \\
+other well-formed non-CSS                   & M & M & M & M & S &  & \\
+\texttt{*/*}, other ill-formed values       & M & M & M &   &   &  & \\
+Header missing                               & M &   &   &   &   &  & \\
+\texttt{application/x-unknown-content-type} & M &   &   &   &   &  & \\
 \bottomrule
 \multicolumn{8}{r}{\vrule height10pt width0pt\relax\itshape
-  S = strict defense; T = tolerant defense; blank = no defense.}
+  M = minimal defense; S = strict defense; blank = no defense.}
 \end{tabular}
 \caption{The effect of missing or ill-formed
   Content-Type}\label{table:adoption}
@@ -882,7 +882,7 @@ rendered in standards mode, and are therefore already being ignored.
 Of the remaining 437 style sheets, 74 are loaded cross-origin; these
 are the sheets that would be rejected by the strict defense, breaking
 62 (0.06\%) of the Alexa sites.  This is enough to make browser
-vendors reluctant to deploy strict enforcement.  The tolerant mode,
+vendors reluctant to deploy strict enforcement.  The minimal defense,
 which accepts cross-origin, mislabeled sheets unless they are also
 malformed, would not break any of the top 100,000 sites.
 
@@ -894,13 +894,13 @@ authenticated user.
 
 \subsection{Adoption}
 Our proposal has been adopted by several major browsers. We
-implemented tolerant enforcement for WebKit, and both tolerant and
-strict enforcement for Mozilla's Gecko engine. Tolerant enforcement
+implemented minimal enforcement for WebKit, and both minimal and
+strict enforcement for Mozilla's Gecko engine. Minimal enforcement
 based on our changes has been deployed in Google Chrome~4.0.249.78,
 Safari~4.0.5, and both Firefox~3.5.11 and~3.6.7. Firefox~4 instead
 offers strict enforcement, which Mozilla considers preferable in the
-long term. Opera independently implemented tolerant enforcement for
-version~10.10 of their browser.
+long term. Opera has also adopted our minimal enforcement proposal
+for version~10.10 of their browser.
 
 \subsection{Missing or Ill-Formed Content Types}\label{sec:missing}
 To be fully reliable, our proposed defenses should be applied whenever
@@ -1114,11 +1114,11 @@ many websites to be feasible.
 In this paper, we presented cross-origin CSS attacks, known for some
 time but underestimated as a threat.  We developed a reliable defense
 for this attack, in two variants: one strict, based solely on content
-types, and one more tolerant, using a content-sniffing rule to improve
+types, and a minimal defense that uses a content-sniffing rule to improve
 site compatibility.  We surveyed 100,000 web sites to assess the site
 compatibility of our proposals.  Common server misconfigurations
 trigger false positives in the strict variant, and would break
-62~(0.06\%) of the 100,000 sites; the tolerant variant does not break
+62~(0.06\%) of the 100,000 sites; the minimal variant does not break
 any sites.  Our defense has been adopted in major browsers, including
 Firefox, Google Chrome, Safari and Opera.  We also made
 recommendations for server-side mitigation of the attack: configure
