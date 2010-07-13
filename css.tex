@@ -84,37 +84,32 @@ requires network communication, and are becoming competitive in other
 areas.  It is not an exaggeration to say that the Web is the
 development platform of choice for new software.
 
-The \emph{same-origin policy}~\cite{mozillasameorigin} is the basic
-principle used to secure Web applications from each other.  An HTML
-document can load any sort of content---images, style sheets, nested
-documents and “plug-ins,” even scripts---from any site.  However, the
-scripts loaded into a document can only communicate with that site's
-servers, and cannot examine content loaded from other sites.  This
-policy applies even within what appears to the user to be one unified
-“page;” for instance, scripts can only inspect the DOM tree for an
-\texttt{IFRAME}'s nested document if that document came from the same
-origin.  This allows sites to share popular script libraries and store
-large, rarely-changing content (such as images and videos) on servers
-dedicated to the purpose, while preventing malicious sites from
-reading content that should be visible only to the user.
+The \emph{same-origin policy}~\cite{mozillasameorigin} is the basic principle
+used to secure Web applications from each other. An HTML document can include
+many sorts of content---including images, scripts, videos, and other
+documents---from any site. However, the document may not directly examine
+content loaded from other sites. This policy applies even within what appears
+to the user to be one unified page; for instance, scripts can only inspect the
+content of a nested document if that document came from the same origin.
+Cross-origin content inclusion allows sites to share popular script libraries
+and store large, rarely-changing content on servers dedicated to that purpose,
+while preventing malicious sites from reading content that should be visible
+only to the user.
 
-Cascading style sheets (CSS) are the third principal component of Web
-documents; they define appearance, just as HTML defines content and
-JavaScript behavior.  Proposals for author control of style were
+Cascading style sheets (CSS) are yet another type of content that a document
+may include; they define appearance, just as HTML defines content and
+JavaScript defines behavior. Proposals for author control of style were
 circulated as early as 1993~\cite{css-history}, but the first complete
 specification dates to 1996~\cite{css1} and was not implemented in a
-widely-used browser till 1997~\cite{eich}.  The CSS specification is
-continually being extended, and its original designers planned for
-this.  As long as new CSS features conform to the
-\emph{forward-compatible parsing rules} defined in \cite{syndata}, old
-browsers will skip over features they do not implement, while
-continuing to honor instructions that they do understand.  Web
-designers can thus build sites that take advantage of the very latest
-CSS features but “degrade gracefully” and remain usable with older
-browsers.  Unfortunately, the forward-compatible parsing rules are so
-permissive that they can find valid CSS constructs in an input stream
-that was not intended to be CSS at all; for instance, in an HTML
-document.
+widely-used browser till 1997~\cite{eich}. To allow future extensibility, the
+CSS specification defines~\emph{error-tolerant parsing rules}: old
+browsers will skip over features they do not implement, while continuing to
+honor instructions that they do understand~\cite{syndata}. These rules are
+intended to allow web designers to build sites that take advantage of the very
+latest CSS features but ``degrade gracefully'' and remain usable with older
+browsers. Unfortunately, error-tolerant parsing rules can find valid CSS
+constructs in an input stream that was not intended to be CSS at all; for
+instance, in an HTML document.
 
 This leads to a security hole, first described (to our knowledge) in
 2002~\cite{cssxss02} and rediscovered at least twice since 
@@ -124,19 +119,22 @@ contents, are known) and then load that page as a style sheet, it can
 extract information from the page by examining what the CSS parser
 makes of this ```sheet.'' The attack works even if the target page cannot
 be retrieved without presenting login credentials, because the browser
-will present any credentials (e.g.\ HTTP cookies) it has stored for
+will present any credentials (e.g.~HTTP cookies) it has stored for
 the target server when it does the load.  However, to date, all
 published attacks of this type have required JavaScript, and most have
 been specific to Internet Explorer.
 
-In this paper, we present a general form of the attack that can be
-made to work in any browser that supports CSS, even if JavaScript is
-disabled or unsupported.  We then propose and implement modifications
-to browser handling of CSS that completely block the attack, as long
-as the victimized web site does not make certain errors (discussed in
-Section~\ref{sec:missing}).  Our modifications have no negative side
-effects for most websites, and have been adopted by Firefox, Google
-Chrome, Safari, and Opera.
+In this paper, we present a general form of the attack that can be made to
+work in any browser that supports CSS, even if JavaScript is disabled or
+unsupported. We argue that this vulnerability is not a bug in browser CSS
+implementations, but rather a general limitation of forwards-compatible
+parsing: the browser must be confident of the content type of an included
+resource before such rules can be safely applied. We propose and implement
+stricter negotiation content type negotiation that completely blocks the
+attack, as long as the victimized web site does not make certain errors
+(discussed in Section~\ref{sec:missing}). Our proposal has no negative side
+effects for most websites, and have been adopted by Firefox, Google Chrome,
+Safari, and Opera.
 
 \paragraph{Organization}
 The rest of this paper is organized as
@@ -213,53 +211,52 @@ confidential information.
 
 \subsubsection{Cross-Origin Content Inclusion}
 As discussed in Section~\ref{sec:intro}, browsers permit web pages to
-reference resources (images, scripts, style sheets, etc.) from any
+include resources (images, scripts, style sheets, etc.) from any
 origin, not just from the server hosting the page itself. Requests for
 cross-origin resources transmit any credentials (cookies or HTTP
 authentication tokens) associated with the site that hosts the
 resource, \emph{not} credentials associated with the site whose page
-made the reference. Thus, confidential information from one site can
-be “transcluded” into a page that could not read it directly (thanks
-to the same-origin policy.)  There it will be visible to the user, but
-not to scripts running in the page.
+made the reference. Thus, confidential resources from one site can
+be included into a page that could not read it directly. 
+There it will be visible to the user, but not to scripts running in the page.
 
-\todo{The next few paragraphs don't make any sense. -zw}
+% \todo{The next few paragraphs don't make any sense. -zw}
 
-Unfortunately, session-authenticated URLs may be abused by malicious
-sites in cross-site request forgery~\cite{csrf} attacks to disrupt the
-integrity of the user's session with an honest site. And a general
-problem of confidential data theft arises when a resource (on the
-target site) bypasses the browser's security restrictions for library
-imports:
-\begin{itemize}
-\item The embedded content must conform to a benign library
-format. This may be defeated since the browser allow
-error-tolerant parsing for certain library formats. The HTTP
-\texttt{Content-Type} header is supposed to indicate the type of
-the content being transmitted, using the Multipurpose Internet
-Mail Extensions (MIME) type vocabulary~\cite{mime}. However,
-browsers typically don't check the content type for library
-imports and attempts to parse any response from the server (some
-even ignore HTTP error codes.)
-\item The embedded content shouldn't be read back by the
-requesting page. However, we have known security gaps in the
-JavaScript environment where it is possible to violate the
-same-origin policy: imported styles could be revealed by
-inspecting computed styles; imported scripts could be revealed
-by redefining callback functions or modifying object
-prototypes~\cite{rootkits}; even partial information of embedded
-HTML documents may be revealed by inspecting the height
-attribute of auto-sized seamless iframes.
-\end{itemize} One of the better researched vulnerabilites of
-this class is known as JavaScript hijacking~\cite{jshijacking},
-where a confidential JSON document is parsed as a valid script
-and could be stolen by a malicious site (further discussed in
-Section~\ref{sec:json}). A potentially severe vulnerablity might
-exist if an attacker-manipulated content was parsed as embedded
-objects in browser plugins and executed in the origin of the
-server hosting the resource. In this paper, we present the
-cross-origin CSS attack as another form of cross-origin content
-inclusion vulnerabilites.
+% Unfortunately, session-authenticated URLs may be abused by malicious
+% sites in cross-site request forgery~\cite{csrf} attacks to disrupt the
+% integrity of the user's session with an honest site. And a general
+% problem of confidential data theft arises when a resource (on the
+% target site) bypasses the browser's security restrictions for library
+% imports:
+% \begin{itemize}
+% \item The embedded content must conform to a benign library
+% format. This may be defeated since the browser allow
+% error-tolerant parsing for certain library formats. The HTTP
+% \texttt{Content-Type} header is supposed to indicate the type of
+% the content being transmitted, using the Multipurpose Internet
+% Mail Extensions (MIME) type vocabulary~\cite{mime}. However,
+% browsers typically don't check the content type for library
+% imports and attempts to parse any response from the server (some
+% even ignore HTTP error codes.)
+% \item The embedded content shouldn't be read back by the
+% requesting page. However, we have known security gaps in the
+% JavaScript environment where it is possible to violate the
+% same-origin policy: imported styles could be revealed by
+% inspecting computed styles; imported scripts could be revealed
+% by redefining callback functions or modifying object
+% prototypes~\cite{rootkits}; even partial information of embedded
+% HTML documents may be revealed by inspecting the height
+% attribute of auto-sized seamless iframes.
+% \end{itemize} One of the better researched vulnerabilites of
+% this class is known as JavaScript hijacking~\cite{jshijacking},
+% where a confidential JSON document is parsed as a valid script
+% and could be stolen by a malicious site (further discussed in
+% Section~\ref{sec:json}). A potentially severe vulnerablity might
+% exist if an attacker-manipulated content was parsed as embedded
+% objects in browser plugins and executed in the origin of the
+% server hosting the resource. In this paper, we present the
+% cross-origin CSS attack as another form of cross-origin content
+% inclusion vulnerabilites.
 
 \begin{figure*}[t]
 \begin{center}
