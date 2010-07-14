@@ -272,7 +272,7 @@ Attacker injects CSS leader and trailer around secret.&
 CSS parser skips most of the document, loads secret as a valid style rule.
 \end{tabular}
 \end{center}
-\caption{Anatomy of the attack.}
+\caption{Example of a Cross-Origin CSS Attack}
 \label{figure:victim}
 \end{figure*}
 
@@ -352,7 +352,7 @@ rules, even without JavaScript.  Figure~\ref{figure:victim}
 illustrates the anatomy of the attack. (The text in
 Figure~\ref{figure:victim} has been word-wrapped for readability; if
 line breaks were present in between the injected blocks, the attack
-would be limited as discussed in Section~\ref{sec:linebreaks}.)
+would be limited to Internet Explorer as discussed in Section~\ref{sec:linebreaks}.)
 
 \subsubsection{CSS String Injection}
 One might expect that an HTML document, when parsed as a style sheet,
@@ -465,7 +465,7 @@ server, providing the secret to be stolen as the query string.
 \begin{figure*}
 \centering
 \includegraphics[width=\linewidth]{steps}
-\caption{Steps of the Cross-Origin CSS Attack without JavaScript}
+\caption{Steps of a Cross-Origin CSS Attack without JavaScript}
 \label{figure:steps}
 \end{figure*}
 
@@ -682,7 +682,7 @@ CSS attacks, evaluate it for compatibility with existing web sites,
 and review its adoption by major browsers.  We also examine a few
 alternative client-side defenses and complementary server-side measures.
 
-\subsection{Proposal: Content Type Checking for CSS} % Is this a good name?
+\subsection{Content Type Enforcement Proposal}
    \label{sec:proposal}
 
 \begin{table*}
@@ -703,7 +703,6 @@ Cross-Origin& Standards Mode&  47,943&        347&      47,345&       104&      
 \hline
 \end{tabular}
 \caption{Categorization of CSS references for the Alexa top 100,000 sites.}
-%\todo{need the lines back!}
 \label{table:results}
 \end{table*}
 
@@ -780,7 +779,7 @@ from a different origin.
                            missing& 178& (18\%)\\
 \bottomrule
 \end{tabular}
-\caption{Incorrect content types observed for CSS.}
+\caption{Incorrect Content Types Observed for CSS}
 \label{table:MIME}
 \end{table}
 
@@ -812,8 +811,8 @@ Header missing                               & M &   &   &   &   &  & \\
 \multicolumn{8}{r}{\vrule height10pt width0pt\relax\itshape
   M = minimal defense; S = strict defense; blank = no defense.}
 \end{tabular}
-\caption{The effect of missing or ill-formed
-  Content-Type}\label{table:adoption}
+\caption{Handling of Missing or Ill-Formed
+  Content-Type Headers after our Proposal}\label{table:adoption}
 \end{table*}
 
 \paragraph{Results}
@@ -1110,20 +1109,29 @@ many websites to be feasible.
 %impose additional round-trip costs, but it may be harder to deploy
 %than an approach relying on well-known URLs.
 
-\section{Conclusions} \label{sec:conclusion}
-In this paper, we presented cross-origin CSS attacks, known for some
-time but underestimated as a threat.  We developed a reliable defense
-for this attack, in two variants: one strict, based solely on content
+\section{Conclusion} \label{sec:conclusion}
+In this paper, we argued that error-tolerant parsing requires browsers to be
+confident of the content type of an included cross-origin resource before
+handling it. Cross-origin CSS attacks have been known for some time, but
+existing defenses for JavaScript-based CSS attacks are ineffective against
+the new variants we have discovered. We propose stricter content type handling
+to overcome the limitations of error-tolerant parsing. Our proposal has
+two variants: a strict defense, based solely on content
 types, and a minimal defense that uses a content-sniffing rule to improve
 site compatibility.  We surveyed 100,000 web sites to assess the site
 compatibility of our proposals.  Common server misconfigurations
 trigger false positives in the strict variant, and would break
 62~(0.06\%) of the 100,000 sites; the minimal variant does not break
 any sites.  Our defense has been adopted in major browsers, including
-Firefox, Google Chrome, Safari and Opera.  We also made
-recommendations for server-side mitigation of the attack: configure
-the \texttt{Content-Type} header correctly, and consider
-entity-encoding curly braces in user-submitted content.
+Firefox, Google Chrome, Safari and Opera.
+We also described some server-side mitigations for the attack.
+
+Error-tolerant parsing has extensibility benefits that have allowed CSS to
+become the dominant presentation format for the Web and will allow it to
+continue to evolve in the future. As more new features are introduced into
+browsers, we expect that many of them will consider adopting error-tolerant parsing as well. We hope that the designers of these features will
+take into consideration the importance of correctly determining the content
+type of cross-origin resources to avoid similar attacks.
 
 \section*{Acknowledgements}
 
