@@ -465,7 +465,13 @@ server, providing the secret to be stolen as the query string.
 \begin{figure*}
 \centering
 \includegraphics[width=\linewidth]{steps}
-\caption{Steps of a Cross-Origin CSS Attack without JavaScript}
+\caption{Steps of a Cross-Origin CSS Attack without JavaScript.  1:
+  Victim logs into target website.  2: Some time later, victim is
+  tricked into visiting the attacker's website, which requests a private
+  page on the target as a style sheet.  3: Victim's browser finds an
+  injected CSS rule in the private page.  4: Browser requests a
+  “background image” from the attacker's website, transmitting secret
+  information.}
 \label{figure:steps}
 \end{figure*}
 
