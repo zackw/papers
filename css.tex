@@ -1,4 +1,4 @@
-\documentclass{acm_proc_article-sp}
+\documentclass{sig-alternate}
 \usepackage{url}
 \usepackage{verbatim}
 \usepackage[utf8]{inputenc}
@@ -7,25 +7,11 @@
 \usepackage{upquote}
 \hyphenation{brow-ser brow-sers tra-dit-ion-al ja-va-script Web-Kit}
 \begin{document}
-% fix some inappropriately large gaps - some of this must be after
-% begin document
-\itemsep 0pt
-\partopsep 0pt
-\topsep 0pt
-\makeatletter
-\def\paragraph{%
-    \@startsection{paragraph}{4}{\z@}{\z@ \@plus \p@}{-5\p@}{\subsecfnt}}
-\makeatother
-\renewenvironment{itemize}{%
- \begin{list}{$\bullet$}
-  {\setlength{\itemsep}{0pt}
-   \setlength{\parsep}{3pt}
-   \setlength{\topsep}{3pt}
-   \setlength{\partopsep}{0pt}
-   \setlength{\leftmargin}{1.5em}
-   \setlength{\labelwidth}{1em}
-   \setlength{\labelsep}{0.5em}}}
-  {\end{list}}
+\conferenceinfo{CCS'10,} {October 4--8, 2010, Chicago, Illinois, USA.}
+\CopyrightYear{2010}
+\crdata{978-1-4503-0244-9/10/10}
+\clubpenalty=10000
+\widowpenalty=10000
 
 \title{Protecting Browsers from Cross-Origin CSS Attacks}
 \numberofauthors{4}
@@ -36,8 +22,8 @@ Lin-Shung Huang\\
       \affaddr{linshung.huang@sv.cmu.edu}
 \alignauthor
 Zack Weinberg\\
-      \affaddr{Mozilla}\\
-      \affaddr{zweinberg@mozilla.com}
+      \affaddr{Carnegie Mellon University}\\
+      \affaddr{zack.weinberg@sv.cmu.edu}
 \and
 \alignauthor
 Chris Evans\\
@@ -96,45 +82,48 @@ and store large, rarely-changing content on servers dedicated to that purpose,
 while preventing malicious sites from reading content that should be visible
 only to the user.
 
-Cascading style sheets (CSS) are yet another type of content that a document
-may include; they define appearance, just as HTML defines content and
-JavaScript defines behavior. Proposals for author control of style were
-circulated as early as 1993~\cite{css-history}, but the first complete
-specification dates to 1996~\cite{css1} and was not implemented in a
-widely-used browser till 1997~\cite{eich}. To allow future extensibility, the
-CSS specification defines~\emph{error-tolerant parsing rules}: old
-browsers will skip over features they do not implement, while continuing to
-honor instructions that they do understand~\cite{syndata}. These rules are
-intended to allow web designers to build sites that take advantage of the very
-latest CSS features but ``degrade gracefully'' and remain usable with older
-browsers. Unfortunately, error-tolerant parsing rules can find valid CSS
-constructs in an input stream that was not intended to be CSS at all; for
-instance, in an HTML document.
+Cascading style sheets (CSS) are yet another type of content that a
+document may include; they define appearance, just as HTML defines
+content and JavaScript defines behavior. CSS is a relative late-comer
+to the Web; although the need for a style sheet language was
+recognized as early as 1993, the first specification of CSS dates to
+1996, and the earliest browser to implement enough of CSS to be
+generally useful was Internet Explorer 6.0, in 2001.~\cite{css-hakon}
+
+To allow future extensibility, the CSS specification
+defines~\emph{error-tolerant parsing rules}: old browsers will skip
+over features they do not implement, while continuing to honor
+instructions that they do understand~\cite{syndata}. These rules are
+intended to allow web designers to build sites that take advantage of
+the very latest CSS features but ``degrade gracefully'' and remain
+usable with older browsers. Unfortunately, error-tolerant parsing
+rules can find valid CSS constructs in an input stream that was not
+intended to be CSS at all; for instance, in an HTML document.
 
 This leads to a security hole, first described (to our knowledge) in
-2002~\cite{cssxss02} and rediscovered at least twice since 
-then~\cite{cssxss05,cssxss08}.  If a malicious site can inject chosen
+2002~\cite{cssxss02} and rediscovered at least twice since then
+\cite{cssxss05,cssxss08}.  If a malicious site can inject chosen
 strings into a target webpage (whose structure, but not specific
 contents, are known) and then load that page as a style sheet, it can
 extract information from the page by examining what the CSS parser
-makes of this ``sheet.'' The attack works even if the target page cannot
-be retrieved without presenting login credentials, because the browser
-will present any credentials (e.g.~HTTP cookies) it has stored for
-the target server when it does the load.  However, to date, all
+makes of this ``sheet.'' The attack works even if the target page
+cannot be retrieved without presenting login credentials, because the
+browser will present any credentials (e.g.~HTTP cookies) it has stored
+for the target server when it does the load.  However, to date, all
 published attacks of this type have required JavaScript, and most have
 been specific to Internet Explorer.
 
-In this paper, we present a general form of the attack that can be made to
-work in any browser that supports CSS, even if JavaScript is disabled or
-unsupported. We argue that this vulnerability is not a bug in browser CSS
-implementations, but rather a general limitation of forwards-compatible
-parsing: the browser must be confident of the content type of an included
-resource before such rules can be safely applied. We propose and implement
-stricter negotiation content type negotiation that completely blocks the
-attack, as long as the victimized web site does not make certain errors
-(discussed in Section~\ref{sec:missing}). Our proposal has no negative side
-effects for most websites, and have been adopted by Firefox, Google Chrome,
-Safari, and Opera.
+In this paper, we present a general form of the attack that can be
+made to work in any browser that supports CSS, even if JavaScript is
+disabled or unsupported. We argue that this vulnerability is not a bug
+in browser CSS implementations, but rather a general limitation of
+forwards-compatible parsing: the browser must be confident of the
+content type of an included resource before such rules can be safely
+applied. We propose and implement stricter content handling rules that
+completely block the attack, as long as the targeted web site does not
+make certain errors (discussed in Section~\ref{sec:missing}). Our
+proposal has no negative side effects for most websites, and has been
+adopted by Firefox, Google Chrome, Safari, and Opera.
 
 \paragraph{Organization}
 The rest of this paper is organized as
@@ -163,7 +152,7 @@ it could replace the browser and bypass any browser-based defenses.
 
 \paragraph{Target Behavior}
 The web attacker can inject strings into the target site, even into
-pages that it cannot see, but its injections must pass server-side
+pages that it cannot retrieve, but its injections must pass server-side
 cross-site scripting (XSS) filters such as HTML
 Purifier~\cite{htmlpurifier}.  We do not assume that arbitrary string
 injection is required, since such targets would be vulnerable to
@@ -172,12 +161,11 @@ into the target are not unusual in practice: reflection of URL
 parameters, intra-site messaging, or even non-web channels~\cite{xcs}.
 
 \paragraph{Victim Behavior}
-The web attacker can entice the victim into visiting its site; this is
-easily done either by social engineering (e.g.\ sending bulk email to
-encourage visitors), or by manipulating an advertisement network. We
-do not assume that the victim discloses any sensitive information
-while on the attacker's site; merely rendering the attacker's web
-content is sufficient.
+The web attacker can entice the victim into visiting its site, for
+instance by sending bulk email to encourage visitors, or by
+manipulating an advertisement network. We do not assume that the
+victim discloses any sensitive information while on the attacker's
+site; merely rendering the attacker's web content is sufficient.
 
 \section{Cross-Origin CSS Attacks} \label{sec:attacks}
 
@@ -216,9 +204,9 @@ origin, not just from the server hosting the page itself. Requests for
 cross-origin resources transmit any credentials (cookies or HTTP
 authentication tokens) associated with the site that hosts the
 resource, \emph{not} credentials associated with the site whose page
-made the reference. Thus, a confidential resource from one site can
-be included into a page that could not read it directly. 
-There it will be visible to the user, but not to scripts running in the page.
+made the reference. Thus, a confidential resource from one site can be
+included into a page that could not read it directly.  There it will
+be visible to the user, but not to scripts running in the page.
 
 % \todo{The next few paragraphs don't make any sense. -zw}
 
@@ -293,12 +281,12 @@ features they do not understand.  When skipping ahead, the browser
 uses only a few simple grammar rules:
 
 \begin{itemize}
+\item Even while skipping, parentheses, square brackets, and curly
+  braces must be properly balanced and nested.
+\item Unlike in HTML, angle brackets are not expected to balance.
 \item Depending on where the syntax error occurred, the next syntactic
   construct might begin after the next semicolon, after going up one
   brace level, or after the next brace-enclosed block.
-\item While skipping, parentheses, square brackets, and curly braces
-  must still be properly balanced and nested.
-\item Unlike in HTML, angle brackets are not expected to balance.
 \item \verb|/* ... */| is a comment to be ignored, as in JavaScript.
   However, unlike JavaScript, \verb|//| does \emph{not} indicate the
   beginning of a single-line comment.
@@ -372,28 +360,28 @@ arranged to insert two strings into the document:
 \item \verb|{}#f{font-family:'| before the secret
 \item \verb|';}| after the secret
 \end{itemize}
-The target site has wrapped each of these in an HTML \verb|<span>|,
-which is harmless to the attacker's purpose.  The opening string has
-three components: The attacker can safely assume that the CSS parser
-is in error recovery mode, looking for a brace-enclosed block, when it
-encounters the two-character synchronization sequence \verb|{}|.  This
-sequence will take the CSS parser out of error recovery, unless there
-is something before the injection point that must be balanced---an
-unclosed string or CSS comment, or an unmatched \verb|{| \verb|[| or
-\verb|(|.  If the attacker can predict what comes before the injection
-point, it can tailor the synchronization sequence to match.  The next
-component, \verb|#f{font-family:| is the beginning of a valid CSS
-style rule, declaring the font family for an element in the attacker's
-document (with ID \texttt{f}). The \texttt{font-family} property
-takes a string constant as its value; thus the final component of the
-opening string is a single quote character, \verb|'|.  The CSS parser
-will absorb whatever follows as a string, as long as it contains
-neither line breaks nor another single quote.
-The closing string simply ends the CSS string constant with another
-quote mark, and then closes the style rule with a semicolon and a
-close brace.  (The semicolon could be omitted.)  Regardless of what
-appears after the close brace, this style rule has been successfully
-parsed and will be visible to the attacker's document.
+The target site happens to have wrapped each of these in an HTML
+\verb|<span>|, which does not hinder the attack in any way.  The
+opening string has three components: The attacker can safely assume
+that the CSS parser is in error recovery mode, looking for a
+brace-enclosed block, when it encounters the two-character
+synchronization sequence \verb|{}|.  This sequence will take the CSS
+parser out of error recovery, unless there is something before the
+injection point that must be balanced---an unclosed string or CSS
+comment, or an unmatched \verb|{| \verb|[| or \verb|(|.  If the
+attacker can predict what comes before the injection point, it can
+tailor the synchronization sequence to match.  The next component,
+\verb|#f{font-family:| is the beginning of a valid CSS style rule,
+declaring the font family for an element in the attacker's document
+(with ID \texttt{f}). The \texttt{font-family} property takes a string
+constant as its value; thus the final component is a single quote
+character, \verb|'|.  The CSS parser will absorb whatever follows as a
+string, as long as it contains neither line breaks nor another single
+quote.  The closing string simply ends the CSS string constant with
+another quote mark, and then closes the style rule with a semicolon
+and a close brace.  (The semicolon could be omitted.)  Regardless of
+what appears after the close brace, this style rule has been
+successfully parsed and will be visible to the attacker's document.
 
 \subsubsection{Cross-Origin CSS Import}
 When the victim user visits \texttt{attacker.com}, the attacker's page
@@ -403,13 +391,14 @@ done with the \texttt{link} tag~\cite{html}:
 
 \verb|<LINK REL="stylesheet" HREF="http://target.com">|
 
+\noindent
 or with the CSS “import” directive, in an internal style sheet:
 
 \verb|<STYLE>@import url(http://target.com);</STYLE>|
 
+\noindent
 The attacker must ensure that their page is in “quirks mode,” but this
-is easy to do: simply do not begin the page with any \verb|DOCTYPE|
-declaration.%, and do not serve it as XHTML.
+is easy: they simply do not provide any \verb|DOCTYPE| declaration.
 
 \subsubsection{Confidential Data Extraction}\label{sec:extraction}
 Having loaded the target document as a style sheet, the attacker must
@@ -419,9 +408,11 @@ summarizes them.
 
 \paragraph{CSS Object Model}
 JavaScript can read the text of successfully parsed style rules via
-the \texttt{cssText} property of \emph{style rule} objects.  All the
-style rules for a document are visible in the
-\texttt{document.styleSheets[].cssRules[]} arrays.  Safari and Google
+the \texttt{cssText} property of \emph{style rule} objects, and then
+transmit any interesting secrets to the attacker's server using
+\texttt{XMLHttpRequest} or a hidden form.  The
+\texttt{document.\discretionary{}{}{}styleSheets[].cssRules[]} arrays
+contain all the style rule objects for a document.  Safari and Google
 Chrome also provide the \texttt{getMatchedCSSRules} utility function
 that can retrieve style rules matched by an element.  This is perhaps
 the most convenient way to extract secrets, but it only works in
@@ -430,21 +421,19 @@ access to style rules from sheets loaded cross-origin since 2002 (in
 response to~\cite{cssxss02}).  In the example in
 Figure~\ref{figure:victim}, \texttt{cssRules[0].cssText} would expose
 all of the text that isn't struck out in the right-hand document.
-Once the secret is visible to JavaScript, it can be transmitted to the
-attacker's server using \texttt{XMLHttpRequest} or a hidden form.
 
 \paragraph{Computed Style}
 JavaScript can also inspect the \emph{computed style} in effect for an
 element, using either the standard function
-\texttt{getComputedStyle}~\cite{domcss} supported in most browsers or
-the \texttt{currentStyle} object in IE.  The attacker can easily
+\texttt{getComputed\-Style}~\cite{domcss} supported in most browsers,
+or the \texttt{currentStyle} object in IE.  The attacker can easily
 ensure that the style was computed from the style rule containing the
 secret.  No current browser blocks access to computed style if it was
 computed from a cross-origin style sheet's rules, so this variant
 works in any current browser as long as JavaScript is enabled.  In the
 example in Figure~\ref{figure:victim},
-\texttt{getComputedStyle(f).style.fontFamily} would expose the text
-highlighted in white in the right-hand document.
+\texttt{getComputedStyle(f).\discretionary{}{}{}style.fontFamily}
+would expose the highlighted text in the right-hand document.
 
 \paragraph{Without JavaScript}
 This attack is even possible if users have disabled JavaScript,
@@ -453,7 +442,7 @@ properties can direct the browser to load an arbitrary URL; for
 instance, the attacker might change their injected strings to:
 
 \begin{itemize}
-\item \verb|{}#f{background-image:url('http://attacker.com/?|\\
+\item \verb|{}#f{background:url('http://attacker.com/?|\\
   before the secret
 \item \verb|');}| after the secret
 \end{itemize}
@@ -526,14 +515,14 @@ Server-side filters aiming to remove malicious code from
 user-submitted content are common, but they are usually designed to
 strip dangerous HTML attributes and defang JavaScript keywords.  They
 will not block cross-origin CSS attacks, because the injected strings
-won't be nested within HTML attributes, and CSS shares very few
+won't be inside HTML attributes, and CSS shares few
 keywords with JavaScript.
 
 Some filters also replace particular punctuation characters with
 equivalent HTML entities.  Single and double quotes are often
-replaced, because of their significance in both HTML and JavaScript.
-If \emph{any} of the punctuation in the injected strings is replaced
-with an entity, the attack will fail.
+replaced, because of their significance in HTML and JavaScript.  If
+\emph{any} of the punctuation in the injected strings is replaced with
+an entity, the attack will fail.
 
 \paragraph{Forcing UTF-7}
 The attacker may be able to defeat filters that replace punctuation
@@ -548,9 +537,11 @@ injected strings would become
 The attacker would then request UTF-7 decoding from the CSS parser,
 by specifying a character set in their \verb|link| tag:
 
-\verb|<LINK REL="stylesheet" HREF="http://target.com"|\\
-\verb| CHARSET="utf-7">|
+\noindent
+\verb|  <LINK REL="stylesheet" HREF="http://target.com"|\\
+\verb|   CHARSET="utf-7">|
 
+\noindent
 This trick does not work if the target site specifies a character set
 in its \texttt{Content-Type} header.  Unfortunately, only 584 out of
 the top 1,000 web sites ranked by Alexa~\cite{alexa} specify character
@@ -596,15 +587,15 @@ function steal() {
 \end{verbatim}
 \end{enumerate}
 
-The attacker must know the victim's account ID (\texttt{ur12345678} in
-the example); this is public information that can be learned from the
-victim's user profile page, even if one is not logged in.  The browser
+The attacker needs the victim's account ID (\texttt{ur12345678} in
+the example); this is public information, revealed by the victim's
+user profile page, even if the attacker is not logged in.  The browser
 will retrieve the victim's private messaging page, using the
 appropriate credentials from the victim's IMDb session, and process it
-as a style sheet.  The private message sent by the attacker will cause a
-fragment of HTML, including the full text of earlier private messages
-to the victim, to be absorbed as a CSS property value, which is then
-revealed to JavaScript via \texttt{currentStyle}.
+as a style sheet.  The private message sent by the attacker will cause
+a fragment of HTML, including the full text of earlier private
+messages to the victim, to be absorbed as a CSS property value, which
+is then revealed to JavaScript via \texttt{currentStyle}.
 
 This attack works only in IE, due to line breaks in the HTML for the
 private messaging page.  This is why the JavaScript above uses only
@@ -654,11 +645,11 @@ We use \texttt{background-image} instead of \texttt{font-family} in
 this attack to illustrate the variety of CSS properties that can be
 used.  The attacking page requests the mobile version of the site by
 loading \url{http://m.yahoo.com/mail} rather than
-\url{http://www.yahoo.com/mail}.  To reduce bandwidth requirements,
-the mobile site has all unnecessary whitespace removed from its HTML,
-including newlines; this allows the CSS portion of the attack to
-succeed in more browsers, hence the JavaScript detects which of
-the two methods for retrieving computed style is supported.
+\url{http://www.yahoo.com/mail}.  To save bandwidth, the mobile site
+has had all unnecessary whitespace removed from its HTML, including
+newlines; this allows the CSS portion of the attack to succeed in more
+browsers, hence the JavaScript detects which of the two methods for
+retrieving computed style is supported.
 
 The stolen HTML fragment contains the subject lines of every email
 delivered to the victim in between the two attack messages.  It also
@@ -667,13 +658,12 @@ allow the attacker to delete messages via CSRF.
 
 \paragraph{Hotmail}
 Windows Live Hotmail is an web-based email service operated by
-Microsoft. It is vulnerable to nearly the same attack as Yahoo!
-Mail: we can read messages and acquire CSRF tokens by sending
-two emails to a victim Hotmail account with crafted subject
-lines, then loading the mobile Hotmail website
-\url{http://mail.live.com/m/} as a style sheet. Unlike the
-mobile version of Yahoo! Mail, Hotmail delivers HTML containing
-newlines, which limits the attack to Internet Explorer.
+Microsoft. It is vulnerable to nearly the same attack as Yahoo!\  Mail:
+we can read messages and acquire CSRF tokens by sending two emails to
+a victim Hotmail account with crafted subject lines, then loading the
+mobile Hotmail site \url{http://mail.live.com/m/} as a style
+sheet. Unlike Yahoo!\ Mail, Hotmail's mobile site delivers HTML
+containing newlines, which limits the attack to Internet Explorer.
 
 The existence of nearly identical attacks on unrelated websites
 illustrates the general nature of cross-origin CSS vulnerabilities. We
@@ -712,7 +702,7 @@ Cross-Origin& Standards Mode&  47,943&        347&      47,345&       104&      
 \label{table:results}
 \end{table*}
 
-In a cross-origin CSS attack, the attacker’s web page causes the
+In a cross-origin CSS attack, the attacker’s web page asks the
 victim’s browser to parse the target document as a style sheet.  The
 attack works because the browser will attempt to parse \emph{anything}
 that was requested by a stylesheet \verb|link| or \verb|@import| as if
@@ -735,11 +725,11 @@ in order to maximize web site compatibility.
 
 \subsubsection{Strict Enforcement} \label{sec:strict}
 Strict enforcement refuses to load \emph{any} style sheet
-cross-origin, unless it is properly labeled with
-\verb|Content-Type: text/css|. Since the target page is labeled
-\verb|text/html|, \texttt{application\slash{}json},
-\verb|text/rss+xml|, or some other non-CSS content type, the browser
-will not load it as a style sheet, foiling a cross-origin CSS attack.
+cross-origin, unless it is properly labeled
+\texttt{text\slash{}css}. Since the target document is labeled
+\texttt{text\slash{}html}, \texttt{application\slash{}json},
+\texttt{text\slash{}rss+xml}, or some other non-CSS content type, the
+browser will not load it as a style sheet, foiling the attack.
 
 Strict enforcement may cause legitimate requests for cross-origin
 style sheets to fail, if the server providing the style sheet is
@@ -909,7 +899,7 @@ for version~10.10 of their browser.
 
 \subsection{Missing or Ill-Formed Content Types}\label{sec:missing}
 To be fully reliable, our proposed defenses should be applied whenever
-a style sheet lacks the \verb|Content-Type: text/css| label, including
+a style sheet lacks the proper \verb|text/css| label, including
 when the \texttt{Content-Type} header is missing or has an ill-formed
 value.  Recall from Table~\ref{table:MIME} that we saw 178 CSS
 resources that lacked a Content-Type header in our survey.  However,
@@ -1073,15 +1063,14 @@ the site where the attack originated.
 \subsection{Gazelle Browser}
 The Gazelle browser~\cite{gazelle} includes strict architectural
 control over resource protection and sharing across websites.  Sites
-are treated as security principals, and all cross-principal
-communication is explicitly mediated by the browser kernel to prevent
-cross-origin attacks.  Cross-origin resources are only retrieved if
-the content has the proper content type in the HTTP response; thus
-Gazelle implements what we described in Section~\ref{sec:strict} as
-“strict enforcement” of cross-origin CSS labeling, as a natural
-consequence of their security architecture.  Users of Gazelle are
-protected against cross-origin CSS attacks, at some cost in site
-incompatibility (62 out of 100,000 sites in our survey).
+are security principals; all cross-principal communication is mediated
+by the browser kernel to prevent cross-origin attacks.  Cross-origin
+resources are only retrieved if the content has the proper content
+type in the HTTP response; thus Gazelle implements what we described
+in Section~\ref{sec:strict} as “strict enforcement” of cross-origin
+CSS labeling, as a natural consequence of their architecture.  Users
+of Gazelle are protected against cross-origin CSS attacks, at some
+cost in site incompatibility (62 out of 100,000 sites in our survey).
 
 \subsection{SOMA}
 The Same Origin Mutual Approval (SOMA) proposal~\cite{soma} restricts

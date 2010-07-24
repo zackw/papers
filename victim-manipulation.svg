@@ -1,343 +1,76 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="676"
-   height="293.5"
-   id="svg2"
-   version="1.1"
-   inkscape:version="0.47 r22583"
-   sodipodi:docname="victim-manipulation.svg">
-  <defs
-     id="defs4">
-    <inkscape:perspective
-       sodipodi:type="inkscape:persp3d"
-       inkscape:vp_x="0 : 196.875 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_z="675 : 196.875 : 1"
-       inkscape:persp3d-origin="337.5 : 131.25 : 1"
-       id="perspective93" />
-  </defs>
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="8.7971014"
-     inkscape:cx="678.46181"
-     inkscape:cy="150.54448"
-     inkscape:document-units="px"
-     inkscape:current-layer="layer1"
-     showgrid="false"
-     units="in"
-     borderlayer="true"
-     inkscape:showpageshadow="false"
-     inkscape:window-width="1278"
-     inkscape:window-height="751"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1"
-     showborder="true">
-    <inkscape:grid
-       type="xygrid"
-       id="grid2816"
-       empspacing="4"
-       visible="true"
-       enabled="true"
-       snapvisiblegridlinesonly="true"
-       units="px"
-       spacingx="2.8125px"
-       spacingy="2.8125px"
-       originy="0.375in" />
-  </sodipodi:namedview>
-  <metadata
-     id="metadata7">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(-0.5,-657.81)">
-    <g
-       id="g2914">
-      <path
-         sodipodi:nodetypes="cccccccccc"
-         d="m 169.75,658.31 0,33.75 33.75,0 -33.75,-33.75 z m -168.75,0 168.75,0 33.75,33.75 0,258.75 -202.5,0 0,-292.5 z"
-         style="fill:#cacaca;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:2;stroke-opacity:1;stroke-dasharray:none"
-         id="path3599" />
-      <rect
-         y="765.60754"
-         x="5.790164"
-         height="70.819672"
-         width="187.67213"
-         id="rect3836"
-         style="fill:#ffffff;fill-opacity:1;stroke:none" />
-      <flowRoot
-         transform="translate(-3.0625,614.9397)"
-         style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Inconsolata;-inkscape-font-specification:Inconsolata Medium"
-         id="flowRoot2829"
-         xml:space="preserve"><flowRegion
-           id="flowRegion2831"><rect
-             style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Inconsolata;-inkscape-font-specification:Inconsolata Medium"
-             y="45.853462"
-             x="11.313708"
-             height="280.72141"
-             width="184.56248"
-             id="rect2833" /></flowRegion><flowPara
-           style="font-size:14px"
-           id="flowPara2835">&lt;!doctype html&gt;</flowPara><flowPara
-           style="font-size:14px"
-           id="flowPara2837">&lt;html&gt;&lt;head&gt;...&lt;/head&gt;</flowPara><flowPara
-           style="font-size:14px"
-           id="flowPara2843">&lt;body&gt;</flowPara><flowPara
-           style="font-size:14px"
-           id="flowPara2851">...</flowPara><flowPara
-           style="font-size:14px"
-           id="flowPara2853">&lt;script&gt;</flowPara><flowPara
-           style="font-size:14px"
-           id="flowPara3681">var user = {</flowPara><flowPara
-           style="font-size:14px"
-           id="flowPara3687">&quot;handle&quot;:&quot;Alice&quot;,</flowPara><flowPara
-           style="font-size:14px"
-           id="flowPara3683">&quot;uid&quot;:22250,</flowPara><flowPara
-           style="font-size:14px"
-           id="flowPara2863">&quot;nonce&quot;:</flowPara><flowPara
-           id="flowPara3830"
-           style="font-size:14px">&quot;eqObkxssYmUNSk93bVLHyA==&quot;</flowPara><flowPara
-           style="font-size:14px"
-           id="flowPara3698">};</flowPara><flowPara
-           style="font-size:14px"
-           id="flowPara2855">&lt;/script&gt;</flowPara><flowPara
-           style="font-size:14px"
-           id="flowPara2857">...</flowPara><flowPara
-           style="font-size:14px"
-           id="flowPara2849">&lt;/body&gt;&lt;/html&gt;</flowPara></flowRoot>    </g>
-    <g
-       id="g2935">
-      <path
-         sodipodi:nodetypes="cccccccccc"
-         id="path3605"
-         style="fill:#c8c8c8;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:2;stroke-opacity:1;stroke-dasharray:none"
-         d="m 406,658.31 0,33.75 33.75,0 L 406,658.31 z m -168.75,0 168.75,0 33.75,33.75 0,258.75 -202.5,0 0,-292.5 z" />
-      <rect
-         style="fill:#ffffff;fill-opacity:1;stroke:none"
-         id="rect3863"
-         width="187.67213"
-         height="70.819672"
-         x="244.79016"
-         y="781.60754" />
-      <g
-         id="g2898">
-        <path
-           sodipodi:nodetypes="cccccccccccccccc"
-           id="path2937"
-           d="m 347.225,730.73364 -0.14115,16.98818 -7.5,2.8125 -7.5,-2.8125 -7.5,2.8125 -7.5,-2.8125 -7.5,2.8125 -7.5,-2.8125 -7.16726,18.05589 -7.79523,-2.53021 -7.79523,2.8125 -7.79522,-2.8125 -7.79523,2.8125 -7.79523,-2.8125 -7.79523,2.8125 -7.79522,-2.8125"
-           style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:0.51131227;stroke-dasharray:none" />
-        <path
-           style="fill:#ffff00;fill-opacity:1;stroke:none"
-           d="m 240.15729,715.01778 8.11784,-2.8125 8.11784,2.8125 8.11786,-2.8125 8.11786,2.8125 8.11786,-2.8125 8.11786,2.8125 8.11786,-2.67136 5.05002,17.77361 7.5,-2.8125 7.5,2.8125 7.5,-2.8125 7.5,2.8125 7.5,-2.8125 7.5,2.8125 -0.14115,17.18457 -7.5,2.8125 -7.5,-2.8125 -7.5,2.8125 -7.5,-2.8125 -7.5,2.8125 -7.5,-2.8125 -7.16726,18.05589 -7.79523,-2.53021 -7.79523,2.8125 -7.79522,-2.8125 -7.79523,2.8125 -7.79523,-2.8125 -7.79523,2.8125 -7.79522,-2.8125 0,-47.8125 z"
-           id="path3893"
-           sodipodi:nodetypes="ccccccccccccccccccccccccccccccc" />
-        <text
-           xml:space="preserve"
-           style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:cmr10;-inkscape-font-specification:cmr10"
-           x="241.8125"
-           y="724.55994"
-           id="text3851"><tspan
-             sodipodi:role="line"
-             id="tspan3853"
-             x="241.8125"
-             y="724.55994"
-             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Inconsolata;-inkscape-font-specification:Inconsolata Medium">&lt;span&gt;{}</tspan><tspan
-             sodipodi:role="line"
-             x="241.8125"
-             y="742.05994"
-             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Inconsolata;-inkscape-font-specification:Inconsolata Medium"
-             id="tspan3889">#f{font-family:</tspan><tspan
-             sodipodi:role="line"
-             x="241.8125"
-             y="759.55994"
-             id="tspan3855"
-             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Inconsolata;-inkscape-font-specification:Inconsolata Medium">'&lt;/span&gt;</tspan></text>
-      </g>
-      <g
-         id="g2906">
-        <path
-           style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:0.51131227;stroke-dasharray:none"
-           d="m 361.32179,871.347 1.7e-4,47.8125 -8.0105,2.8125 -8.0105,-2.8125 -8.0105,2.8125 -8.01049,-2.8125 -8.0105,2.8125 -8.0105,-2.8125 -8.0105,2.8125 -8.0105,-2.8125 -8.01049,2.8125 -8.0105,-2.8125 -8.0105,2.8125 -8.0105,-2.8125 -8.0105,2.8125 -8.01048,-2.8125"
-           id="path3716"
-           sodipodi:nodetypes="cccccccccccccccc" />
-        <path
-           sodipodi:nodetypes="cccccccccccccccccccccccccccccccc"
-           id="path2904"
-           d="m 256.60889,886.78174 7.73425,2.8125 7.73425,-2.8125 7.73426,2.8125 7.73425,-2.8125 7.73425,2.8125 7.73425,-2.8125 7.73426,-6.69918 9.7e-4,-9.33511 8.37864,-2.8125 8.37863,2.8125 8.37863,-2.8125 8.37863,2.8125 8.37863,-2.8125 8.37863,2.8125 1.7e-4,47.8125 -8.0105,2.8125 -8.0105,-2.8125 -8.0105,2.8125 -8.01049,-2.8125 -8.0105,2.8125 -8.0105,-2.8125 -8.0105,2.8125 -8.0105,-2.8125 -8.01049,2.8125 -8.0105,-2.8125 -8.0105,2.8125 -8.0105,-2.8125 -8.0105,2.8125 -8.01048,-2.8125 0,-28.96571 7.73426,-2.8125 z"
-           style="fill:#ffff00;fill-opacity:1;stroke:none" />
-        <text
-           xml:space="preserve"
-           style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Inconsolata;-inkscape-font-specification:Inconsolata Medium"
-           x="250"
-           y="882.05994"
-           id="text3859"><tspan
-             sodipodi:role="line"
-             id="tspan3861"
-             x="250"
-             y="882.05994">         &lt;span&gt;'</tspan><tspan
-             sodipodi:role="line"
-             x="250"
-             y="899.55994"
-             id="tspan3885">;}</tspan><tspan
-             sodipodi:role="line"
-             x="250"
-             y="917.05994"
-             id="tspan3887">&lt;/span&gt;</tspan></text>
-      </g>
-      <flowRoot
-         xml:space="preserve"
-         id="flowRoot3702"
-         style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Inconsolata;-inkscape-font-specification:Inconsolata Medium"
-         transform="translate(233.1875,614.9397)"><flowRegion
-           id="flowRegion3704"><rect
-             id="rect3706"
-             width="184.56248"
-             height="280.72141"
-             x="11.313708"
-             y="45.853462"
-             style="font-size:14px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Inconsolata;-inkscape-font-specification:Inconsolata Medium" /></flowRegion><flowPara
-           style="font-size:14px;font-weight:normal;-inkscape-font-specification:Bitstream Charter"
-           id="flowPara3708">&lt;!doctype html&gt;</flowPara><flowPara
-           style="font-size:14px;font-weight:normal;-inkscape-font-specification:Bitstream Charter"
-           id="flowPara3710">&lt;html&gt;&lt;head&gt;...&lt;/head&gt;</flowPara><flowPara
-           style="font-size:14px;font-weight:normal;-inkscape-font-specification:Bitstream Charter"
-           id="flowPara3714">&lt;body&gt;...</flowPara><flowPara
-           id="flowPara3744"
-           style="font-size:14px;font-weight:normal;-inkscape-font-specification:Bitstream Charter" /><flowPara
-           id="flowPara3857"
-           style="font-size:14px;font-weight:normal;-inkscape-font-specification:Bitstream Charter" /><flowPara
-           id="flowPara3875"
-           style="font-size:14px;font-weight:normal;-inkscape-font-specification:Bitstream Charter">        &lt;script&gt;</flowPara><flowPara
-           style="font-size:14px;font-weight:normal;-inkscape-font-specification:Bitstream Charter"
-           id="flowPara3718">var user = {</flowPara><flowPara
-           style="font-size:14px;font-weight:normal;-inkscape-font-specification:Bitstream Charter"
-           id="flowPara3720">&quot;handle&quot;:&quot;Alice&quot;,</flowPara><flowPara
-           style="font-size:14px;font-weight:normal;-inkscape-font-specification:Bitstream Charter"
-           id="flowPara3722">&quot;uid&quot;:22250,</flowPara><flowPara
-           style="font-size:14px;font-weight:normal;-inkscape-font-specification:Bitstream Charter"
-           id="flowPara3724">&quot;nonce&quot;:</flowPara><flowPara
-           id="flowPara3832"
-           style="font-size:14px;font-weight:normal;-inkscape-font-specification:Bitstream Charter">&quot;eqObkxssYmUNSk93bVLHyA==&quot;</flowPara><flowPara
-           style="font-size:14px;font-weight:normal;-inkscape-font-specification:Bitstream Charter"
-           id="flowPara3726">};</flowPara><flowPara
-           style="font-size:14px;font-weight:normal;-inkscape-font-specification:Bitstream Charter"
-           id="flowPara3728">&lt;/script&gt;</flowPara><flowPara
-           style="font-size:14px;font-weight:normal;-inkscape-font-specification:Bitstream Charter"
-           id="flowPara3732" /><flowPara
-           id="flowPara3881"
-           style="font-size:14px;font-weight:normal;-inkscape-font-specification:Bitstream Charter" /><flowPara
-           id="flowPara3883"
-           style="font-size:14px;font-weight:normal;-inkscape-font-specification:Bitstream Charter">...&lt;/body&gt;&lt;/html&gt;</flowPara></flowRoot>    </g>
-    <g
-       id="g2972">
-      <path
-         sodipodi:nodetypes="cccccccccc"
-         d="m 642.25,658.31 0,33.75 33.75,0 -33.75,-33.75 z m -168.75,0 168.75,0 33.75,33.75 0,258.75 -202.5,0 0,-292.5 z"
-         style="fill:#c8c8c8;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:2;stroke-opacity:1;stroke-dasharray:none"
-         id="path3607" />
-      <rect
-         y="749.06"
-         x="478"
-         height="139"
-         width="189"
-         id="rect3873"
-         style="fill:#ffffff;fill-opacity:1;stroke:none" />
-      <flowRoot
-         transform="translate(469.0975,614.9397)"
-         style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Inconsolata;-inkscape-font-specification:Inconsolata Medium"
-         id="flowRoot3752"
-         xml:space="preserve"><flowRegion
-           id="flowRegion3754"><rect
-             style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Inconsolata;-inkscape-font-specification:Inconsolata Medium"
-             y="45.853462"
-             x="11.313708"
-             height="280.72141"
-             width="183.1461"
-             id="rect3756" /></flowRegion><flowPara
-           id="flowPara3758"
-           style="font-size:14px;font-style:normal;font-weight:normal;-inkscape-font-specification:Bitstream Charter">&lt;!doctype html&gt;</flowPara><flowPara
-           id="flowPara3760"
-           style="font-size:14px;font-style:normal;font-weight:normal;-inkscape-font-specification:Bitstream Charter">&lt;html&gt;&lt;head&gt;...&lt;/head&gt;</flowPara><flowPara
-           id="flowPara3762"
-           style="font-size:14px;font-style:normal;font-weight:normal;-inkscape-font-specification:Bitstream Charter">&lt;body&gt;...</flowPara><flowPara
-           id="flowPara3838"
-           style="font-size:14px;font-style:normal;font-weight:normal;-inkscape-font-specification:Bitstream Charter">&lt;span&gt;{}</flowPara><flowPara
-           id="flowPara3842"
-           style="font-size:14px;font-style:normal;font-weight:normal;-inkscape-font-specification:Bitstream Charter">#f{font-family:</flowPara><flowPara
-           style="font-size:14px;font-style:normal;font-weight:normal;-inkscape-font-specification:Bitstream Charter"
-           id="flowPara3770">'&lt;/span&gt;&lt;script&gt;</flowPara><flowPara
-           id="flowPara3772"
-           style="font-size:14px;font-style:normal;font-weight:normal;-inkscape-font-specification:Bitstream Charter">var user = {</flowPara><flowPara
-           id="flowPara3774"
-           style="font-size:14px;font-style:normal;font-weight:normal;-inkscape-font-specification:Bitstream Charter">&quot;handle&quot;:&quot;Alice&quot;,</flowPara><flowPara
-           id="flowPara3776"
-           style="font-size:14px;font-style:normal;font-weight:normal;-inkscape-font-specification:Bitstream Charter">&quot;uid&quot;:22250,</flowPara><flowPara
-           id="flowPara3778"
-           style="font-size:14px;font-style:normal;font-weight:normal;-inkscape-font-specification:Bitstream Charter">&quot;nonce&quot;:</flowPara><flowPara
-           id="flowPara3834"
-           style="font-size:14px;font-style:normal;font-weight:normal;-inkscape-font-specification:Bitstream Charter">&quot;eqObkxssYmUNSk93bVLHyA==&quot;</flowPara><flowPara
-           id="flowPara3780"
-           style="font-size:14px;font-style:normal;font-weight:normal;-inkscape-font-specification:Bitstream Charter">};</flowPara><flowPara
-           id="flowPara3782"
-           style="font-size:14px;font-style:normal;font-weight:normal;-inkscape-font-specification:Bitstream Charter">&lt;/script&gt;&lt;span&gt;'</flowPara><flowPara
-           id="flowPara3786"
-           style="font-size:14px;font-style:normal;font-weight:normal;-inkscape-font-specification:Bitstream Charter">;}</flowPara><flowPara
-           id="flowPara3871"
-           style="font-size:14px;font-style:normal;font-weight:normal;-inkscape-font-specification:Bitstream Charter">&lt;/span&gt;</flowPara><flowPara
-           id="flowPara3788"
-           style="font-size:14px;font-style:normal;font-weight:normal;-inkscape-font-specification:Bitstream Charter">...&lt;/body&gt;&lt;/html&gt;</flowPara></flowRoot>      <path
-         sodipodi:nodetypes="cc"
-         id="path2913"
-         d="m 478.14449,669.54751 110.57002,0"
-         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-      <path
-         sodipodi:nodetypes="cc"
-         id="path2915"
-         d="m 478.14449,686.97972 158.88214,0"
-         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-      <path
-         id="path2917"
-         d="m 478.14449,704.41193 65.24627,0"
-         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-      <path
-         id="path2919"
-         d="m 478.14449,722.09317 60.7637,0.24903"
-         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-      <path
-         sodipodi:nodetypes="cc"
-         id="path2921"
-         d="m 478.14449,914.84361 55.28501,0"
-         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-      <path
-         sodipodi:nodetypes="cc"
-         id="path2923"
-         d="m 478.14449,932.52485 125.01385,0"
-         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-    </g>
-  </g>
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     version="1.1" width="676" height="293.5">
+  <path d="m 169.25,0.5 0,33.75 33.75,0 -33.75,-33.75 z m -168.75,0 168.75,0 33.75,33.75 0,258.75 -202.5,0 0,-292.5 z"
+	style="fill:#cacaca;stroke:#000;stroke-miterlimit:2"/>
+  <path d="m 405.5,0.5 0,33.75 33.75,0 -33.75,-33.75 z m -168.75,0 168.75,0 33.75,33.75 0,258.75 -202.5,0 0,-292.5 z"
+	style="fill:#cacaca;stroke:#000;stroke-miterlimit:2"/>
+  <path d="m 641.75,0.5 0,33.75 33.75,0 -33.75,-33.75 z m -168.75,0 168.75,0 33.75,33.75 0,258.75 -202.5,0 0,-292.5 z"
+	style="fill:#cacaca;stroke:#000;stroke-miterlimit:2" />
+  <rect x="4" y="110" width="191" height="61"
+	fill="#fff"/>
+  <rect x="240" y="110" width="191" height="61"
+	fill="#fff"/>
+  <path d="m 476,81 195.33295,0 0,118.0525 -142.48436,0 0,18.51173 -52.84859,0 0,-136.56423 z"
+	fill="#fff"/>
+  <path d="m 348.825,67.831 -0.14115,10.77234 -7.5,2.8125 -7.5,-2.8125 -7.5,2.8125 -7.5,-2.8125 -7.5,2.8125 -7.5,-2.8125 -7.16726,18.05589 -7.79523,-2.53021 -7.79523,2.8125 -7.79522,-2.8125 -7.79523,2.8125 -7.79523,-2.8125 -7.79523,2.8125 -7.79522,-2.8125"
+	style="stroke:#555;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
+  <path d="m 357.81605,202.952 7e-5,11.95298 -8.25775,2.8125 -8.25776,-2.8125 -8.25775,2.8125 -8.25775,-2.8125 -8.25775,2.8125 -8.25775,-2.8125 -8.25775,2.8125 -8.25775,-2.8125 -8.25776,2.8125 -8.25775,-2.8125 -8.25775,2.8125 -8.25775,-2.8125 -8.25777,2.8125 -8.25776,-2.8125"
+	style="stroke:#555;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
+  <path d="m 241.65729,51.61391 8.11784,-2.8125 8.11784,2.8125 8.11786,-2.8125 8.11786,2.8125 8.11786,-2.8125 8.11786,2.8125 8.11786,-2.67136 5.05002,17.77361 7.5,-2.8125 7.5,2.8125 7.5,-2.8125 7.5,2.8125 7.5,-2.8125 7.5,2.8125 -0.14115,11.47001 -7.5,2.8125 -7.5,-2.8125 -7.5,2.8125 -7.5,-2.8125 -7.5,2.8125 -7.5,-2.8125 -7.16726,18.05589 -7.79523,-2.53021 -7.79523,2.8125 -7.79522,-2.8125 -7.79523,2.8125 -7.79523,-2.8125 -7.79523,2.8125 -7.79522,-2.8125 0,-42.09794 z"
+       style="fill:#ffff00;fill-opacity:1;stroke:none" />
+  <path d="m 249.69579,199.185 8.32115,2.8125 8.32113,-2.8125 8.32114,2.8125 8.32114,-2.8125 8.32113,2.8125 8.32114,-2.8125 8.32114,2.8125 8.32113,-2.8125 8.32114,2.8125 8.32114,-2.8125 8.32113,2.8125 8.32114,-2.8125 8.32113,2.8125 4e-4,12.57431 -8.32117,2.8125 -8.32116,-2.8125 -8.32117,2.8125 -8.32117,-2.8125 -8.32116,2.8125 -8.32117,-2.8125 -8.32117,2.8125 -8.32116,-2.8125 -8.32117,2.8125 -8.32117,-2.8125 -8.32117,2.8125 -8.32116,-2.8125 -8.32117,2.8125 -8.32117,-2.8125 0,-12.57431 8.32116,-2.8125 z"
+       style="fill:#ffff00;fill-opacity:1;stroke:none" />
+  <text style="font-size:12px;font-weight:bold;font-family:Courier;fill:#000"><tspan
+     x="6" y="16">&lt;!doctype html&gt;</tspan><tspan
+     x="6" y="31">&lt;html&gt;</tspan><tspan
+     x="6" y="46">&lt;head&gt;...&lt;/head&gt;</tspan><tspan
+     x="6" y="61">&lt;body&gt;</tspan><tspan
+     x="6" y="76">...</tspan><tspan
+     x="6" y="91">&lt;script&gt;</tspan><tspan
+     x="6" y="106">var user = {</tspan><tspan
+     x="6" y="121">&quot;handle&quot;:&quot;Alice&quot;,</tspan><tspan
+     x="6" y="136">&quot;uid&quot;:22250,</tspan><tspan
+     x="6" y="151">&quot;nonce&quot;:</tspan><tspan
+     x="6" y="166">&quot;eq0bkxssYmUNSk93bVLHyA==&quot;</tspan><tspan
+     x="6" y="181">};</tspan><tspan
+     x="6" y="196">&lt;/script&gt;</tspan><tspan
+     x="6" y="211">...</tspan><tspan
+     x="6" y="226">&lt;/body&gt;&lt;/html&gt;</tspan></text>
+  <text style="font-size:12px;font-weight:bold;font-family:Courier;fill:#000"><tspan
+     x="242.25" y="16">&lt;!doctype html&gt;</tspan><tspan
+     x="242.25" y="31">&lt;html&gt;&lt;head&gt;...&lt;/head&gt;</tspan><tspan
+     x="242.25" y="46">&lt;body&gt;...</tspan><tspan
+     x="242.25" y="61">&lt;span&gt;{}</tspan><tspan
+     x="242.25" y="76">#f{font-family:</tspan><tspan
+     x="242.25" y="91">'&lt;/span&gt;&lt;script&gt;</tspan><tspan
+     x="242.25" y="106">var user = {</tspan><tspan
+     x="242.25" y="121">&quot;handle&quot;:&quot;Alice&quot;,</tspan><tspan
+     x="242.25" y="136">&quot;uid&quot;:22250,</tspan><tspan
+     x="242.25" y="151">&quot;nonce&quot;:</tspan><tspan
+     x="242.25" y="166">&quot;eq0bkxssYmUNSk93bVLHyA==&quot;</tspan><tspan
+     x="242.25" y="181">};</tspan><tspan
+     x="242.25" y="196">&lt;/script&gt;</tspan><tspan
+     x="242.25" y="211">&lt;span&gt;';}&lt;/span&gt;</tspan><tspan
+     x="242.25" y="226">...</tspan><tspan
+     x="242.25" y="241">&lt;/body&gt;&lt;/html&gt;</tspan></text>
+  <text style="font-size:12px;font-weight:bold;font-family:Courier;fill:#000"><tspan
+     x="478.5" y="16">&lt;!doctype html&gt;</tspan><tspan
+     x="478.5" y="31">&lt;html&gt;&lt;head&gt;...&lt;/head&gt;</tspan><tspan
+     x="478.5" y="46">&lt;body&gt;...</tspan><tspan
+     x="478.5" y="61">&lt;span&gt;{}</tspan><tspan
+     x="478.5" y="76">#f{font-family:</tspan><tspan
+     x="478.5" y="91">'&lt;/span&gt;&lt;script&gt;</tspan><tspan
+     x="478.5" y="106">var user = {</tspan><tspan
+     x="478.5" y="121">&quot;handle&quot;:&quot;Alice&quot;,</tspan><tspan
+     x="478.5" y="136">&quot;uid&quot;:22250,</tspan><tspan
+     x="478.5" y="151">&quot;nonce&quot;:</tspan><tspan
+     x="478.5" y="166">&quot;eq0bkxssYmUNSk93bVLHyA==&quot;</tspan><tspan
+     x="478.5" y="181">};</tspan><tspan
+     x="478.5" y="196">&lt;/script&gt;</tspan><tspan
+     x="478.5" y="211">&lt;span&gt;';}&lt;/span&gt;</tspan><tspan
+     x="478.5" y="226">...</tspan><tspan
+     x="478.5" y="241">&lt;/body&gt;&lt;/html&gt;</tspan></text>
+  <path d="m 544.14749,207.76145 51.15083,0 m -118.8648,29.22905 106.68603,0 m -106.68603,-14.12737 22.89609,0 m -22.89609,-164.65699 68.68827,0 m -68.68827,-16.075972 69.17542,0.48715 m -69.17542,-15.101676 161.24693,-0.48715 m -161.24693,-15.101676 114.9676,0.48715"
+	stroke="#000"/>
 </svg>
