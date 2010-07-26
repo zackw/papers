@@ -987,7 +987,7 @@ tag.
 
 \subsubsection{Avoid Ambient Authentication}
 Cross-site attacks rely on the browser transmitting “ambient”
-authentication information, such as HTTP authentication or session
+authentication information, such as HTTP credentials or session
 cookies, with any request to the target site.  A site that makes no
 use of these is less vulnerable.  One possible alternative is the
 web-key authentication scheme~\cite{webkey}, which embeds credentials
@@ -1058,7 +1058,18 @@ redesign of the web application.  Finally, avoiding ambient
 authentication is also an effective defense for this attack.
 
 \subsection{Cross Channel Scripting}
-Many consumer electronic devices provide a web interface along with a variety of services (e.g. FTP.) Unfortunately, a content that appears benign to one service may become malicious when mis-interpreted by another service. A cross channel scripting (XCS) attack~\cite{xcs} abuses such interactions between the web interface and other services by injecting malicous content into web content via alternate channels, bypassing common sanitizations for web exploits.  XCS also applies to large social networking sites that provide non-web cloud APIs, where a third party application supplies malicious data to the cloud service that is unexpected by the site's sanitization policy. The SiteFirewall~\cite{xcs} proposes to block XCS attacks at the payload execution stage, requiring sites to specify the permitted external resources the site can load via a site-wide policy in a cookie. This defense is ineffective against cross-origin CSS attacks because the attacker may white list the target site in its policy.
+Many consumer electronic devices provide a variety of services (e.g. FTP) along
+with a web interface. Unfortunately, a content that appears benign to one
+service may become malicious if mis-interpreted by another service. A cross
+channel scripting (XCS) attack~\cite{xcs} abuses such interactions between the
+web interface and other services by injecting malicous code into web content via
+alternate channels, bypassing common sanitizations for web exploits.
+%XCS also applies to large social networking sites that provide non-web cloud APIs, where malicious content may be supplied by third party application to the cloud service that bypasses the site's sanitization. 
+SiteFirewall~\cite{xcs} is a client-side defense that blocks XCS attacks at the
+last payload execution stage, which requires sites to provide a site-wide policy
+in a cookie to specify the permitted external resources the site may load.
+However, this defense is ineffective against cross-origin CSS attacks because
+the attacker will white list the target site in its policy.
 
 \subsection{SOMA}
 The Same Origin Mutual Approval (SOMA) proposal~\cite{soma} restricts
