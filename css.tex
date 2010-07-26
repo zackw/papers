@@ -67,8 +67,8 @@ gaining support for data entry, client-side scripting, and
 application-specific network dialogues.  Web-hosted applications have
 supplanted traditional desktop applications for almost everything that
 requires network communication, and are becoming competitive in other
-areas.  It is not an exaggeration to say that the Web is the
-development platform of choice for new software.
+areas. \todo{It is not an exaggeration to say that the Web is the
+development platform of choice for new software.}
 
 The \emph{same-origin policy}~\cite{mozillasameorigin} is the basic principle
 used to secure Web applications from each other. An HTML document can include
@@ -76,11 +76,11 @@ many sorts of content---including images, scripts, videos, and other
 documents---from any site. However, the document may not directly examine
 content loaded from other sites. This policy applies even within what appears
 to the user to be one unified page; for instance, scripts can only inspect the
-content of a nested document if that document came from the same origin.
-Cross-origin content inclusion allows sites to share popular script libraries
-and store large, rarely-changing content on servers dedicated to that purpose,
-while preventing malicious sites from reading content that should be visible
-only to the user.
+content of a nested document if that document came from the same origin
+as the include of the script. Cross-origin content inclusion allows sites to
+share popular script libraries and store large, rarely-changing content on
+servers dedicated to that purpose, while preventing malicious sites from
+reading content  that should be visible only to the user.
 
 Cascading style sheets (CSS) are yet another type of content that a
 document may include; they define appearance, just as HTML defines
@@ -282,8 +282,8 @@ uses only a few simple grammar rules:
 
 \begin{itemize}
 \item Even while skipping, parentheses, square brackets, and curly
-  braces must be properly balanced and nested.
-\item Unlike in HTML, angle brackets are not expected to balance.
+  braces must be properly balanced and nested. Unlike in HTML, angle 
+  brackets are not expected to balance.
 \item Depending on where the syntax error occurred, the next syntactic
   construct might begin after the next semicolon, after going up one
   brace level, or after the next brace-enclosed block.
@@ -556,7 +556,7 @@ of UTF-7 in a \verb|link| tag.
 We have successfully carried out cross-origin CSS attacks on several
 popular websites.
 
-\paragraph{IMDb}
+\subsubsection{IMDb}
 IMDb is an online database of movies and related information, which
 allows registered users to rate films, make posts on message boards,
 and send private messages to each other.  An attacker with an account
@@ -604,7 +604,7 @@ not necessary to inject a second string after the text to be stolen,
 because the end of the page serves that purpose (recall that end of
 style sheet closes open CSS constructs without error).
 
-\paragraph{Yahoo! Mail}
+\subsubsection{Yahoo! Mail}
 Yahoo! Mail is a popular web-based email service.  Its session cookies
 persist for up to two weeks if users do not actively log out.  An
 attacker can steal subject lines and CSRF tokens from a victim's email
@@ -656,7 +656,7 @@ delivered to the victim in between the two attack messages.  It also
 contains a hidden, unguessable token for each message; these tokens
 allow the attacker to delete messages via CSRF.
 
-\paragraph{Hotmail}
+\subsubsection{Hotmail}
 Windows Live Hotmail is an web-based email service operated by
 Microsoft. It is vulnerable to nearly the same attack as Yahoo!\  Mail:
 we can read messages and acquire CSRF tokens by sending two emails to
@@ -926,7 +926,7 @@ Other defensive approaches could be deployed in browsers without
 modifying web servers, but we argue that all of them could easily be
 circumvented, or else would significantly reduce web compatibility.
 
-\paragraph{Block Cookies}
+\subsubsection{Block Cookies}
 If HTTP cookies are disabled in the browser, web attackers cannot
 steal content from cookie-au\-then\-ti\-cated sites.  However, completely
 disabling cookies renders many sites unusable.  Some browsers have the
@@ -937,7 +937,7 @@ cross-origin load, because some sites require session cookies for
 cross-origin resources~\cite{jackson06thirdpartycookies}.  Blocking
 only cookie sets does not block cross-origin CSS attacks.
 
-\paragraph{Block JavaScript Style APIs}
+\subsubsection{Block JavaScript Style APIs}
 Many browsers already prevent JavaScript from reading parsed style
 rules when those rules were loaded cross-origin; this could be done
 more thoroughly, and they could also prevent access to computed style
@@ -953,14 +953,14 @@ Web applications may wish to adopt such mitigations to
 protect users of browsers that have not yet adopted our
 proposed defenses, such as Internet Explorer.
 
-\paragraph{Newlines}
+\subsubsection{Newlines}
 The CSS specification does not allow strings and URLs to contain
 newlines.  Most browsers honor this rule, so sites can defend against
 cross-origin CSS attacks by inserting newlines before and after
 potential injection points.  However, this does not protect users of
 Internet Explorer, which allows unescaped newlines in string contants.
 
-\paragraph{HTML Encoding}
+\subsubsection{HTML Encoding}
 CSS-based attacks can be prevented by replacing the punctuation
 within the injected strings with HTML entities. Existing filters
 often already do this for quotation marks, but quotation marks
@@ -985,9 +985,9 @@ tag.
 %headers for some reason, entity-encoding plus signs as \verb|&#43;|
 %would also prevent the attacker from using UTF-7.
 
-\paragraph{Avoid Ambient Authentication}
+\subsubsection{Avoid Ambient Authentication}
 Cross-site attacks rely on the browser transmitting “ambient”
-authentication information, such as HTTP credentials or session
+authentication information, such as HTTP authentication or session
 cookies, with any request to the target site.  A site that makes no
 use of these is less vulnerable.  One possible alternative is the
 web-key authentication scheme~\cite{webkey}, which embeds credentials
@@ -997,11 +997,18 @@ visible to the victim user (e.g. via the location bar), they might be
 tricked into revealing it; sites must assess whether this is an
 acceptable trade-off.
 
+Sites that use ambient authentication may consider deploying CSRF defenses~\cite{csrf},
+such as validating secret request tokens or validating the HTTP \texttt{Origin} header,
+% or validating custom HTTP headers attached to XMLHttpRequests,
+to distinguish and reject unintended cross-site requests.
+Such mechanisms must be implemented for all requests that would reveal confidential data,
+not only state-modifying requests, to effectively protect against cross-origin CSS attacks.
+
 \section{Related Work} \label{sec:relatedwork}
 In this section, we review current client-side defenses against
-similar attacks: content-sniffing XSS and JavaScript hijacking.  We
-also look at a few recent research proposals for secure web browsers
-in the light of the cross-origin CSS attack.
+similar attacks: content-sniffing XSS, JavaScript hijacking and cross
+channel scripting.  We also look at a few recent research proposals for
+secure web browsers in the light of the cross-origin CSS attack.
 
 \subsection{Content-Sniffing XSS}
 Browsers use content-sniffing algorithms to detect HTML documents that
@@ -1048,29 +1055,10 @@ Servers may also be able to mitigate the attack by using JSON
 responses only for HTTP POST requests; the \texttt{script} tag always
 generates GET requests.  However, this may require significant
 redesign of the web application.  Finally, avoiding ambient
-authentication as in \cite{webkey} is also an effective defense for
-this attack.
+authentication is also an effective defense for this attack.
 
-\subsection{OP Browser}
-The OP web browser~\cite{op-browser} sandboxes browser components, to
-isolate and contain failures.  OP's architecture does not provide any
-automatic protection against cross-origin CSS attacks, which depend
-only on the high-level behaviors described in
-Section~\ref{sec:behavior}.  However, OP does maintain a detailed
-security audit log that could be used by forensics experts to identify
-the site where the attack originated.
-
-\subsection{Gazelle Browser}
-The Gazelle browser~\cite{gazelle} includes strict architectural
-control over resource protection and sharing across websites.  Sites
-are security principals; all cross-principal communication is mediated
-by the browser kernel to prevent cross-origin attacks.  Cross-origin
-resources are only retrieved if the content has the proper content
-type in the HTTP response; thus Gazelle implements what we described
-in Section~\ref{sec:strict} as “strict enforcement” of cross-origin
-CSS labeling, as a natural consequence of their architecture.  Users
-of Gazelle are protected against cross-origin CSS attacks, at some
-cost in site incompatibility (62 out of 100,000 sites in our survey).
+\subsection{Cross Channel Scripting}
+Many consumer electronic devices provide a web interface along with a variety of services (e.g. FTP.) Unfortunately, a content that appears benign to one service may become malicious when mis-interpreted by another service. A cross channel scripting (XCS) attack~\cite{xcs} abuses such interactions between the web interface and other services by injecting malicous content into web content via alternate channels, bypassing common sanitizations for web exploits.  XCS also applies to large social networking sites that provide non-web cloud APIs, where a third party application supplies malicious data to the cloud service that is unexpected by the site's sanitization policy. The SiteFirewall~\cite{xcs} proposes to block XCS attacks at the payload execution stage, requiring sites to specify the permitted external resources the site can load via a site-wide policy in a cookie. This defense is ineffective against cross-origin CSS attacks because the attacker may white list the target site in its policy.
 
 \subsection{SOMA}
 The Same Origin Mutual Approval (SOMA) proposal~\cite{soma} restricts
@@ -1103,6 +1091,27 @@ many websites to be feasible.
 %Since it uses HTTP headers, it does not
 %impose additional round-trip costs, but it may be harder to deploy
 %than an approach relying on well-known URLs.
+
+\subsection{Gazelle Browser}
+The Gazelle browser~\cite{gazelle} includes strict architectural
+control over resource protection and sharing across websites.  Sites
+are security principals; all cross-principal communication is mediated
+by the browser kernel to prevent cross-origin attacks.  Cross-origin
+resources are only retrieved if the content has the proper content
+type in the HTTP response; thus Gazelle implements what we described
+in Section~\ref{sec:strict} as “strict enforcement” of cross-origin
+CSS labeling, as a natural consequence of their architecture.  Users
+of Gazelle are protected against cross-origin CSS attacks, at some
+cost in site incompatibility (62 out of 100,000 sites in our survey).
+
+\subsection{OP Browser}
+The OP web browser~\cite{op-browser} sandboxes browser components, to
+isolate and contain failures.  OP's architecture does not provide any
+automatic protection against cross-origin CSS attacks, which depend
+only on the high-level behaviors described in
+Section~\ref{sec:behavior}.  However, OP does maintain a detailed
+security audit log that could be used by forensics experts to identify
+the site where the attack originated.
 
 \section{Conclusion} \label{sec:conclusion}
 In this paper, we argued that error-tolerant parsing requires browsers to be

