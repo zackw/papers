@@ -116,10 +116,11 @@ been specific to Internet Explorer.
 In this paper, we present a general form of the attack that can be
 made to work in any browser that supports CSS, even if JavaScript is
 disabled or unsupported. We argue that this vulnerability is not a bug
-in browser CSS implementations, but rather a general limitation of
-forwards-compatible parsing: the browser must be confident of the
-content type of an included resource before such rules can be safely
-applied. We propose and implement stricter content handling rules that
+specific to browser CSS implementations, but rather a general limitation of
+allowing an including page to decide the content type of a cross-origin resource:
+browsers should obtain independent confirmation that the
+content type of an included resource is correct before handling it.
+We propose and implement stricter content handling rules that
 completely block the attack, as long as the targeted web site does not
 make certain errors (discussed in Section~\ref{sec:missing}). Our
 proposal has no negative side effects for most websites, and has been
@@ -1125,13 +1126,12 @@ security audit log that could be used by forensics experts to identify
 the site where the attack originated.
 
 \section{Conclusion} \label{sec:conclusion}
-In this paper, we argued that error-tolerant parsing requires browsers to be
-confident of the content type of an included cross-origin resource before
-handling it. Cross-origin CSS attacks have been known for some time, but
+In this paper, we argued that it is dangerous for browsers to allow a page
+to determine the content type of an included cross-origin resource.
+Cross-origin CSS attacks have been known for some time, but
 existing defenses for JavaScript-based CSS attacks are ineffective against
-the new variants we have discovered. We propose stricter content type handling
-to overcome the limitations of error-tolerant parsing. Our proposal has
-two variants: a strict defense, based solely on content
+the new variants we have discovered. We propose two variants on 
+stricter content type handling: a strict defense, based solely on content
 types, and a minimal defense that uses a content-sniffing rule to improve
 site compatibility.  We surveyed 100,000 web sites to assess the site
 compatibility of our proposals.  Common server misconfigurations
@@ -1144,7 +1144,8 @@ We also described some server-side mitigations for the attack.
 Error-tolerant parsing has extensibility benefits that have allowed CSS to
 become the dominant presentation format for the Web and will allow it to
 continue to evolve in the future. As more new features are introduced into
-browsers, we expect that many of them will consider adopting error-tolerant parsing as well. We hope that the designers of these features will
+browsers, we expect that many of them will consider adopting error-tolerant
+parsing as well. We hope that the designers of these features will
 take into consideration the importance of correctly determining the content
 type of cross-origin resources to avoid similar attacks.
 
