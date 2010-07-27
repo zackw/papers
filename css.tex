@@ -1078,8 +1078,10 @@ The policy is delivered via an HTTP response header. In Firefox~4.0, CSP
 includes a \verb|frame-ancestors| directive that affects whether a document
 can be included by other sites via \verb|object|, \verb|frame|, and
 \verb|iframe| tags. However, this directive does not prevent a document from
-being included across origins as a stylesheet, image, script. Thus, CSP does
-not currently provide any protection against cross-origin CSS import attacks. We expect to see additional directives added to CSP in the future.
+being included across origins as a stylesheet, image, or script. Thus, CSP by
+itself does not currently provide any protection against cross-origin CSS
+import attacks. We expect to see additional directives added to CSP in the
+future.
 
 \subsection{Same Origin Mutual Approval}
 The Same Origin Mutual Approval (SOMA) proposal~\cite{soma} restricts
