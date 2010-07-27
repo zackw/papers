@@ -608,8 +608,8 @@ style sheet closes open CSS constructs without error).
 \subsubsection{Yahoo! Mail}
 Yahoo! Mail is a popular web-based email service.  Its session cookies
 persist for up to two weeks if users do not actively log out.  An
-attacker can steal subject lines and CSRF tokens from a victim's email
-inbox with these steps:
+attacker can steal subject lines and cross-site request forgery~\cite{csrf}
+tokens from a victim's email inbox with these steps:
 
 \begin{enumerate}
 \item Send an email to the victim with the subject line:
@@ -987,27 +987,28 @@ tag.
 %would also prevent the attacker from using UTF-7.
 
 \subsubsection{Avoid Ambient Authentication}
-Cross-site attacks rely on the browser transmitting “ambient”
+Cross-site attacks rely on the browser transmitting ``ambient''
 authentication information, such as HTTP credentials or session
-cookies, with any request to the target site.  A site that makes no
-use of these is less vulnerable.  One possible alternative is the
-web-key authentication scheme~\cite{webkey}, which embeds credentials
-in site URLs instead of cookies.  The attacker is foiled, as they
-cannot guess these URLs.  However, if a URL with a credential becomes
+cookies, with any request to the target site.  
+The web-key authentication scheme~\cite{webkey} avoids the use of ambient
+authentication information by embedding credentials
+in site URLs instead.  This defense blocks cross-origin CSS attacks
+as well as cross-site request forgery~\cite{csrf}.
+However, if a URL with a credential becomes
 visible to the victim user (e.g. via the location bar), they might be
 tricked into revealing it; sites must assess whether this is an
 acceptable trade-off.
 
-Sites that use ambient authentication may consider deploying CSRF defenses~\cite{csrf},
-such as validating secret request tokens or validating the HTTP \texttt{Origin} header,
-% or validating custom HTTP headers attached to XMLHttpRequests,
-to distinguish and reject unintended cross-site requests.
-Such mechanisms must be implemented for all requests that would reveal confidential data,
-not only state-modifying requests, to effectively protect against cross-origin CSS attacks.
+% Sites that use ambient authentication may consider deploying CSRF defenses~\cite{csrf},
+% such as validating secret request tokens or validating the HTTP \texttt{Origin} header,
+% % or validating custom HTTP headers attached to XMLHttpRequests,
+% to distinguish and reject unintended cross-site requests.
+% Such mechanisms must be implemented for all requests that would reveal confidential data,
+% not only state-modifying requests, to effectively protect against cross-origin CSS attacks.
 
 \section{Related Work} \label{sec:relatedwork}
-In this section, we review current client-side defenses against
-similar attacks: content-sniffing XSS, JavaScript hijacking and cross
+In this section, we review defenses against
+similar attacks: content-sniffing XSS, cross-site script inclusion, and cross
 channel scripting.  We also look at a few recent research proposals for
 secure web browsers in the light of the cross-origin CSS attack.
 
@@ -1039,7 +1040,7 @@ particular document not to be HTML, the browser will not process it as
 HTML.  They do nothing against the cross-origin CSS attack, which
 tricks the browser into processing an HTML document as CSS.
 
-\subsection{JavaScript Hijacking} \label{sec:json}
+\subsection{Cross-Site Script Inclusion} \label{sec:json}
 Subsets of JavaScript syntax are commonly used as a data transport
 format; the most popular of these is JavaScript Object Notation
 (JSON)~\cite{json}.  Since the browser security model allows importing
@@ -1072,7 +1073,7 @@ in a cookie to specify the permitted external resources the site may load.
 However, this defense is ineffective against cross-origin CSS attacks because
 the attacker will white list the target site in its policy.
 
-\subsection{SOMA}
+\subsection{Same Origin Mutual Approval}
 The Same Origin Mutual Approval (SOMA) proposal~\cite{soma} restricts
 communication between origins by requiring mutual approval between a
 web page's server and the servers of its cross-origin resources.  Each
@@ -1086,7 +1087,7 @@ sites, and so mitigates the cross-origin CSS attack. However, the
 negotiation scheme costs additional round-trip requests and requires
 modifications to all participating web sites and browsers.
 
-\subsection{CORS}
+\subsection{Cross-Origin Resource Sharing}
 The Cross-Origin Resource Sharing (CORS) proposal~\cite{cors} is
 similar to SOMA, but it uses HTTP headers rather than well-known URLs,
 and is strictly for \emph{expanding} the set of sites allowed to
