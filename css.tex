@@ -94,8 +94,8 @@ To allow future extensibility, the CSS specification
 mandates~\emph{error-tolerant parsing}. Browsers skip over CSS
 directives they cannot interpret, while continuing to honor what they
 do understand.~\cite{syndata} These rules allow web designers to build
-sites that take advantage of the very latest CSS features but “degrade
-gracefully” and remain usable with older browsers. Unfortunately,
+sites that take advantage of the very latest CSS features but ``degrade
+gracefully''and remain usable with older browsers. Unfortunately,
 error-tolerant parsing can find valid CSS constructs in an input
 stream that was not intended to be CSS at all; for instance, in an
 HTML document.
@@ -272,7 +272,7 @@ HTML uses angle brackets to delimit \emph{tags} that must nest; text
 outside tags is mostly unparsed. CSS and JavaScript both use curly
 braces to enclose \emph{blocks}; inside or outside a block, the input
 text must follow a formal grammar.  However, CSS's error handling is
-entirely different from Javascript's.
+entirely different from JavaScript's.
 
 When browsers encounter syntax errors in CSS, they discard the current
 syntactic construct, skip ahead until what appears to be the beginning
