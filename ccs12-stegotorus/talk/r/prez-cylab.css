@@ -1,0 +1,126 @@
+body {
+    background-color: #ecedeb;
+    margin: 0;
+    padding: 0;
+}
+
+section, header, footer, div.content {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+section {
+    width: 800px;
+    height: 600px;
+    display: none;
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+    margin: auto;
+    padding: 0 24px;
+    background-color: white;
+    font-family: "cabin";
+}
+
+section.currentSlide {
+    display: block;
+}
+
+header {
+    padding: 8px 0;
+    position: relative;
+    height: 64px;
+}
+
+div.content {
+    padding: 8px 0;
+    position: relative;
+    height: 512px;
+}
+
+footer {
+    padding: 8px 0;
+    position: relative;
+    height: 24px;
+}
+
+.slideNumber {
+    position: absolute;
+    right: 0;
+    bottom: 8px;
+   font-size: 12px;
+}
+
+img, object {
+    display: block;
+    float: right;
+    padding-left: 24px;
+    max-width: 728px;
+    max-height: 496px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: normal;
+    font-style: normal;
+    font-family: "playfair display";
+    font-size: 54px;
+    margin: 0;
+    padding: 0;
+    color: #333
+    border-bottom: 2px solid #333;
+}
+
+section.title header {
+    height: 576px;
+    padding-top: 72px;
+    display: table-cell;
+    vertical-align: middle;
+}
+section.title div.content {
+    display: none;
+}
+
+section.title h1 {
+    color: #000;
+    font-size: 72px;
+    text-align: center;
+}
+section.title h2 {
+    color: #000;
+    font-size: 48px;
+    font-family: "cabin";
+    text-align: center;
+}
+section.title h3 {
+    color: #000;
+    font-size: 36px;
+    font-family: "cabin";
+    text-align: center;
+}
+
+pre, code {
+    font-family: "inconsolata";
+}
+
+@media all and (min-width: 1024px) and (min-height: 768px) {
+    section { width: 1024px; height: 768px; }
+    div.content, header, footer { width: 976px; }
+    header      { height: 96px; }
+    div.content { height: 624px; }
+    footer      { height: 48px; }
+    img, object { max-width: 952px; max-height: 608px; }
+    section.title header {
+        height: 976px;
+    }
+    section.title div.content { display: none }
+}
+
+.slideNumber {
+   background-color: hsla(120,40%,80%,.75);
+}
+
+/* todo:
+   print style
+   transitions?
+   typography
+ */
