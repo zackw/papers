@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html><head>
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-
   <title>StegoTorus: A Camouflage Proxy for the Tor Anonymity System</title>
-
   <link rel="stylesheet" href="r/fonts.css">
   <link rel="stylesheet" href="r/prez-cylab.css">
 </head>
@@ -15,34 +12,41 @@
     <h1>StegoTorus:<br>A Camouflage Proxy for the<br>Tor Anonymity System</h1>
     <h2><b>Zachary Weinberg</b> · Jeffrey Wang<br>Vinod Yegneswaran ·
         Linda Briesemeister<br>Steven Cheung · Frank Wang · Dan Boneh</h2>
-    <h3>CMU · SRI International · Stanford</h3>
   </hgroup>
+  <p><img src="r/cylab.svg" height="64"
+          alt="Carnegie Mellon University: CyLab"
+   ><img src="r/sri-logo.svg" height="64"
+         alt="SRI International"
+   ><img src="r/stanford-blocks.png" height="64"
+         alt="Stanford University"
+   ><img src="r/2011-tor-logo-flat.svg" height="64"
+         alt="The Tor Project"></p>
 </section>
 
 <section>
   <h2>Tor and Censorship</h2>
-  <object data="tor-background-1.svg" width="773.5" height="346"></object>
+  <object data="tor-background-1.svg"></object>
   <p>The Onion Router (Tor)<br>conceals the source and destination of
   traffic<br>by relaying it through a chain of proxies</p>
 </section>
 
 <section>
   <h2>Tor and Censorship</h2>
-  <object data="tor-background-2.svg" width="773.5" height="346"></object>
+  <object data="tor-background-2.svg"></object>
   <p>Any of these routers could be eavesdropping<br>
   Any of these routers could cut off communications</p>
 </section>
 
 <section>
   <h2>Tor and Censorship</h2>
-  <object data="tor-background-3.svg" width="773.5" height="346"></object>
+  <object data="tor-background-3.svg"></object>
   <p>The <b>censor</b>, an adversary in this position,<br>
      regularly does cut off communications</p>
 </section>
 
 <section>
   <h2>StegoTorus</h2>
-  <object data="tor-background-4.svg" width="773.5" height="346"></object>
+  <object data="tor-background-4.svg"></object>
   <p style="">Disguise Tor traffic as an innocuous cover
   protocol<br>so the censor does not detect and block it</p>
 </section>
@@ -51,7 +55,7 @@
   <h2>Actual incident</h2>
   <figure>
     <p>Directly connecting users from Iran</p>
-    <object data="direct-users-iran.svg" width="900" height="500"></object>
+    <object data="direct-users-iran.svg"></object>
     <figcaption>
       Data from the Tor Project
       — <a href="https://metrics.torproject.org">https://metrics.torproject.org</a>
@@ -61,9 +65,9 @@
 
 <section>
   <h2>Stegotorus’ Mission</h2>
-  <p>Protect <b>bulk Tor traffic</b> from deep-packet inspection and
+  <p>Protect <b>bulk traffic</b> from deep-packet inspection and
      blockade</p>
-  <p>… hide it, steganographically, in commonplace Internet
+  <p>… hide it, steganographically, in common Internet
   protocols</p>
   <p>… obscure packet contents, size, and timing</p>
   <p>… maintain Tor’s anonymity properties and performance</p>
@@ -78,16 +82,16 @@
   <p>State of the art is weaker than for cryptography</p>
   <ul>
     <li>theoretically-secure designs are not yet practical</li>
-    <li>deployed designs can all be broken by a determined
+    <li>deployed designs can be broken by a determined
       adversary</li>
     <li>hiddentext must be <b>entirely</b> indistinguishable
-      from random bits</li>
+      from&nbsp;random&nbsp;bits</li>
   </ul>
 </section>
 
 <section>
   <h2>DEFIANCE: the larger system</h2>
-  <img src="defiance-arch.svg">
+  <object data="defiance-arch.svg"></object>
   <ul>
     <li>StegoTorus defends against packet inspection</li>
     <li>Other components provide IP-blocking resistance, preshared
@@ -116,12 +120,12 @@
 
 <section>
   <h2>StegoTorus Architecture</h2>
-  <img src="architecture.svg">
+  <object data="architecture.svg"></object>
 </section>
 
 <section>
   <h2>Chopping</h2>
-  <img src="chop-block.svg">
+  <object data="chop-block.svg"></object>
   <div style="font-size:.6666em">
   <p>The Tor stream is not a good hidden protocol as is</p>
   <ul>
@@ -130,17 +134,12 @@
     <li>Must be delivered in order
   </ul>
   <p>Chopping reformats the stream to solve these issues</p>
-  <ul>
-    <li>Can be used by itself</li>
-    <li>Think of it as a custom rebuild of TLS and TCP</li>
-    <li>Two particularly hard design problems</li>
-  </ul>
   </div>
 </section>
 
 <section>
   <h2>Hard problem 1</h2>
-  <img src="chop-block.svg">
+  <object data="chop-block.svg"></object>
   <ul>
     <li>Must know length to decrypt; must decrypt length</li>
     <li>Encrypted, unauthenticated data leads to<br>decryption-oracle attacks</li>
@@ -150,46 +149,40 @@
 
 <section>
   <h2>Handshakes</h2>
-  <div style="width: 50%; display: table-cell">
-    <ul>
-      <li>Create new Tor links
-        <ul>
-          <li>Pre-shared server public key</li>
-          <li>Special asymmetric cipher for initial key agreement</li>
-          <li>ECDH (fixed curve) for session key agreement</li>
-        </ul>
-      </li>
-      <li>Associate new connections with established Tor links
-        <ul>
-          <li>Same asymmetric cipher as initial key agreement</li>
-          <li>Needed to multiplex a Tor link over many cover-protocol
+  <object class="floatgraf" data="chop-handshake-nc.svg"></object>
+  <ul>
+    <li>Create new Tor links
+      <ul>
+        <li>Pre-shared server public key</li>
+        <li>Special asymmetric cipher for initial key agreement</li>
+        <li>ECDH (fixed curve) for session key agreement</li>
+      </ul>
+    </li>
+  </ul>
+  <object class="floatgraf" data="chop-handshake-rc.svg"></object>
+  <ul>
+    <li>Associate new connections with established Tor links
+      <ul>
+        <li>Same asymmetric cipher as initial key agreement</li>
+        <li>Needed to multiplex a Tor link over many cover-protocol
           connections</li>
-        </ul>
-      </li>
-    </ul>
-  </div>
-  <div style="width: 50%; display: table-cell; vertical-align: top">
-    <img src="chop-handshakes.svg">
-  </div>
+      </ul>
+    </li>
+  </ul>
 </section>
 
 <section>
   <h2>Hard problem 2</h2>
-  <div style="width: 50%; display: table-cell">
-    <p>No standard asymmetric cipher produces pseudorandom ciphertexts</p>
-    <p>We use <a href="http://www.bmoeller.de/pdf/pke-pseudo-esorics2004.pdf">Bodo
+  <p>No standard asymmetric cipher produces pseudorandom ciphertexts</p>
+  <p>We use <a href="http://www.bmoeller.de/pdf/pke-pseudo-esorics2004.pdf">Bodo
       Möller’s proposed cipher</a> from ESORICS 2004</p>
-    <ul style="font-size: 1.5em">
-      <li>First production implementation of this cipher (to our
-        knowledge)</li>
-      <li>Only good for initial key agreement</li>
-      <li>Produces 163-<b>bit</b> messages</li>
-      <li>Intrinsic timing attack<br>(see paper for fix)</li>
+  <ul>
+    <li>First production implementation of this cipher (to our
+      knowledge)</li>
+    <li>Only good for initial key agreement</li>
+    <li>Produces 163-<b>bit</b> messages</li>
+    <li>Intrinsic timing attack<br>(see paper for fix)</li>
     </ul>
-  </div>
-  <div style="width: 50%; display: table-cell; vertical-align: top">
-    <img src="chop-handshakes.svg">
-  </div>
 </section>
 
 <section>
@@ -207,13 +200,13 @@
     </ul>
   </div>
   <div style="width: 50%; display: table-cell; vertical-align: middle">
-    <img src="architecture.svg" width="100%">
+    <object data="architecture.svg"></object>
   </div>
 </section>
 
 <section>
   <h2>Arbitrary encrypted packet stream</h2>
-  <pre style="width:500px; float: right"
+  <pre
 >17 03 01 00 6B XX XX XX  XX XX XX XX XX XX XX XX
 XX XX XX XX XX XX XX XX  XX XX XX XX XX XX XX XX
 XX XX XX XX XX XX XX XX  XX XX XX XX XX XX XX XX
@@ -230,7 +223,7 @@ MM MM MM MM PP</pre>
 
 <section>
   <h2>Arbitrary encrypted packet stream</h2>
-  <pre style="width:500px; float: right"
+  <pre
 >17 03 01 00 6B <b>XX XX XX  XX XX XX XX XX XX XX XX
 XX XX XX XX XX XX XX XX  XX XX XX XX XX XX XX XX
 XX XX XX XX XX XX XX XX  XX XX XX XX XX XX XX XX
@@ -252,14 +245,7 @@ MM MM MM MM PP</b></pre>
 
 <section>
   <h2>HTTP client → server</h2>
-  <div style="width: 50%; display: table-cell">
-    <p>Not much room to smuggle arbitrary data</p>
-    <p>We use URIs and cookies, base64’d</p>
-    <ul style="font-size:1.5em"><li>todo: make them look less fishy</li></ul>
-    <p>Hostname impractical (has to be in the DNS)</p>
-  </div>
-  <div style="width: 50%; display: table-cell">
-    <pre>GET /<b>&lt;uri&gt;</b> HTTP/1.1
+  <pre>GET /<b>&lt;uri&gt;</b> HTTP/1.1
 Accept: text/html,application/xhtml+xml,
     application/xml;q=0.9,*/*;q=0.8
 Accept-Encoding: gzip, deflate
@@ -269,18 +255,15 @@ Host: <b>&lt;hostname&gt;</b>
 User-Agent: Mozilla/5.0 (X11; Linux x86_64;
     rv:10.0) Gecko/20100101 Firefox/10.0
 Cookie: <b>&lt;cookie&gt;</b></pre>
-  </div>
+  <p>Not much room to smuggle arbitrary data</p>
+  <p>We use URIs and cookies, base64’d</p>
+  <ul style="font-size:1.5em"><li>todo: make them look less fishy</li></ul>
+  <p>Hostname impractical (has to be in the DNS)</p>
 </section>
 
 <section>
   <h2>HTTP server → client: JavaScript</h2>
-  <div style="width: 50%; display: table-cell">
-    <p>JavaScript on the wire looks like this →</p>
-    <p>Overwrite identifiers with hiddentext, encoded in modified
-    base64</p>
-  </div>
-  <div style="width: 50%; display: table-cell">
-<pre style="width:550px">(function(a,b){function cy(a){return f.isWindow(a)?a:
+<pre>(function(a,b){function cy(a){return f.isWindow(a)?a:
 a.nodeType===9?a.defaultView||a.parentWindow:!1}funct
 ion cv(a){if(!ck[a]){var b=c.body,d=f("&lt;"+a+"&gt;").appe
 ndTo(b),e=d.css("display");d.remove();if(e==="none"||
@@ -297,21 +280,14 @@ ice(0,b)),function(){c[this]=a});return c}function ct
 w()}function cj(){try{return new a.ActiveXObject("Mic
 rosoft.XMLHTTP")}catch(b){}}function ci(){try{return
 new a.XMLHttpRequest}catch(b){}}</pre>
-  </div>
+    <p>JavaScript on the wire looks like this →</p>
+    <p>Overwrite identifiers with hiddentext, encoded in modified
+    base64</p>
 </section>
 
 <section>
   <h2>HTTP server → client: JavaScript</h2>
-  <div style="width: 50%; display: table-cell">
-    <p>JavaScript on the wire looks like this →</p>
-    <p>Overwrite identifiers with hiddentext, encoded in modified
-    base64</p>
-    <p>Preserve JS keywords</p>
-    <p>Match hiddentext to covertext length</p>
-    <p>Roughly 4x expansion</p>
-  </div>
-  <div style="width: 50%; display: table-cell">
-<pre style="width:550px">(function(a,b){function c<b>y</b>(a){return f.i<b>FBEg__S</b>(a)?a:
+<pre>(function(a,b){function c<b>y</b>(a){return f.i<b>FBEg__S</b>(a)?a:
 a.n<b>LL5K5Wi</b>===9?a.d<b>b9pYVlj2x_</b>||a.p<b>jgALQ96LcyO</b>:!1}funct
 ion c<b>r</b>(a){if(!c<b>Q</b>[a]){var b=c.b<b>c3B</b>,d=f("&lt;"+a+"&gt;").a<b>xb3
 G9Tt</b>(b),e=d.c<b>Xk</b>("d<b>XKHE2w</b>");d.r<b>IASMb</b>();if(e==="n<b>2Ee</b>"||
@@ -328,7 +304,12 @@ zv9</b>(0,b)),function(){c[this]=a});return c}function c<b>d</b>
 d</b>()}function c<b>f</b>(){try{return new a.A<b>_i8qX_4HizjJ</b>("M<b>Ef
 DhOFVY</b>.X<b>hXvKkJ</b>")}catch(b){}}function c<b>w</b>(){try{return
 new a.X<b>rcSdu8P4nzNod</b>}catch(b){}}</pre>
-  </div>
+  <p>JavaScript on the wire looks like this →</p>
+  <p>Overwrite identifiers with hiddentext, encoded in modified
+    base64</p>
+  <p>Preserve JS keywords</p>
+  <p>Match hiddentext to covertext length</p>
+  <p>Roughly 4x expansion</p>
 </section>
 
 <section>
@@ -338,26 +319,23 @@ new a.X<b>rcSdu8P4nzNod</b>}catch(b){}}</pre>
     <object data="machine-classification.svg"></object>
     <figcaption><a href="http://www.caida.org/data/passive/passive_2011_dataset.xml">CAIDA
     Anonymized Internet Traces 2011 (Chicago)</a></figcaption>
+  </figure>
 </section>
 
 <section>
   <h2>Traffic Analysis Resistance</h2>
-  <img src="traffic-analysis-resist.svg">
-  <div style="font-size:.66em">
+  <object data="traffic-analysis-resist.svg"></object>
   <p>StegoTorus-HTTP is much more like CAIDA-port-80 traffic than
     either is like Tor traffic</p>
   <p>StegoTorus-HTTP is still distinguishable from true HTTP</p>
-  </div>
 </section>
 
 <section>
   <h2>Performance</h2>
-  <img src="performance.svg">
+  <object data="performance.svg"></object>
   <div style="font-size:.66em">
-  <p>The chopper by itself adds a small amount of overhead</p>
-  <p>HTTP steganography adds a great deal more</p>
-  <p>ST-HTTP is still usable for casual web surfing (comparable to
-  dial-up)</p>
+  <p>HTTP steganography adds a great deal of overhead, but
+    is still usable for casual web surfing (still 4x faster than dialup)</p>
   </div>
 </section>
 
@@ -377,46 +355,34 @@ new a.X<b>rcSdu8P4nzNod</b>}catch(b){}}</pre>
 
 <section>
   <h2>What’s Next — Long Term</h2>
-  <div style="width: 45%; display: table-cell; font-size: .75em">
-    <p>If censors can’t block all use of Tor, perhaps they will try to
-      extract information instead</p>
-    <p>Quite a bit of research on detecting website identity from
-      traffic volume, packet timing, etc.</p>
-    <p>We found this can be done in constant time per packet and
-      constant memory per stream</p>
-    <p>We are skeptical whether this scales from small closed-world
-      experiments to the global Internet</p>
-  </div>
-  <div style="width: 5%; display: table-cell"></div>
-  <div style="width: 50%; display: table-cell">
-    <figure>
+    <figure class="floatgraf">
     <p>Machine classification of Tor traffic as<br>visits to
       Facebook or visits elsewhere</p>
-    <img src="facebook-detect.svg" style="width:100%">
-  </div>
+    <object data="facebook-detect.svg"></object>
+    </figure>
+  <p>If censors can’t block all use of Tor, perhaps they will try to
+    extract information instead</p>
+  <p>We found this can be done in constant time per packet and
+    constant memory per stream</p>
+  <p>We are skeptical whether this scales from small closed-world
+    experiments to the global Internet</p>
 </section>
 
-<section class="slide question-slide">
-  <div class="vcenter">
-  <p style="font-size:400%">Questions?</p>
-
-  <p style="font-size:1.5em;margin-top:2em">
-    <code>zackw@cmu.edu</code><br>
+<section class="title">
+  <hgroup>
+    <h2>Questions?</h2>
+    <h3><code>zackw@cmu.edu</code><br>
     <a href="https://gitweb.torproject.org/stegotorus.git">https://gitweb.torproject.org/stegotorus.git</a><br>
-    <a href="https://github.com/zackw/stegotorus/">https://github.com/zackw/stegotorus/</a></p>
-</div>
+    <a href="https://github.com/zackw/stegotorus/">https://github.com/zackw/stegotorus/</a></h3>
+  </hgroup>
 </section>
 
 <section>
-  <div class="vcenter">
-    <img src="traffic-analysis-resist-obfsp.svg">
-  </div>
+  <object data="traffic-analysis-resist-obfsp.svg"></object>
 </section>
 
 <section>
-  <div class="vcenter">
-    <img src="latency.svg">
-  </div>
+  <object data="latency.svg"></object>
 </section>
 
 

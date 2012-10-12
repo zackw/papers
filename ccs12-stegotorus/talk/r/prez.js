@@ -60,105 +60,25 @@ function keyEvent(event)
     event.preventDefault();
 }
 
-function rewriteSlideDOM(slide, index, count)
+function rewriteSlideDOM(slide, index)
 {
-    var head, content, foot, child, sib, n, s, slideNo, slideNoText;
-
-    for (child = slide.firstChild; child !== null; child = sib) {
-        sib = child.nextSibling;
-        slide.removeChild(child);
-        if (child.nodeType !== 1 /* element */) {
-            if (child.nodeType == 3 /* text */ && !/\S/.test(child.textContent))
-                continue; /* discard text nodes consisting entirely of
-                             whitespace */
-            if (!content) {
-                content = document.createElement("div");
-                content.className = "content";
-            }
-            content.appendChild(child);
-        }
-
-        switch (child.tagName) {
-        case "HEADER":
-            if (head) {
-                n = child.firstChild;
-                while (n) {
-                    s = n.nextSibling;
-                    child.removeChild(n);
-                    head.appendChild(n);
-                    s = n;
-                }
-            } else {
-                head = child;
-            }
-            break;
-
-        case "HGROUP":
-        case "H1":
-        case "H2":
-        case "H3":
-        case "H4":
-        case "H5":
-        case "H6":
-            if (!head) {
-                head = document.createElement("header");
-            }
-            head.appendChild(child);
-            break;
-
-        case "FOOTER":
-            if (foot) {
-                n = child.firstChild;
-                while (n) {
-                    s = n.nextSibling;
-                    child.removeChild(n);
-                    foot.appendChild(n);
-                    s = n;
-                }
-            } else {
-                foot = child;
-            }
-            break;
-
-        default:
-            if (!content) {
-                content = document.createElement("div");
-                content.className = "content";
-            }
-            content.appendChild(child);
-        }
-    }
-
-    if (!head)
-        head = document.createElement("header");
-    if (!foot)
-        foot = document.createElement("footer");
-    if (!content) {
-        content = document.createElement("div");
-        content.className = "content";
-    }
-
-    slideNoText = document.createTextNode("" + index + " / " + count);
-    slideNo = document.createElement("div");
+    var slideNoText = document.createTextNode("" + index);
+    var slideNo = document.createElement("div");
     slideNo.className = "slideNumber";
     slideNo.appendChild(slideNoText);
-    foot.appendChild(slideNo);
-
-    slide.appendChild(head);
-    slide.appendChild(content);
-    slide.appendChild(foot);
+    slide.appendChild(slideNo);
 
     if (slide.id === undefined || slide.id === null || slide.id === "")
         slide.id = "slide-" + index;
 }
 
-window.onload = function onload()
+function loadEvent()
 {
     var slides = document.getElementsByTagName('section');
     var i;
 
     for (i = 0; i < slides.length; i++) {
-        rewriteSlideDOM(slides[i], i+1, slides.length);
+        rewriteSlideDOM(slides[i], i+1);
 
         slides[i].setUserData("prevSlide",
                               (i == 0) ? null : slides[i-1],
@@ -186,9 +106,9 @@ window.onload = function onload()
         document.location.hash = "#" + slides[0].id;
     }
 
-    /*window.addEventListener("click", clickEvent);*/
     window.addEventListener("keyup", keyEvent);
-};
+}
+document.addEventListener("DOMContentLoaded", loadEvent);
 
 /* todo:
    menu
