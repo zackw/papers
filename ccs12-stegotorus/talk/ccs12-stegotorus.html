@@ -24,6 +24,18 @@
 </section>
 
 <section>
+  <h2>Problem</h2>
+  <figure>
+    <p>Directly connecting users from Iran</p>
+    <object data="direct-users-iran.svg"></object>
+    <figcaption>
+      Data from the Tor Project
+      — <a href="https://metrics.torproject.org">https://metrics.torproject.org</a>
+      </figcaption>
+  </figure>
+</section>
+
+<section>
   <h2>Tor and Censorship</h2>
   <object data="tor-background-1.svg"></object>
   <p>The Onion Router (Tor) conceals the source and destination of
@@ -34,8 +46,7 @@
 <section>
   <h2>Tor and Censorship</h2>
   <object data="tor-background-2.svg"></object>
-  <p>The network topology really looks like this.<br>
-    Any of these routers could detect the use of Tor.</p>
+  <p>Any of these routers could detect the use of Tor.</p>
 </section>
 
 <section>
@@ -50,18 +61,6 @@
   <object data="tor-background-4.svg"></object>
   <p style="">Disguise Tor traffic as an innocuous cover
   protocol<br>so the censor does not detect and block it.</p>
-</section>
-
-<section>
-  <h2>Actual incident</h2>
-  <figure>
-    <p>Directly connecting users from Iran</p>
-    <object data="direct-users-iran.svg"></object>
-    <figcaption>
-      Data from the Tor Project
-      — <a href="https://metrics.torproject.org">https://metrics.torproject.org</a>
-      </figcaption>
-  </figure>
 </section>
 
 <section>
@@ -310,7 +309,7 @@ new a.X<b>rcSdu8P4nzNod</b>}catch(b){}}</pre>
   <h2>Data for comparison: CAIDA</h2>
   <figure>
     <p>One day of traffic through a backbone router in Chicago, 2011</p>
-    <img src="caida-right.png">
+    <img src="caida.png">
     <figcaption>Data
   source: <a href="http://www.caida.org/data/passive/passive_2011_dataset.xml">http://www.caida.org/data/passive/passive_2011_dataset.xml</a></figcaption>
   </figure>
@@ -326,7 +325,12 @@ new a.X<b>rcSdu8P4nzNod</b>}catch(b){}}</pre>
 
 <section>
   <h2>Traffic Analysis Resistance</h2>
-  <object data="traffic-analysis-resist.svg"></object>
+  <object data="traffic-analysis-resist-tor.svg"></object>
+</section>
+
+<section>
+  <h2>Traffic Analysis Resistance</h2>
+  <object data="traffic-analysis-resist-storus.svg"></object>
   <p>StegoTorus-HTTP is much more like CAIDA-port-80 traffic than
     either is like Tor traffic</p>
   <p>StegoTorus-HTTP is still distinguishable from true HTTP</p>
@@ -342,20 +346,7 @@ new a.X<b>rcSdu8P4nzNod</b>}catch(b){}}</pre>
 </section>
 
 <section>
-  <h2>What’s Next — Short Term</h2>
-  <p>Still to do:</p>
-  <ul>
-    <li>Reduce overhead</li>
-    <li>More sophisticated steganography</li>
-    <li>More cover protocols</li>
-    <li>Decoy traffic</li>
-    <li>Real-world testing</li>
-  </ul>
-  <p>Help wanted!</p>
-</section>
-
-<section>
-  <h2>What’s Next — Long Term</h2>
+  <h2>Fingerprinting</h2>
   <object class="floatgraf" data="facebook-detect.svg"></object>
   <p>If censors can’t block all use of Tor, perhaps they will try to
     extract information instead</p>
@@ -430,7 +421,7 @@ new a.X<b>rcSdu8P4nzNod</b>}catch(b){}}</pre>
 </section>
 
 <section>
-  <h2>What’s Next — Long Term</h2>
+  <h2>Fingerprinting</h2>
     <figure class="floatgraf">
     <object data="facebook-detect.svg"></object>
     </figure>
@@ -438,6 +429,19 @@ new a.X<b>rcSdu8P4nzNod</b>}catch(b){}}</pre>
     train on StegoTorus instead)</p>
   <p>We are skeptical whether this attack scales to the global
       Internet</p>
+</section>
+
+<section>
+  <h2>What’s Next</h2>
+  <p>Still to do:</p>
+  <ul>
+    <li>Reduce overhead</li>
+    <li>More sophisticated steganography</li>
+    <li>More cover protocols</li>
+    <li>Decoy traffic</li>
+    <li>Real-world testing</li>
+  </ul>
+  <p>Help wanted!</p>
 </section>
 
 <section class="title">
@@ -452,11 +456,6 @@ new a.X<b>rcSdu8P4nzNod</b>}catch(b){}}</pre>
 <section>
   <object data="traffic-analysis-resist-obfsp.svg"></object>
 </section>
-
-<section>
-  <object data="latency.svg"></object>
-</section>
-
 
 <!--
 <form action="." method="get" class="goto-form">
