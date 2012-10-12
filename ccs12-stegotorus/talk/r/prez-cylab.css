@@ -35,7 +35,7 @@ img, object {
     display: block;
     margin: 18px auto;
     max-width: 728px;
-    max-height: 496px;
+    max-height: 420px;
 }
 
 .floatgraf {
@@ -87,7 +87,7 @@ figure > p {
     font-size: 20px;
 }
 figure > img, figure > object {
-    margin: 0;
+    margin: 0 auto;
 }
 figure > figcaption {
     text-align: right;
@@ -148,7 +148,7 @@ pre, code {
     header      { height: 96px; }
     div.content { height: 624px; }
     footer      { height: 48px; }
-    img, object { max-width: 952px; max-height: 608px; }
+    img, object { max-width: 952px; max-height: 580px; }
     section.title header {
         height: 720px;
         padding-top: 0;

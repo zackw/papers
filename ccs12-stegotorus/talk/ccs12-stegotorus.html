@@ -26,29 +26,30 @@
 <section>
   <h2>Tor and Censorship</h2>
   <object data="tor-background-1.svg"></object>
-  <p>The Onion Router (Tor)<br>conceals the source and destination of
-  traffic<br>by relaying it through a chain of proxies</p>
+  <p>The Onion Router (Tor) conceals the source and destination of
+  traffic by relaying it through a chain of proxies.<br>
+  It does not conceal <b>that you are using Tor</b>.</p>
 </section>
 
 <section>
   <h2>Tor and Censorship</h2>
   <object data="tor-background-2.svg"></object>
-  <p>Any of these routers could be eavesdropping<br>
-  Any of these routers could cut off communications</p>
+  <p>The network topology really looks like this.<br>
+    Any of these routers could detect the use of Tor.</p>
 </section>
 
 <section>
   <h2>Tor and Censorship</h2>
   <object data="tor-background-3.svg"></object>
   <p>The <b>censor</b>, an adversary in this position,<br>
-     regularly does cut off communications</p>
+     is motivated to prevent Tor from being used.</p>
 </section>
 
 <section>
   <h2>StegoTorus</h2>
   <object data="tor-background-4.svg"></object>
   <p style="">Disguise Tor traffic as an innocuous cover
-  protocol<br>so the censor does not detect and block it</p>
+  protocol<br>so the censor does not detect and block it.</p>
 </section>
 
 <section>
@@ -95,7 +96,7 @@
   <ul>
     <li>StegoTorus defends against packet inspection</li>
     <li>Other components provide IP-blocking resistance, preshared
-        keys, protection from active probes and directory scraping,
+        keys, protection from active probes and directory&nbsp;scraping,
         etc.</li>
     <li>More details: <a href="https://www.usenix.org/conference/foci12/bootstrapping-communications-anti-censorship-system">Lincoln et al.</a>, FOCI’12</li>
   </ul>
@@ -138,9 +139,10 @@
 </section>
 
 <section>
-  <h2>Hard problem 1</h2>
+  <h2>Challenge 1: avoiding plaintext headers</h2>
   <object data="chop-block.svg"></object>
   <ul>
+    <li>AES-GCM for bulk encryption</li>
     <li>Must know length to decrypt; must decrypt length</li>
     <li>Encrypted, unauthenticated data leads to<br>decryption-oracle attacks</li>
     <li>Solution: separate key for header, short-message AE</li>
@@ -148,41 +150,33 @@
 </section>
 
 <section>
-  <h2>Handshakes</h2>
-  <object class="floatgraf" data="chop-handshake-nc.svg"></object>
+  <h2>Initial Handshake</h2>
+  <object data="chop-handshake-nc.svg"></object>
   <ul>
-    <li>Create new Tor links
-      <ul>
-        <li>Pre-shared server public key</li>
-        <li>Special asymmetric cipher for initial key agreement</li>
-        <li>ECDH (fixed curve) for session key agreement</li>
-      </ul>
-    </li>
-  </ul>
-  <object class="floatgraf" data="chop-handshake-rc.svg"></object>
-  <ul>
-    <li>Associate new connections with established Tor links
-      <ul>
-        <li>Same asymmetric cipher as initial key agreement</li>
-        <li>Needed to multiplex a Tor link over many cover-protocol
-          connections</li>
-      </ul>
-    </li>
+    <li>Pre-shared server public key</li>
+    <li>ECDH over P-256 for session key agreement</li>
+    <li><a href="http://www.bmoeller.de/pdf/pke-pseudo-esorics2004.pdf">Bodo
+      Möller’s special EC with pseudorandom ciphertext</a><br>for initial
+      key agreement
+      <ul><li>First production implementation of this cipher (to our
+      knowledge)</li></ul></li>
   </ul>
 </section>
 
 <section>
-  <h2>Hard problem 2</h2>
-  <p>No standard asymmetric cipher produces pseudorandom ciphertexts</p>
-  <p>We use <a href="http://www.bmoeller.de/pdf/pke-pseudo-esorics2004.pdf">Bodo
-      Möller’s proposed cipher</a> from ESORICS 2004</p>
+  <h2>Challenge 2: Short cover connections</h2>
   <ul>
-    <li>First production implementation of this cipher (to our
-      knowledge)</li>
-    <li>Only good for initial key agreement</li>
-    <li>Produces 163-<b>bit</b> messages</li>
-    <li>Intrinsic timing attack<br>(see paper for fix)</li>
-    </ul>
+    <li>Tor uses one long-lived TCP connection for all data</li>
+    <li>Some cover protocols (e.g. HTTP) use many short-lived TCP
+    connections</li>
+  </ul>
+  <ul>
+    <li>Special handshake to associate new connections with
+      established Tor links</li>
+    <li>TCP-style sequence numbering so blocks can arrive out of
+    order</li>
+  </ul>
+  <object data="chop-handshake-rc.svg"></object>
 </section>
 
 <section>
@@ -313,12 +307,20 @@ new a.X<b>rcSdu8P4nzNod</b>}catch(b){}}</pre>
 </section>
 
 <section>
+  <h2>Data for comparison: CAIDA</h2>
+  <figure>
+    <p>One day of traffic through a backbone router in Chicago, 2011</p>
+    <img src="caida-right.png">
+    <figcaption>Data
+  source: <a href="http://www.caida.org/data/passive/passive_2011_dataset.xml">http://www.caida.org/data/passive/passive_2011_dataset.xml</a></figcaption>
+  </figure>
+</section>
+
+<section>
   <h2>Packet-level distinguisher</h2>
   <figure>
     <p>The first 20 packets of 64,000 port-443 TCP flows, binned by size</p>
     <object data="machine-classification.svg"></object>
-    <figcaption><a href="http://www.caida.org/data/passive/passive_2011_dataset.xml">CAIDA
-    Anonymized Internet Traces 2011 (Chicago)</a></figcaption>
   </figure>
 </section>
 
@@ -344,33 +346,103 @@ new a.X<b>rcSdu8P4nzNod</b>}catch(b){}}</pre>
   <p>Still to do:</p>
   <ul>
     <li>Reduce overhead</li>
-    <li>Make HTTP steg less latency-sensitive</li>
-    <li>More and better steganography</li>
+    <li>More sophisticated steganography</li>
+    <li>More cover protocols</li>
     <li>Decoy traffic</li>
-    <li>Collect covertexts from end user</li>
-    <li>Test against genuine “deep packet inspection” gear</li>
+    <li>Real-world testing</li>
   </ul>
   <p>Help wanted!</p>
 </section>
 
 <section>
   <h2>What’s Next — Long Term</h2>
-    <figure class="floatgraf">
-    <p>Machine classification of Tor traffic as<br>visits to
-      Facebook or visits elsewhere</p>
-    <object data="facebook-detect.svg"></object>
-    </figure>
+  <object class="floatgraf" data="facebook-detect.svg"></object>
   <p>If censors can’t block all use of Tor, perhaps they will try to
     extract information instead</p>
-  <p>We found this can be done in constant time per packet and
-    constant memory per stream</p>
-  <p>We are skeptical whether this scales from small closed-world
-    experiments to the global Internet</p>
+  <p>This sliding-window classifier requires only TCP payload sizes,
+    runs in constant time per-packet and constant memory per-stream
+    after initial training (offline)</p>
+  <p style="clear:right"><math><mspace width="2ex"/>
+  <mo>log Pr</mo>
+  <mo>[</mo>
+    <mo>{</mo>
+    <msub>
+      <mi>u</mi>
+      <mi>i</mi>
+    </msub>
+    <mo>}</mo>
+  <mo>,</mo>
+  <mo>{</mo>
+  <msub>
+    <mi>d</mi>
+    <mi>i</mi>
+  </msub>
+  <mo>}</mo>
+  <mspace width="1ex" />
+  <mtext>is Facebook</mtext>
+  <mo>]</mo>
+  <mo>=</mo>
+</math><br><math><mspace width="6ex"/>
+  <munderover>
+    <mo>&#x2211;</mo>
+    <mrow>
+      <mi>i</mi>
+      <mo>=</mo>
+      <mn>1</mn>
+    </mrow>
+    <mi>n</mi>
+  </munderover>
+  <mo>log Pr</mo>
+  <mo>[</mo>
+  <msub>
+    <mi>U</mi>
+    <mi>i</mi>
+  </msub>
+  <mo>=</mo>
+  <msub>
+    <mi>u</mi>
+    <mi>i</mi>
+  </msub>
+  <mo>]</mo>
+  <mo>+</mo>
+  <munderover>
+    <mo>&#x2211;</mo>
+    <mrow>
+      <mi>i</mi>
+      <mo>=</mo>
+      <mn>1</mn>
+    </mrow>
+    <mi>n</mi>
+  </munderover>
+  <mo>log Pr</mo>
+  <mo>[</mo>
+  <msub>
+    <mi>D</mi>
+    <mi>i</mi>
+  </msub>
+  <mo>=</mo>
+  <msub>
+    <mi>d</mi>
+    <mi>i</mi>
+  </msub>
+  <mo>]</mo>
+</math></p>
+</section>
+
+<section>
+  <h2>What’s Next — Long Term</h2>
+    <figure class="floatgraf">
+    <object data="facebook-detect.svg"></object>
+    </figure>
+    <p>StegoTorus defeats a classifier trained on Tor<br>(todo:
+    train on StegoTorus instead)</p>
+  <p>We are skeptical whether this attack scales to the global
+      Internet</p>
 </section>
 
 <section class="title">
-  <hgroup>
-    <h2>Questions?</h2>
+  <hgroup style="margin-top:240px">
+    <h2 style="font-size:60px">Questions?</h2>
     <h3><code>zackw@cmu.edu</code><br>
     <a href="https://gitweb.torproject.org/stegotorus.git">https://gitweb.torproject.org/stegotorus.git</a><br>
     <a href="https://github.com/zackw/stegotorus/">https://github.com/zackw/stegotorus/</a></h3>
