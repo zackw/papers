@@ -1,26 +1,28 @@
+html { width: 100%; height: 100%; }
 body {
     background-color: #ecedeb;
     margin: 0;
     padding: 0;
+    height: 100%;
+    overflow: hidden;
 }
 
 section {
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
-    width: 800px;
-    height: 600px;
-    position: absolute;
-    margin: auto;
-    left: -999em;
-    top: -999em;
-    padding: 0 24px;
+    width: 798px;
+    height: 598px;
+    position: relative; /* is a container */
+    margin: 0 auto;
+    padding: 0 23px;
     background-color: white;
     font-family: "cabin";
+    visibility: hidden;
 }
 
 section.currentSlide {
-    top: 0; bottom: 0; left: 0; right: 0;
+    visibility: visible;
 }
 
 .slideNumber {
@@ -71,6 +73,7 @@ pre {
     border: 1px solid #888;
     margin: 12px 0 0 24px;
     color: #888;
+    font-size: 16px;
 }
 pre b {
     font-weight: normal;
@@ -92,10 +95,11 @@ figure > img, figure > object {
 figure > figcaption {
     text-align: right;
     margin-top: 4px;
+    font-size: 16px;
 }
 
 section.title hgroup {
-    margin-top: 48px;
+    padding-top: 48px;
 }
 
 section.title h1 {
@@ -108,7 +112,7 @@ section.title h1 {
 }
 section.title h2 {
     color: #000;
-    font-size: 36px;
+    font-size: 32px;
     font-family: "cabin";
     text-align: center;
     margin-bottom: 1em;
@@ -132,18 +136,111 @@ section.title p {
 section.title p > img {
     display: inline;
     margin: 0 20px;
+    height: 64px;
 }
 
 section > object:first-child {
-    margin-top: 100px;
+    padding-top: 100px;
 }
 
 pre, code {
     font-family: "inconsolata";
 }
 
-@media all and (min-width: 1024px) and (min-height: 768px) {
-    section { width: 1024px; height: 768px; }
+
+body.menu-mode {
+    overflow-y: scroll;
+    width: 670px;
+    margin: 0 auto;
+}
+
+body.menu-mode section {
+    display: inline-block;
+    vertical-align: top;
+    visibility: visible;
+    width: 200px;
+    height: 150px;
+    margin: 10px;
+    padding: 0 5px;
+}
+
+body.menu-mode section.currentSlide {
+    background-color: #ecedff;
+}
+body.menu-mode section:hover, body.menu-mode section.candidate {
+    box-shadow: 2px 2px 3px 2px;
+}
+
+body.menu-mode .slideNumber {
+    z-index: 2;
+    background: #ccc;
+}
+body.menu-mode img, body.menu-mode object {
+    margin: 4px auto;
+    max-width: 170px;
+    max-height: 100px;
+}
+body.menu-mode .floatgraf {
+    width: 87px;
+    margin: 4.5px;
+}
+body.menu-mode h1, body.menu-mode h2, body.menu-mode h3,
+body.menu-mode h4, body.menu-mode h5, body.menu-mode h6 {
+    font-size: 9px;
+}
+
+body.menu-mode p, body.menu-mode ol, body.menu-mode ul {
+    font-size: 7px;
+    margin: 2px 0;
+}
+body.menu-mode ul, body.menu-mode ol {
+    padding-left: 10px;
+}
+body.menu-mode ol ol, body.menu-mode ul ul,
+body.menu-mode ol ul, body.menu-mode ul ol {
+    font-size: 6px;
+}
+
+body.menu-mode pre {
+    padding: 2px;
+    border: none;
+    margin: 3px 0 0 6px;
+    font-size: 4px;
+}
+body.menu-mode figure {
+    margin: 4.5px auto;
+}
+body.menu-mode figure > p {
+    margin: 0 0 1px 0;
+    font-size: 5px;
+}
+body.menu-mode figure > figcaption {
+    margin-top: 1px;
+    font-size: 4px;
+}
+body.menu-mode section.title hgroup {
+    padding-top: 12px;
+}
+body.menu-mode section.title h1 {
+    font-size: 10px;
+}
+body.menu-mode section.title h2 {
+    font-size: 8px;
+}
+body.menu-mode section.title h3 {
+    font-size: 6px;
+}
+body.menu-mode section.title p > img {
+    height: 16px;
+    margin: 0 5px;
+}
+body.menu-mode section > object:first-child {
+    padding-top: 25px;
+}
+
+
+@media all and (min-width: 1022px) and (min-height: 766px) {
+    section { width: 1022px; height: 766px; }
     div.content, header, footer { width: 976px; }
     header      { height: 96px; }
     div.content { height: 624px; }
@@ -158,7 +255,6 @@ pre, code {
         margin: 12px 0;
         padding-bottom: 6px;
     }
-    section.title div.content { display: none }
     .floatgraf { width: 500px }
     pre { font-size: 18px }
     p, ol, ul {
@@ -166,6 +262,9 @@ pre, code {
     }
     ol ol, ul ul, ol ul, ul ol {
         font-size: 28px;
+    }
+    body.menu-mode {
+        width: 900px;
     }
 }
 

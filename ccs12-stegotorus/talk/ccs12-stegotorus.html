@@ -13,14 +13,10 @@
     <h2><b>Zachary Weinberg</b> · Jeffrey Wang<br>Vinod Yegneswaran ·
         Linda Briesemeister<br>Steven Cheung · Frank Wang · Dan Boneh</h2>
   </hgroup>
-  <p><img src="r/cylab.svg" height="64"
-          alt="Carnegie Mellon University: CyLab"
-   ><img src="r/sri-logo.svg" height="64"
-         alt="SRI International"
-   ><img src="r/stanford-blocks.png" height="64"
-         alt="Stanford University"
-   ><img src="r/2011-tor-logo-flat.svg" height="64"
-         alt="The Tor Project"></p>
+  <p><img src="r/cylab.svg" alt="Carnegie Mellon University: CyLab"
+   ><img src="r/sri-logo.svg" alt="SRI International"
+   ><img src="r/stanford-blocks.png" alt="Stanford University"
+   ><img src="r/2011-tor-logo-flat.svg" alt="The Tor Project"></p>
 </section>
 
 <section>
@@ -59,7 +55,7 @@
 <section>
   <h2>StegoTorus</h2>
   <object data="tor-background-4.svg"></object>
-  <p style="">Disguise Tor traffic as an innocuous cover
+  <p>Disguise Tor traffic as an innocuous cover
   protocol<br>so the censor does not detect and block it.</p>
 </section>
 
@@ -126,7 +122,6 @@
 <section>
   <h2>Chopping</h2>
   <object data="chop-block.svg"></object>
-  <div style="font-size:.6666em">
   <p>The Tor stream is not a good hidden protocol as is</p>
   <ul>
     <li>Plaintext record headers
@@ -134,7 +129,6 @@
     <li>Must be delivered in order
   </ul>
   <p>Chopping reformats the stream to solve these issues</p>
-  </div>
 </section>
 
 <section>
@@ -180,21 +174,17 @@
 
 <section>
   <h2>Steganography</h2>
-  <div style="width: 50%; display: table-cell">
-    <p>Implemented:</p>
-    <ul>
-      <li>Arbitrary encrypted packet stream (“embed”)</li>
-      <li>HTTP (JS, Flash, PDF)</li>
-    </ul>
-    <p>Planned:</p>
-    <ul>
-      <li>Skype, RTMP, WoW?</li>
-      <li>More HTTP content types</li>
-    </ul>
-  </div>
-  <div style="width: 50%; display: table-cell; vertical-align: middle">
-    <object data="architecture.svg"></object>
-  </div>
+  <object class="floatgraf" data="architecture.svg"></object>
+  <p>Implemented:</p>
+  <ul>
+    <li>Arbitrary encrypted packet stream (“embed”)</li>
+    <li>HTTP (JS, Flash, PDF)</li>
+  </ul>
+  <p>Planned:</p>
+  <ul>
+    <li>RTMP, Quake, other popular TCP-based protocols</li>
+    <li>More HTTP content types</li>
+  </ul>
 </section>
 
 <section>
@@ -233,7 +223,6 @@ MM MM MM MM PP</b></pre>
     check the MAC)</p>
   <p>Works from labeled packet captures of TLS streams</p>
   <p>Can be adapted to any TCP protocol carrying encrypted data</p>
-  <p>Not reliable enough to benchmark yet</p>
 </section>
 
 <section>
@@ -249,8 +238,8 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64;
     rv:10.0) Gecko/20100101 Firefox/10.0
 Cookie: <b>&lt;cookie&gt;</b></pre>
   <p>Not much room to smuggle arbitrary data</p>
-  <p>We use URIs and cookies, base64’d</p>
-  <ul style="font-size:1.5em"><li>todo: make them look less fishy</li></ul>
+  <p>We use URIs and cookies, base64’d
+    <br>(todo: make them look less fishy)</p>
   <p>Hostname impractical (has to be in the DNS)</p>
 </section>
 
@@ -306,7 +295,14 @@ new a.X<b>rcSdu8P4nzNod</b>}catch(b){}}</pre>
 </section>
 
 <section>
-  <h2>Data for comparison: CAIDA</h2>
+  <h2>Performance</h2>
+  <object data="performance.svg"></object>
+  <p>HTTP steganography adds a great deal of overhead, but
+    is still usable for casual web surfing (still 4x faster than dialup)</p>
+</section>
+
+<section>
+  <h2>What does “ordinary” traffic look like?</h2>
   <figure>
     <p>One day of traffic through a backbone router in Chicago, 2011</p>
     <img src="caida.png">
@@ -316,7 +312,7 @@ new a.X<b>rcSdu8P4nzNod</b>}catch(b){}}</pre>
 </section>
 
 <section>
-  <h2>Packet-level distinguisher</h2>
+  <h2>Picking Tor streams out of the background</h2>
   <figure>
     <p>The first 20 packets of 64,000 port-443 TCP flows, binned by size</p>
     <object data="machine-classification.svg"></object>
@@ -334,15 +330,6 @@ new a.X<b>rcSdu8P4nzNod</b>}catch(b){}}</pre>
   <p>StegoTorus-HTTP is much more like CAIDA-port-80 traffic than
     either is like Tor traffic</p>
   <p>StegoTorus-HTTP is still distinguishable from true HTTP</p>
-</section>
-
-<section>
-  <h2>Performance</h2>
-  <object data="performance.svg"></object>
-  <div style="font-size:.66em">
-  <p>HTTP steganography adds a great deal of overhead, but
-    is still usable for casual web surfing (still 4x faster than dialup)</p>
-  </div>
 </section>
 
 <section>
@@ -445,10 +432,10 @@ new a.X<b>rcSdu8P4nzNod</b>}catch(b){}}</pre>
 </section>
 
 <section class="title">
-  <hgroup style="margin-top:240px">
-    <h2 style="font-size:60px">Questions?</h2>
-    <h3><code>zackw@cmu.edu</code><br>
-    <a href="https://gitweb.torproject.org/stegotorus.git">https://gitweb.torproject.org/stegotorus.git</a><br>
+  <hgroup>
+    <h1>Questions?</h1>
+    <h2><code>zackw@cmu.edu</code></h2>
+    <h3><a href="https://gitweb.torproject.org/stegotorus.git">https://gitweb.torproject.org/stegotorus.git</a><br>
     <a href="https://github.com/zackw/stegotorus/">https://github.com/zackw/stegotorus/</a></h3>
   </hgroup>
 </section>
