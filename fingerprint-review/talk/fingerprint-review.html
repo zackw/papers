@@ -1,0 +1,130 @@
+<!doctype html>
+<html><head>
+  <meta charset="utf-8">
+  <title>Website Fingerprinting Attacks on Low-Latency Mix Networks</title>
+  <link rel="stylesheet" href="r/fonts.css">
+  <link rel="stylesheet" href="r/prez-cylab.css">
+</head>
+<body>
+
+<section class="title">
+  <hgroup>
+    <h1>Website Fingerprinting Attacks on Low-Latency Mix Networks</h1>
+    <h2>Zachary Weinberg</h2>
+  </hgroup>
+  <p style="position:absolute;bottom:5px;left:5px"><img src="r/cylab.svg"
+  alt="Carnegie Mellon University: CyLab"></p>
+</section>
+
+<section>
+  <object data="tor-background-1.svg"></object>
+</section>
+
+<section>
+  <object data="tor-background-2.svg"></object>
+</section>
+
+<section>
+  <object data="tor-background-3.svg"></object>
+</section>
+
+<section>
+  <object data="tor-traces.svg"></object>
+</section>
+
+<section>
+  <h2>Fingerprinting</h2>
+  <object class="floatgraf" data="facebook-detect.svg"></object>
+  <p>If censors can’t block all use of Tor, perhaps they will try to
+    extract information instead</p>
+  <p>This sliding-window classifier requires only TCP payload sizes,
+    runs in constant time per-packet and constant memory per-stream
+    after initial training (offline)</p>
+  <p style="clear:right"><math><mspace width="2ex"/>
+  <mo>log Pr</mo>
+  <mo>[</mo>
+    <mo>{</mo>
+    <msub>
+      <mi>u</mi>
+      <mi>i</mi>
+    </msub>
+    <mo>}</mo>
+  <mo>,</mo>
+  <mo>{</mo>
+  <msub>
+    <mi>d</mi>
+    <mi>i</mi>
+  </msub>
+  <mo>}</mo>
+  <mspace width="1ex" />
+  <mtext>is Facebook</mtext>
+  <mo>]</mo>
+  <mo>=</mo>
+</math><br><math><mspace width="6ex"/>
+  <munderover>
+    <mo>&#x2211;</mo>
+    <mrow>
+      <mi>i</mi>
+      <mo>=</mo>
+      <mn>1</mn>
+    </mrow>
+    <mi>n</mi>
+  </munderover>
+  <mo>log Pr</mo>
+  <mo>[</mo>
+  <msub>
+    <mi>U</mi>
+    <mi>i</mi>
+  </msub>
+  <mo>=</mo>
+  <msub>
+    <mi>u</mi>
+    <mi>i</mi>
+  </msub>
+  <mo>]</mo>
+  <mo>+</mo>
+  <munderover>
+    <mo>&#x2211;</mo>
+    <mrow>
+      <mi>i</mi>
+      <mo>=</mo>
+      <mn>1</mn>
+    </mrow>
+    <mi>n</mi>
+  </munderover>
+  <mo>log Pr</mo>
+  <mo>[</mo>
+  <msub>
+    <mi>D</mi>
+    <mi>i</mi>
+  </msub>
+  <mo>=</mo>
+  <msub>
+    <mi>d</mi>
+    <mi>i</mi>
+  </msub>
+  <mo>]</mo>
+</math></p>
+</section>
+
+<section>
+  <h2>Fingerprinting</h2>
+    <figure class="floatgraf">
+    <object data="facebook-detect.svg"></object>
+    </figure>
+    <p>StegoTorus defeats a classifier trained on Tor<br>(todo:
+    train on StegoTorus instead)</p>
+  <p>We are skeptical whether this attack scales to the global
+      Internet</p>
+</section>
+
+
+<section class="title">
+  <hgroup>
+    <h1>Questions?</h1>
+  </hgroup>
+</section>
+
+<script src="r/prez.js"></script>
+</body>
+</html>
