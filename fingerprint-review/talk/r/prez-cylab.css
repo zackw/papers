@@ -99,7 +99,7 @@ figure > figcaption {
 }
 
 section.title hgroup {
-    padding-top: 48px;
+    padding-top: 192px;
 }
 
 section.title h1 {
@@ -139,8 +139,8 @@ section.title p > img {
     height: 64px;
 }
 
-section > object:first-child {
-    padding-top: 100px;
+section > object:first-child, section > img:first-child {
+    padding-top: 80px;
 }
 
 pre, code {
@@ -219,7 +219,7 @@ body.menu-mode figure > figcaption {
     font-size: 4px;
 }
 body.menu-mode section.title hgroup {
-    padding-top: 12px;
+    padding-top: 24px;
 }
 body.menu-mode section.title h1 {
     font-size: 10px;
@@ -234,7 +234,8 @@ body.menu-mode section.title p > img {
     height: 16px;
     margin: 0 5px;
 }
-body.menu-mode section > object:first-child {
+body.menu-mode section > object:first-child,
+body.menu-mode section > img:first-child {
     padding-top: 25px;
 }
 

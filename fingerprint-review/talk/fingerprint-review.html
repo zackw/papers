@@ -29,7 +29,99 @@
 </section>
 
 <section>
+  <img src="waterfall-4.png">
+</section>
+
+<section>
   <object data="tor-traces.svg"></object>
+</section>
+
+<section>
+  <h2>Liberatore and Levine (2006)</h2>
+  <ul>
+    <li>2 classifiers: naive Bayes and Jaccard coefficient</li>
+    <li>Seek to minimize size of stored fingerprints
+      <ul>
+        <li>ignore everything except number of packets observed of each
+          size</li>
+        <li>for Jaccard classifier, reduced to binary: each size
+        observed or not</li>
+    </ul></li>
+    <li>Most-frequently-visited 2000 sites from their department,
+    one-month sample</li>
+    <li>Train and test on front page of each</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Overall packet length probability</h2>
+  <figure>
+    <object data="ll-packet-length-overall.svg"></object>
+    <figcaption>reproduced from Liberatore and Levine 2006</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Overall packet length occurrence prob.</h2>
+  <figure>
+    <object data="ll-packet-length-occurrence.svg"></object>
+    <figcaption>reproduced from Liberatore and Levine 2006</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Front-page classification accuracy</h2>
+  <figure>
+    <object data="ll-accuracy-by-worldsize.svg"></object>
+    <figcaption>reproduced from Liberatore and Levine 2006</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Cai et al. 2012</h2>
+  <ul>
+    <li>Six years later, retest some now-standard techniques (naive
+      Bayes, naive SVM)
+    <li>Twist of their own: edit distance as SVM kernel
+    <li>Using ordered sequences of packet lengths
+    <li>Generalize from front pages to entire sites with hidden Markov
+      models
+    <li>Alexa top 100 for front-page experiments
+    <li>Facebook and IMDB for entire-site experiments
+  </ul>
+</section>
+
+<section>
+  <h2>Front-page classification accuracy</h2>
+  <figure>
+    <object data="cai-accuracy-by-worldsize.svg"></object>
+    <figcaption>reproduced from Cai et al. 2012</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Naive Bayes</h2>
+  <p>Assuming independence between all attributes \(A_i\), the
+    probability of a set \(\bar{A} = A_1, A_2, \ldots, A_n\) belonging
+    to a class \(C_i\) is
+    $$\Pr(C_i\mid\bar{A}) \propto \Pr(C_i) \prod_{j=1}^n \Pr(A_j\mid C_i)$$</p>
+</section>
+
+<section>
+  <h2>Jaccard coefficient</h2>
+  <p>Given two sets \(X\) and \(Y\), Jaccard's coefficient \(S\) is
+    $$S(X,Y) = \frac{|X\cap Y|}{|X\cup Y|}$$</p>
+  <p>Liberatore and Levine normalize for any given challenge \(X\) by
+    dividing by \(\sum_{Y\in U} S(X,Y)\) where \(U\) is the set of all
+    training instances.</p>
+</section>
+
+<section>
+  <h2>Support vector machine</h2>
+</section>
+
+<section>
+  <h2>Edit distance (Damerau-Levenshtein)</h2>
 </section>
 
 <section>
@@ -126,5 +218,6 @@
 </section>
 
 <script src="r/prez.js"></script>
+<script src="r/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </body>
 </html>
