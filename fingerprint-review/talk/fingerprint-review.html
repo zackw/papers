@@ -100,6 +100,70 @@
 </section>
 
 <section>
+  <h2>Entire-site visit detection</h2>
+  <figure>
+    <object data="cai-markov.svg"></object>
+    <figcaption>reproduced from Cai et al. 2012</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Weinberg et al. 2012</h2>
+  <ul>
+    <li>Hypothesis: country scale fingerprinting highly resource constrained
+    <li>Goal: minimize resource requirements at detection time
+    <li>Only tried to detect visits to Alexa top ten
+    <li>Competitive accuracy with simple sliding-window classifier:
+      $$\begin{multline}\log\Pr\bigl[\{u_i,d_i\}\;\text{is }\textit{site}\bigr] = \\
+        \sum_{i=1}^n \log\Pr\bigl[U_i=u_i\bigr] + \sum_{i=1}^n \log\Pr\bigl[D_i=d_i\bigr]\end{multline}$$
+  </ul>
+</section>
+
+<section>
+  <h2>Accuracy (one site)</h2>
+  <figure>
+    <object data="facebook-detect.svg"></object>
+    <figcaption>reproduced from Weinberg et al. 2012</figcaption>
+  </figure>
+</section>
+
+<section>
+  <img src="elephant.png">
+</section>
+
+<section>
+  <h2>Recap: accuracies</h2>
+  <table>
+    <tr><th>Paper<th>Attack<th>Pages<th>Success
+    <tr><td rowspan="2">Liberatore<td>Naive Bayes<td>2000<td>70%
+    <tr><td>Jaccard<td>2000<td>63%
+    <tr class="bgroup"><td rowspan="3">Cai<td>DLSVM<td>100<td>85%
+    <tr><td>Ad hoc SVM<td>100<td>67%
+    <tr><td>Naive Bayes<td>100<td>5%
+    <tr class="bgroup"><td>Weinberg<td>Log-probability<td>60<td>98%
+    (binary)
+  </table>
+</section>
+
+<section>
+  <h2>Does fingerprinting <i>scale?</i></h2>
+  <ul>
+    <li>Not with accuracies below 99.999…%
+    <li>Research to date: \(\le2000\) sites in test set
+    <li>Entire global Web: \(\sim 10^9\) sites, at least \(10\times\) that pages
+    <li>Fingerprinting for internet-scale “filtering” needs a false
+    positive rate below \(10^{-6}\) … while keeping false negatives
+    down too
+  </ul>
+</section>
+
+<section class="title">
+  <hgroup>
+    <h1>Questions?</h1>
+  </hgroup>
+</section>
+
+<section>
   <h2>Naive Bayes</h2>
   <p>Assuming independence between all attributes \(A_i\), the
     probability of a set \(\bar{A} = A_1, A_2, \ldots, A_n\) belonging
@@ -124,98 +188,6 @@
   <h2>Edit distance (Damerau-Levenshtein)</h2>
 </section>
 
-<section>
-  <h2>Fingerprinting</h2>
-  <object class="floatgraf" data="facebook-detect.svg"></object>
-  <p>If censors can’t block all use of Tor, perhaps they will try to
-    extract information instead</p>
-  <p>This sliding-window classifier requires only TCP payload sizes,
-    runs in constant time per-packet and constant memory per-stream
-    after initial training (offline)</p>
-  <p style="clear:right"><math><mspace width="2ex"/>
-  <mo>log Pr</mo>
-  <mo>[</mo>
-    <mo>{</mo>
-    <msub>
-      <mi>u</mi>
-      <mi>i</mi>
-    </msub>
-    <mo>}</mo>
-  <mo>,</mo>
-  <mo>{</mo>
-  <msub>
-    <mi>d</mi>
-    <mi>i</mi>
-  </msub>
-  <mo>}</mo>
-  <mspace width="1ex" />
-  <mtext>is Facebook</mtext>
-  <mo>]</mo>
-  <mo>=</mo>
-</math><br><math><mspace width="6ex"/>
-  <munderover>
-    <mo>&#x2211;</mo>
-    <mrow>
-      <mi>i</mi>
-      <mo>=</mo>
-      <mn>1</mn>
-    </mrow>
-    <mi>n</mi>
-  </munderover>
-  <mo>log Pr</mo>
-  <mo>[</mo>
-  <msub>
-    <mi>U</mi>
-    <mi>i</mi>
-  </msub>
-  <mo>=</mo>
-  <msub>
-    <mi>u</mi>
-    <mi>i</mi>
-  </msub>
-  <mo>]</mo>
-  <mo>+</mo>
-  <munderover>
-    <mo>&#x2211;</mo>
-    <mrow>
-      <mi>i</mi>
-      <mo>=</mo>
-      <mn>1</mn>
-    </mrow>
-    <mi>n</mi>
-  </munderover>
-  <mo>log Pr</mo>
-  <mo>[</mo>
-  <msub>
-    <mi>D</mi>
-    <mi>i</mi>
-  </msub>
-  <mo>=</mo>
-  <msub>
-    <mi>d</mi>
-    <mi>i</mi>
-  </msub>
-  <mo>]</mo>
-</math></p>
-</section>
-
-<section>
-  <h2>Fingerprinting</h2>
-    <figure class="floatgraf">
-    <object data="facebook-detect.svg"></object>
-    </figure>
-    <p>StegoTorus defeats a classifier trained on Tor<br>(todo:
-    train on StegoTorus instead)</p>
-  <p>We are skeptical whether this attack scales to the global
-      Internet</p>
-</section>
-
-
-<section class="title">
-  <hgroup>
-    <h1>Questions?</h1>
-  </hgroup>
-</section>
 
 <script src="r/prez.js"></script>
 <script src="r/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>

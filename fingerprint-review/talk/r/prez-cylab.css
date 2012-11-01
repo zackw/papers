@@ -147,6 +147,19 @@ pre, code {
     font-family: "inconsolata";
 }
 
+table { margin: 0 auto }
+td, th {
+    padding: 0 0.5em;
+}
+tr:first-child {
+    border-bottom: 1px solid #222;
+}
+tr:first-child > td, tr:first-child > th {
+    padding-bottom: 1px;
+}
+tr.bgroup > td, tr.bgroup > th {
+    padding-top: 10px;
+}
 
 body.menu-mode {
     overflow-y: scroll;
