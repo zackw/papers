@@ -58,7 +58,7 @@ h1, h2, h3, h4, h5, h6 {
     border-bottom: 2px solid #888;
 }
 
-p, ol, ul {
+p, ol, ul, td, th {
     font-size: 28px;
 }
 
@@ -151,6 +151,7 @@ table { margin: 0 auto }
 td, th {
     padding: 0 0.5em;
 }
+td[rowspan] { vertical-align: top }
 tr:first-child {
     border-bottom: 1px solid #222;
 }
@@ -202,7 +203,8 @@ body.menu-mode h4, body.menu-mode h5, body.menu-mode h6 {
     font-size: 9px;
 }
 
-body.menu-mode p, body.menu-mode ol, body.menu-mode ul {
+body.menu-mode p, body.menu-mode ol, body.menu-mode ul,
+body.menu-mode td, body.menu-mode th {
     font-size: 7px;
     margin: 2px 0;
 }
@@ -271,7 +273,7 @@ body.menu-mode section > img:first-child {
     }
     .floatgraf { width: 500px }
     pre { font-size: 18px }
-    p, ol, ul {
+    p, ol, ul, td, th {
         font-size: 32px;
     }
     ol ol, ul ul, ol ul, ul ol {

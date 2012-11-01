@@ -182,10 +182,28 @@
 
 <section>
   <h2>Support vector machine</h2>
+  <figure>
+    <img src="Svm_max_sep_hyperplane_with_margin.png">
+    <figcaption><a href="https://commons.wikimedia.org/wiki/File:Svm_max_sep_hyperplane_with_margin.png">Diagram from Wikimedia Commons</a>
+  </figure>
 </section>
 
 <section>
   <h2>Edit distance (Damerau-Levenshtein)</h2>
+  <ul>
+    <li>Count number of single-symbol insertions, deletions, and
+      substitutions, and adjacent-symbol transpositions, required to
+      transform string \(t\) into string \(u\)
+    <li>Most efficient known algorithm uses dynamic programming,
+      \(O(n^2)\) time and space
+    <li>Satisfies all requirements of a distance metric
+    <li>Cai claim: good match for real network and HTTP-level behavior
+    <li>For use in SVM, define kernel transformation
+        $$K(t, u) = e^{-\gamma
+        \left(\frac{d(t,u)}{\min(|t|,|u|)}\right)^2}$$
+        where \(d(t,u)\) is raw edit distance, \(\gamma\) a tuning
+        parameter
+  </ul>
 </section>
 
 
