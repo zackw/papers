@@ -1,0 +1,309 @@
+1.
+
+Hi, I'm Zachary Weinberg, and I'm presenting "Website Fingerprinting
+Attacks on Low-Latency Mix networks."
+
+I'm going to start with the end of that title.  Mix networks.  What's
+a mix network?
+
+2.
+
+As always, we have Alice, who wants to talk to Bob, and they've both
+got computers, and they're connected via the global network.  The
+messages go over a standard secure channel, uses cryptography to
+provide confidentiality, integrity, and authenticity.
+
+Confidentiality: nobody can _read_ what Alice says to Bob or vice versa.
+
+Integrity: nobody can _change_ what Alice says to Bob or vice versa.
+
+Authenticity: Alice knows she's talking to Bob and nobody else.
+Bob may or may not bother making sure he's talking to Alice and nobody
+else. He's a server, maybe he'll send the same files to anyone.  But
+if he needs to know, he can.
+
+This is all standard, this is what you get from HTTPS, this is the
+minimum requirement for secure two-way communication.
+
+But maybe this is not good enough.
+
+What if Alice doesn't want anyone to know that she's talking to Bob at
+all?
+
+3.
+
+Let's make the adversary concrete.  This is Cato.  Cato is spying
+directly on Alice, he knows Alice is talking to _someone_ and he wants
+to know who.  Why?  In real life, when this comes up, it's because
+Cato doesn't want Alice to know what Bob has to say.  That's why I'm
+calling him Cato, because he's a Censor.
+
+The packets coming out of Alice's computer are encrypted, but the TCP
+and IP headers are still in cleartext.  They have to be, so the
+routers know where to send the packets.  So Cato can look up the
+destination IP address and see that that's Bob, and then he can
+disrupt the connection at the TCP level.
+
+Can Alice do anything about this?
+
+4.
+
+She can use a mix network.  These were proposed by Chaum back in 1981,
+for email.  The original idea was, Alice encrypts her email, headers
+and all, using Bob's public key.  Then she re-addresses it to this
+third relay here on the right, and re-encrypts it using that relay's
+public key.  Repeat a couple times.  When she actually _sends_ the
+mail, she sends it to the first relay, which can decrypt just enough
+to know to send it to the second relay, which can decrypt just enough
+to know to send it to the third relay, which can decrypt just enough
+to know to send it to Bob.  Bob does the whole thing in reverse to
+reply.  But Cato here can only tell that Alice is sending messages to
+relays.  You use more than one relay in case Cato is running some of
+them.
+
+Chaum wanted the relays to delay the messages, shuffle them around,
+and send them back out in batches, to make it harder for an adversary
+to figure out that Alice was talking to Bob because of _when_ messages
+went where.  That's fine for email, but it's not fine for surfing the
+Web, you click on a link and you want the page to load as soon as
+possible.  So a _low latency_ mix network has no added delays and
+doesn't reorder messages.  Also, it builds up a virtual circuit,
+giving Alice a shared secret with each relay in the chain in advance,
+so nobody has to do public key operations all the time.  These blue
+lines are the virtual circuit.  And the other big difference is Bob
+doesn't have to participate in the mix protocol.  As far as he is
+concerned he's just having a regular HTTPS conversation, or whatever,
+with the last relay.
+
+Now here's the research question I'm going to present. Is there any
+remaining way for Cato to figure out who Alice is talking to?
+
+He can't use the destination IP address anymore, but he can still see
+TCP payload sizes, inter-packet delays, and he can still see when TCP
+connections begin and end.
+
+5.
+
+If you know anything about HTTP, you know it uses lots of short-lived
+TCP connections, and the pattern of connections is correlated with the
+content of the webpage.  You can get these nice diagnostic plots --
+they're called "waterfalls" -- from the browser.
+
+6.
+
+Here's another one.  Different website, totally different pattern.
+But it turns out Cato doesn't get to see this directly, because the
+mix networks in use today multiplex all the HTTP connections into one
+big long-lived TCP circuit.  So Cato only gets to see this.
+
+7.
+
+This is a packet trace produced by visiting Amazon over Tor, which is
+the most widely used low-latency mix network out there today.  The
+x-axis is sequence---I don't show inter-packet delays---and the y-axis
+is TCP payload size.  Lines going up are server to client, and lines
+going down are client to server.  One thing you can see immediately is
+that Tor does a certain amount of padding.  Most of its packets are a
+whole number of 512-byte "cells".  That obscures the details of small
+messages but it doesn't affect the overall length of a big HTTP
+response very much.
+
+8.
+
+Here's four more of these traces.  Amazon's on the top, then we have a
+ReadWriteWeb article, the Twitter splash page you get if you're not
+logged in, then what you get when you do log in, and finally an xkcd
+comic.
+
+You can see that these have some things in common but they're
+different enough that maybe we can build a machine classifier that can
+tell them apart.  There are a whole lot of research papers where they
+tried to do that, and I'm going to talk about three of them.
+
+9.
+
+Liberatore and Levine, 2006.  This was one of the earlier studies and
+it's still influential.  They instrumented their department's network
+router to determine the 2000 most frequently visited websites, and
+then they trained and tested on the front page of each.  They were
+trying to reduce the size of the stored fingerprints, so they don't
+use any ordering information at all.  They developed two classifiers.
+One uses naive Bayesian classification and another uses the Jaccard
+coefficient.
+
+They did all their testing on a simple single-hop proxy, not a mix
+network, and this proxy did no padding at all. This will be important
+when we compare their results to the other papers.
+
+10.
+
+Naive Bayesian classification is one of the simplest machine
+classification algorithms out there.  It's "naive" because it assumes
+all the attributes you're classifying on are uncorrelated, and all it
+does is apply Bayes' theorem.  If you have observed some set of
+attributes, then the probability that the thing you observed belongs
+to class i is proportional to the "prior" probability that you
+observed something in class i, times the probability that a thing in
+class i has attribute j, for all observed attributes j.  We can just
+multiply all the probabilities like that because we're assuming
+they're uncorrelated.
+
+11.
+
+Liberatore and Levine's naive Bayesian classifier's attribute sets
+were probabilities of observing a particular packet length in each
+direction on the connection under surveillance.  Again, this makes no
+use of ordering.  They just count all the packets of each size,
+normalize to probabilities, and that's their fingerprint for each
+site.
+
+12.
+
+The Jaccard coefficient is a measure of how similar two sets are.
+It's just the size of the intersection of the sets, divided by the
+size of their union.  To make this into a classifier, Liberatore and
+Levine just compute the coefficient between their test set and all the
+training sets, and whichever class of training sets it's most similar
+to, that's the one they pick.
+
+13.
+
+Their Jaccard classifier operates on even less information.  Instead
+of the probability of observing any given packet size, it's looking at
+the probability that any given packet size will occur at least once.
+
+14.
+
+So, how well do these work?  They answer that question several
+different ways.  Number one, they look at how accurate the classifier
+is as a function of how many sites it's got to choose among, giving
+each classifier four training instances per site.  They're both right
+between 70% and 80% of the time, and the accuracy falls off a little
+as the number of sites goes up, and the Jaccard classifier is
+consistently just a little better than the Bayes.
+
+15.
+
+Number two, they look at accuracy as a function of how big the
+training set per site is, holding the number of sites to choose among
+constant at 1000.  What I think is interesting about this is, the
+Jaccard classifier stops getting better after four training instances,
+and with more training instances the Bayesian classifier is actually
+beating it.
+
+16.
+
+Number three, accuracy as a function of how old the training set is.
+In other words, once you've trained your classifier, how long before
+you have to retrain on new data?  It looks like both of them get a
+little worse over time, but not much.  This is good news for the
+adversary, who doesn't have to do as much work.
+
+17.
+
+Now we're going to jump ahead six years and look at some of the very
+latest work in the area.  Cai and colleagues are retesting some
+standard techiques -- naive Bayes, ad-hoc support vector machine --
+and they're also adding a twist of their own, which is to use edit
+distance as the kernel transform for a support vector machine.  Unlike
+Liberatore and Levine they're using ordered sequences of packet
+lengths.  More interesting yet is, they're generalizing the attack to
+take the structure of an entire site into account, with a hidden
+Markov model.
+
+They used the Alexa top 100 for their single-page classification
+experiments -- that's a commercial survey of the most popular websites
+in the whole world -- and they built HMMs for Facebook and IMDB.
+
+18.
+
+Let's review quickly what a support vector machine is.  This is a more
+sophisticated machine classification algorithm.  It treats all the
+observations in the training set as points in an N-dimensional vector
+space, and it finds the N-1-dimensional hyperplane that best separates
+those points into two clusters.  Then it classifies new observations
+by calculating which side of the plane they're on.  So we've got a
+two-dimensional example here.  The algorithm maximizes the distance
+from the dividing plane---here it's just a line---to the nearest data
+points on each side.  If we moved the solid line either way, or if we
+changed its angle, it would get closer to some of the points.
+
+This is a popular algorithm because it can be trained reasonably fast,
+it classifies very fast, you only need to retrain it if you find a
+data point in this "margin" here, and it lets you do something called
+the kernel trick.
+
+19.
+
+Suppose there is no hyperplane that separates your data sets -- they
+aren't "linearly separable" -- but you can find a nonlinear remapping
+into a different vector space where they are.  Then you can run the
+SVM in the remapped space and it'll still do a good job.  Support
+vector machines let you use a mapping that's only defined by a "kernel
+function" -- it takes two vectors in the original space and it tells
+you their dot product in the _remapped_ space.  You don't need to be
+able to map vectors one by one.
+
+20.
+
+This is handy for Cai and colleagues, because it lets them redefine
+_distance_.  Damerau-Levenshtein is one of several definitions of
+"edit distance", it's the number of single symbol insertions,
+deletions, and substitutions, and adjacent transpositions, required to
+convert one string into another.  This is a distance metric, it
+satisfies all the requirements for that [
+
+d(x,y) >= 0             | nonnegativity
+d(x,y) = 0 iff x = y    | coincidence
+d(x,y) = d(y,x)         | symmetry
+d(x,z) <= d(x,y)+d(y,z) | triangle inequality
+
+], but it'd be messy to work out how to transform a single packet
+sequence into the metric space it defines.  But they don't need to do
+that.
+
+Why are they using this?  Well, if you take each packet in a sequence
+as one symbol in a string, with different symbols corresponding to
+different direction plus payload size, then - they claim - the
+Damerau-Levenshtein edit operators correspond well to real network and
+HTTP behavior.  Packets and HTTP requests get reordered, packets get
+dropped and retransmitted, and so on.
+
+21.
+
+And here's the results.  They're comparing their DLSVM to an ad-hoc
+SVM by Panchenko and a naive Bayes classifier by Hermann.  You notice
+that the Bayesian classifier is doing a terrible job, compared to
+working just fine for Liberatore and Levine - what happened?  Cai and
+colleauges are testing over Tor, and Tor pads its packets to multiples
+of 512 bytes.  Hermann's Bayesian classifier, like Liberatore's,
+worked fine over a proxy that didn't pad packets but fell down to 5%
+accuracy against Tor's padding.  But the Panchenko ad hoc support
+vector machine works about as well as Liberatore's stuff and Cai's
+DLSVM does even better.
+
+22.
+
+explain hidden markov models
+
+23.
+
+And here's their hidden Markov models taking information about a
+sequence of page loads to detect visits to an entire site.  The x-axis
+here is page load sequence, the black and pink line is the ground
+truth, and each Markov model outputs a sequence of log-likelihoods,
+which is the y-axis.  They flipped these graphs, normally
+log-likelihood starts at zero and gets increasingly negative.  So a
+score closer to the x-axis is a prediction that it's more likely that
+this is a visit to the site that is modeled.  And you can see that
+this happens more when the line is pink than when it's not.
+Unfortunately the graphic choices here make it look like the model
+anticipates changes from visiting the modeled site to visiting
+something else -- that's just an artifact of the way they graphed it,
+it's really got a little bit of a lag.
+
+24.
+
+Finally, my own work, Weinberg et al. 2012.  We wanted to see how
+resource-efficient a classifier could make, because real-world
+censorship tends to take place on a 

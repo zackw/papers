@@ -37,6 +37,10 @@
 </section>
 
 <section>
+  <object data="tor-trace.svg"></object>
+</section>
+
+<section>
   <object data="tor-traces.svg"></object>
 </section>
 
@@ -46,14 +50,21 @@
     <li>Most-frequently-visited 2000 sites from their department,
     one-month sample</li>
     <li>Train and test on front page of each</li>
-    <li>2 classifiers: naive Bayes and Jaccard coefficient</li>
     <li>Seek to minimize size of stored fingerprints
-      <ul>
-        <li>ignore everything except number of packets observed of each
-          size</li>
-        <li>for Jaccard classifier, reduced to binary: each size
-        observed or not</li>
-    </ul></li>
+    <li>Two classifiers: naive Bayes, Jaccard coefficient
+  </ul>
+</section>
+
+<section>
+  <h2>Naive Bayes</h2>
+  <ul>
+    <li>Categorizes input into classes \(C_i\) based on attributes \(A_j\)
+    <li>Naivete = assume all attributes are uncorrelated
+    <li>Apply Bayes’ theorem: probability that an observed set of
+        attributes \(\bar{A}\) belongs to class \(C_i\) is
+        $$\Pr(C_i\mid\bar{A}) \propto \Pr(C_i) \prod_{A_j\in \bar{A}}
+        \Pr(A_j\mid C_i)$$
+    <li>Choose most probable class from all available
   </ul>
 </section>
 
@@ -66,6 +77,14 @@
 </section>
 
 <section>
+  <h2>Jaccard coefficient</h2>
+  <p>Given two sets \(X\) and \(Y\), Jaccard's coefficient \(S\) is
+    $$S(X,Y) = \frac{|X\cap Y|}{|X\cup Y|}$$</p>
+  <p>To classify a set \(X\), just find the class representative \(Y\)
+    that it is most similar to.
+</section>
+
+<section>
   <h2>Overall packet length occurrence prob.</h2>
   <figure>
     <object data="ll-packet-length-occurrence.svg"></object>
@@ -74,7 +93,7 @@
 </section>
 
 <section>
-  <h2>Front-page classification accuracy</h2>
+  <h2>Accuracy by world size</h2>
   <figure>
     <object data="ll-accuracy-by-worldsize.svg"></object>
     <figcaption>reproduced from Liberatore and Levine 2006</figcaption>
@@ -82,9 +101,25 @@
 </section>
 
 <section>
+  <h2>Accuracy by training set size</h2>
+  <figure>
+    <object data="ll-accuracy-by-training.svg"></object>
+    <figcaption>reproduced from Liberatore and Levine 2006</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Accuracy by time</h2>
+  <figure>
+    <object data="ll-accuracy-by-time.svg"></object>
+    <figcaption>reproduced from Liberatore and Levine 2006</figcaption>
+  </figure>
+</section>
+
+<section>
   <h2>Cai et al. 2012</h2>
   <ul>
-    <li>Retest some now-standard techniques (naive Bayes, naive SVM)
+    <li>Retest some now-standard techniques (naive Bayes, ad hoc SVM)
     <li>Twist of their own: edit distance as SVM kernel
     <li>Using ordered sequences of packet lengths
     <li>Generalize from front pages to entire sites with hidden Markov
@@ -95,11 +130,47 @@
 </section>
 
 <section>
+  <h2>Support vector machine</h2>
+  <figure>
+    <img src="Svm_max_sep_hyperplane_with_margin.png">
+    <figcaption><a href="https://commons.wikimedia.org/wiki/File:Svm_max_sep_hyperplane_with_margin.png">Diagram from Wikimedia Commons</a></figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>SVM with kernel transformation</h2>
+  <figure>
+    <img src="Kernel_Machine.png">
+    <figcaption><a href="https://commons.wikimedia.org/wiki/File:Kernel_Machine.png">Diagram from Wikimedia Commons</a></figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Edit distance (Damerau-Levenshtein)</h2>
+  <ul>
+    <li>Count number of single-symbol insertions, deletions, and
+      substitutions, and adjacent-symbol transpositions, required to
+      transform string \(t\) into string \(u\)
+    <li>Satisfies all requirements of a distance metric
+    <li>For use in SVM, define kernel transformation
+        $$K(t, u) = e^{-\gamma
+        \left(\frac{d(t,u)}{\min(|t|,|u|)}\right)^2}$$
+        where \(d(t,u)\) is raw edit distance, \(\gamma\) a tuning
+        parameter
+    <li>Cai claim: good match for real network and HTTP-level behavior
+  </ul>
+</section>
+
+<section>
   <h2>Front-page classification accuracy</h2>
   <figure>
     <object data="cai-accuracy-by-worldsize.svg"></object>
     <figcaption>reproduced from Cai et al. 2012</figcaption>
   </figure>
+</section>
+
+<section>
+  <h2>Hidden Markov Models</h2>
 </section>
 
 <section>
@@ -164,49 +235,6 @@
   <hgroup>
     <h1>Questions?</h1>
   </hgroup>
-</section>
-
-<section>
-  <h2>Naive Bayes</h2>
-  <p>Assuming independence between all attributes \(A_i\), the
-    probability of a set \(\bar{A} = A_1, A_2, \ldots, A_n\) belonging
-    to a class \(C_i\) is
-    $$\Pr(C_i\mid\bar{A}) \propto \Pr(C_i) \prod_{j=1}^n \Pr(A_j\mid C_i)$$</p>
-</section>
-
-<section>
-  <h2>Jaccard coefficient</h2>
-  <p>Given two sets \(X\) and \(Y\), Jaccard's coefficient \(S\) is
-    $$S(X,Y) = \frac{|X\cap Y|}{|X\cup Y|}$$</p>
-  <p>Liberatore and Levine normalize for any given challenge \(X\) by
-    dividing by \(\sum_{Y\in U} S(X,Y)\) where \(U\) is the set of all
-    training instances.</p>
-</section>
-
-<section>
-  <h2>Support vector machine</h2>
-  <figure>
-    <img src="Svm_max_sep_hyperplane_with_margin.png">
-    <figcaption><a href="https://commons.wikimedia.org/wiki/File:Svm_max_sep_hyperplane_with_margin.png">Diagram from Wikimedia Commons</a>
-  </figure>
-</section>
-
-<section>
-  <h2>Edit distance (Damerau-Levenshtein)</h2>
-  <ul>
-    <li>Count number of single-symbol insertions, deletions, and
-      substitutions, and adjacent-symbol transpositions, required to
-      transform string \(t\) into string \(u\)
-    <li>Most efficient known algorithm uses dynamic programming,
-      \(O(n^2)\) time and space
-    <li>Satisfies all requirements of a distance metric
-    <li>Cai claim: good match for real network and HTTP-level behavior
-    <li>For use in SVM, define kernel transformation
-        $$K(t, u) = e^{-\gamma
-        \left(\frac{d(t,u)}{\min(|t|,|u|)}\right)^2}$$
-        where \(d(t,u)\) is raw edit distance, \(\gamma\) a tuning
-        parameter
-  </ul>
 </section>
 
 <section></section>
