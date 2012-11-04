@@ -11,10 +11,9 @@
 </rdf:RDF>
 </metadata>
 <defs>
-<pattern id="pattern6188" xlink:href="#Wavy" patternTransform="translate(0,0.74325115)"/>
-<pattern id="Wavy" width="30.066020" patternUnits="userSpaceOnUse" height="5.1805778">
-<path d="M7.597,0.061c-2.518-0.248-4.941,0.241-7.607,1.727v1.273c2.783-1.63,5.183-2.009,7.482-1.781,2.298,0.228,4.497,1.081,6.781,1.938,4.567,1.713,9.551,3.458,15.813-0.157l-0.004-1.273c-6.44,3.709-10.816,1.982-15.371,0.273-2.278-0.854-4.576-1.75-7.094-2z" fill="#666"/>
-</pattern>
+<marker id="Arrow2Mend" refY="0.0" refX="0.0" orient="auto">
+<path stroke-linejoin="round" d="M8.7186,4.0337l-10.926-4.0177,10.926-4.0177c-1.7455,2.3721-1.7355,5.6174,0,8.0354z" fill-rule="evenodd" transform="scale(0.6) rotate(180) translate(0,0)" stroke-width="0.62500000"/>
+</marker>
 <linearGradient id="lg1" x2="0.5" x1="0.5" y2="1">
 <stop stop-color="#fff" offset="0"/>
 <stop stop-color="#fcfcd8" offset="1"/>
@@ -45,15 +44,6 @@
 <stop stop-color="#FFF" offset="0"/>
 <stop stop-color="#e6e6e6" offset="1"/>
 </linearGradient>
-<clipPath id="clipPath6233" clipPathUnits="userSpaceOnUse">
-<path stroke="#000" d="m452.86-154.04,0-21.143,48.443,0,0,21.143-0.0745,0-25.204,21.855-23.104-21.855z" fill="none"/>
-</clipPath>
-<clipPath id="clipPath6262" clipPathUnits="userSpaceOnUse">
-<path stroke="#000" stroke-width="1" d="m441.38-158.17,0-31.158,71.33,0,0,31.158-0.1097,0-37.113,32.207-34.02-32.207z" fill="none"/>
-</clipPath>
-<clipPath id="clipPath6282" clipPathUnits="userSpaceOnUse">
-<path stroke="#000" stroke-width="1" d="m433.02-158.29,0-38.47,88.041,0,0,38.47-0.1354,0-45.807,39.766-41.99-39.766z" fill="none"/>
-</clipPath>
 <linearGradient id="linearGradient6308" x1="150.01" xlink:href="#linearGradient2830" gradientUnits="userSpaceOnUse" y1="42.362" gradientTransform="matrix(0.83210078,0,0,-0.83218217,-62.895369,1034.0055)" x2="150.01" y2="126.36"/>
 <linearGradient id="linearGradient6310" x1="75.5" gradientUnits="userSpaceOnUse" y1="1096.2" gradientTransform="matrix(0.94158773,0,0,0.94167982,3.7383853,76.241366)" x2="75.5" y2="952.68">
 <stop stop-color="#4d4d4d" offset="0"/>
@@ -90,33 +80,18 @@
 <g font-size="18px" font-family="Cabin">
 <text y="259.848620" x="16.900071">Alice</text>
 <text y="336.06915" x="686.87915">Bob</text>
-<g transform="matrix(0.48018997,0,0,0.48018997,-127.89933,355.82281)">
-<g transform="translate(413.04234,-1134.7751)">
+<g transform="matrix(0.48018997,0,0,0.48018997,142.43946,-235.08481)">
 <path stroke-linejoin="round" d="m16.154,973.79,45.766-43.273,49.926,43.273-95.692,0z" stroke="#666" stroke-linecap="butt" stroke-width="2.08250904px" fill="url(#linearGradient6308)"/>
 <path stroke-linejoin="round" d="m16.154,973.83,45.766,43.273,49.926-43.273-95.692,0z" stroke="#666" stroke-linecap="butt" stroke-width="2.08250904px" fill="url(#linearGradient6310)"/>
 <path d="m16.156,972.06,0,1.8834,0.1177,0,45.638,43.17,49.786-43.17,0.14713,0,0-1.8834-0.14713,0-49.786,43.17-45.638-43.17-0.1177,0z" fill="url(#linearGradient6312)"/>
 <path stroke-linejoin="miter" d="m16.156,973.94,0,70.744,95.689,0,0-70.744-0.14713,0-49.786,43.17-45.638-43.17-0.1177,0z" stroke="#666" stroke-linecap="butt" stroke-width="2.08250904px" fill="url(#linearGradient6314)"/>
 </g>
-<g clip-path="url(#clipPath6282)">
-<g transform="matrix(0.75,0,0,0.75,429.04234,-887.87489)">
-<path stroke-linejoin="round" d="m16.154,973.79,45.766-43.273,49.926,43.273-95.692,0z" stroke="#666" stroke-linecap="butt" stroke-width="2.7766788px" fill="url(#linearGradient6308)"/>
+<g transform="matrix(0.36014248,0,0,0.36014248,245.95027,-124.25732)">
+<path stroke-linejoin="round" d="m16.154,973.79,46.085,42.756,49.606-42.756z" stroke="#666" stroke-linecap="butt" stroke-width="2.7766788px" fill="url(#linearGradient6308)"/>
 <path stroke-linejoin="round" d="m16.154,973.83,45.766,43.273,49.926-43.273-95.692,0z" stroke="#666" stroke-linecap="butt" stroke-width="2.7766788px" fill="url(#linearGradient6310)"/>
 <path d="m16.156,972.06,0,1.8834,0.1177,0,45.638,43.17,49.786-43.17,0.14713,0,0-1.8834-0.14713,0-49.786,43.17-45.638-43.17-0.1177,0z" fill="url(#linearGradient6312)"/>
 <path stroke-linejoin="miter" d="m16.156,973.94,0,70.744,95.689,0,0-70.744-0.14713,0-49.786,43.17-45.638-43.17-0.1177,0z" stroke="#666" stroke-linecap="butt" stroke-width="2.7766788px" fill="url(#linearGradient6314)"/>
 </g>
-<g transform="translate(-6.0937495e-7,3.5312499e-6)" clip-path="url(#clipPath6262)">
-<g transform="matrix(0.50625,0,0,0.50625,444.64234,-647.14719)">
-<path stroke-linejoin="round" d="m16.154,973.79,45.766-43.273,49.926,43.273-95.692,0z" stroke="#666" stroke-linecap="butt" stroke-width="4.11359787px" fill="url(#linearGradient6308)"/>
-<path stroke-linejoin="round" d="m16.154,973.83,45.766,43.273,49.926-43.273-95.692,0z" stroke="#666" stroke-linecap="butt" stroke-width="4.11359787px" fill="url(#linearGradient6310)"/>
-<path d="m16.156,972.06,0,1.8834,0.1177,0,45.638,43.17,49.786-43.17,0.14713,0,0-1.8834-0.14713,0-49.786,43.17-45.638-43.17-0.1177,0z" fill="url(#linearGradient6312)"/>
-<path stroke-linejoin="miter" d="m16.156,973.94,0,70.744,95.689,0,0-70.744-0.14713,0-49.786,43.17-45.638-43.17-0.1177,0z" stroke="#666" stroke-linecap="butt" stroke-width="4.11359787px" fill="url(#linearGradient6314)"/>
-</g>
-<g transform="matrix(1.0000081,0,0,1,-0.0035772,-0.69104)" clip-path="url(#clipPath6233)">
-<rect height="31.217" width="36.248" stroke="#666" y="-157.34" x="458.92" stroke-width="2.0825" fill="#FFF"/>
-<path d="m462.26-154.05,19.067,0,2.1487-0.75915,8.3435,0,0,24.763-6.0026-0.16835-6.3815,1.5696-17.175,0z" fill="url(#pattern6188)"/>
-</g>
-</g>
-</g>
-</g>
+<path stroke-linejoin="miter" style="marker-end:url(#Arrow2Mend);" d="m201.45,237.16,40.773,0" stroke="#000" stroke-linecap="butt" stroke-width="1px" fill="none"/>
 </g>
 </svg>

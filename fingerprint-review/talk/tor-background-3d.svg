@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml-stylesheet type="text/css" href="r/fonts.css"?>
+<svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 773.5 346" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<metadata>
+<rdf:RDF>
+<cc:Work rdf:about="">
+<dc:format>image/svg+xml</dc:format>
+<dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+<dc:title/>
+</cc:Work>
+</rdf:RDF>
+</metadata>
+<defs>
+<marker id="Arrow2Mend" refY="0.0" refX="0.0" orient="auto">
+<path stroke-linejoin="round" d="M8.7186,4.0337l-10.926-4.0177,10.926-4.0177c-1.7455,2.3721-1.7355,5.6174,0,8.0354z" fill-rule="evenodd" transform="scale(0.6) rotate(180) translate(0,0)" stroke-width="0.62500000"/>
+</marker>
+<linearGradient id="lg1" x2="0.5" x1="0.5" y2="1">
+<stop stop-color="#fff" offset="0"/>
+<stop stop-color="#fcfcd8" offset="1"/>
+</linearGradient>
+<linearGradient id="lg2" x2="0.5" y1="1" x1="0.5">
+<stop stop-color="#f0eec3" offset="0"/>
+<stop stop-color="#fbfbfa" offset="1"/>
+</linearGradient>
+<linearGradient id="lg3" y1="0.5" y2="0.5">
+<stop stop-color="#565f6b" offset="0"/>
+<stop stop-color="#b8bdc6" offset="0.10274"/>
+<stop stop-color="#d6dde6" offset="0.5"/>
+<stop stop-color="#b8bdc6" offset="0.89726"/>
+<stop stop-color="#565f6b" offset="1"/>
+</linearGradient>
+<radialGradient id="rg2" cy="0.1" cx="0.1" r="0.65">
+<stop stop-color="#909090" offset="0"/>
+<stop stop-color="#666" offset="1"/>
+</radialGradient>
+<filter id="f1">
+<feFlood flood-opacity="0.5"/>
+<feComposite operator="in" in2="SourceGraphic"/>
+<feGaussianBlur stdDeviation="2"/>
+<feOffset result="result1" dx="1" dy="1"/>
+<feComposite operator="over" in2="result1" in="SourceGraphic"/>
+</filter>
+<linearGradient id="linearGradient6403" x1="150.01" xlink:href="#linearGradient2830-7" gradientUnits="userSpaceOnUse" y1="42.362" gradientTransform="matrix(0.83210078,0,0,-0.83218217,-62.895369,1034.0055)" x2="150.01" y2="126.36"/>
+<linearGradient id="linearGradient2830-7">
+<stop stop-color="#FFF" offset="0"/>
+<stop stop-color="#e6e6e6" offset="1"/>
+</linearGradient>
+<linearGradient id="linearGradient6405" x1="75.5" gradientUnits="userSpaceOnUse" y1="1096.2" gradientTransform="matrix(0.94158773,0,0,0.94167982,3.7383853,76.241366)" x2="75.5" y2="952.68">
+<stop stop-color="#4d4d4d" offset="0"/>
+<stop stop-color="#ececec" offset="1"/>
+</linearGradient>
+<linearGradient id="linearGradient6407" x1="210" gradientUnits="userSpaceOnUse" y1="326.47" gradientTransform="matrix(0.83210079,0,0,0.83218217,-62.895369,911.84667)" x2="210" y2="50.451">
+<stop stop-color="#000" offset="0"/>
+<stop stop-color="#000" stop-opacity="0" offset="1"/>
+</linearGradient>
+<linearGradient id="linearGradient6409" x1="140" xlink:href="#linearGradient2830-7" gradientUnits="userSpaceOnUse" y1="52.266" gradientTransform="matrix(0.83210078,0,0,0.83218217,-62.895369,913.73003)" x2="140" y2="182.48"/>
+<pattern id="pattern6188" xlink:href="#Wavy" patternTransform="translate(0,0.74325115)"/>
+<pattern id="Wavy" width="30.066020" patternUnits="userSpaceOnUse" height="5.1805778">
+<path d="M7.597,0.061c-2.518-0.248-4.941,0.241-7.607,1.727v1.273c2.783-1.63,5.183-2.009,7.482-1.781,2.298,0.228,4.497,1.081,6.781,1.938,4.567,1.713,9.551,3.458,15.813-0.157l-0.004-1.273c-6.44,3.709-10.816,1.982-15.371,0.273-2.278-0.854-4.576-1.75-7.094-2z" fill="#666"/>
+</pattern>
+</defs>
+<g filter="url(#f1)">
+<rect height="10.38" width="108.25" y="299.63" x="649.19" fill="url(#lg3)"/>
+<path stroke="#90908e" stroke-linecap="square" d="m728.53,310.75,0-5.9316m-25.209,5.9316,0-5.9316m-25.209,5.9316,0-5.9316m-28.175,5.9316,106.77,0" fill="none"/>
+<path stroke="#b8bdc6" stroke-linecap="square" d="m661.8,303.34,81.559,0" fill="none"/>
+<rect height="2.9658" width="19.278" stroke="#a8a8a6" y="300.37" x="676.63" fill="#888b8e"/>
+<rect height="2.9658" width="8.8973" stroke="#a8a8a6" y="300.37" x="715.18" fill="#888b8e"/>
+<path stroke="#888b8e" d="m672.18,301.86a1.4829,1.4829,0,0,1,-2.9658,0,1.4829,1.4829,0,1,1,2.9658,0z" fill="#4e4e4e"/>
+</g>
+<g id="relay">
+<g filter="url(#f1)">
+<rect height="2.9658" width="34.106" stroke="#cfcead" y="316.26" x="19.136" fill="#fcfcd8"/>
+<rect height="44.487" width="59.316" stroke="#e8e8e1" y="271.77" x="6.5316" fill="url(#lg2)"/>
+<rect height="38.555" width="50.418" stroke="#9d9d9b" y="274.74" x="10.981" fill="url(#rg2)"/>
+<rect height="4.4487" width="34.106" stroke="#cfcead" y="322.19" x="19.136" fill="#f7f7e6"/>
+<rect height="11.863" width="53.384" stroke="#adadac" y="326.84" x="9.4975" fill="#adadac"/>
+<path stroke="#e7e7cb" d="m22.843,320.71,26.692,0" fill="none"/>
+<path stroke-linejoin="bevel" stroke="#b2b199" d="m9.4975,326.84,10.38,11.863,32.624,0,10.38-11.863z" fill="url(#lg1)"/>
+</g>
+</g>
+<use y="0" x="207.578" xlink:href="#relay"/>
+<use y="0" x="316.57" xlink:href="#relay"/>
+<use y="0" x="425.563" xlink:href="#relay"/>
+<g font-size="18px" font-family="Cabin">
+<text y="259.848620" x="16.900071">Alice</text>
+<text y="336.06915" x="686.87915">Bob</text>
+<g transform="matrix(0.24309617,0,0,0.24309617,414.44184,-6.9862598)">
+<path stroke-linejoin="round" d="m16.154,973.79,45.766-43.273,49.926,43.273-95.692,0z" stroke="#666" stroke-linecap="butt" stroke-width="4.11359787px" fill="url(#linearGradient6403)"/>
+<path stroke-linejoin="round" d="m16.154,973.83,45.766,43.273,49.926-43.273-95.692,0z" stroke="#666" stroke-linecap="butt" stroke-width="4.11359787px" fill="url(#linearGradient6405)"/>
+<path d="m16.156,972.06,0,1.8834,0.1177,0,45.638,43.17,49.786-43.17,0.14713,0,0-1.8834-0.14713,0-49.786,43.17-45.638-43.17-0.1177,0z" fill="url(#linearGradient6407)"/>
+<path stroke-linejoin="miter" d="m16.156,973.94,0,70.744,95.689,0,0-70.744-0.14713,0-49.786,43.17-45.638-43.17-0.1177,0z" stroke="#666" stroke-linecap="butt" stroke-width="4.11359787px" fill="url(#linearGradient6409)"/>
+</g>
+<g transform="matrix(0.48019386,0,0,0.48018997,258.9272,301.15381)" clip-path="none">
+<rect height="31.217" width="36.248" stroke="#666" y="-157.34" x="458.92" stroke-width="2.0825" fill="#FFF"/>
+<path d="m462.26-154.05,19.067,0,2.1487-0.75915,8.3435,0,0,24.763-6.0026-0.16835-6.3815,1.5696-17.175,0z" fill="url(#pattern6188)"/>
+</g>
+<path stroke-linejoin="miter" style="marker-end:url(#Arrow2Mend);" d="m448,232,23,0" stroke="#000" stroke-linecap="butt" stroke-width="1px" fill="none"/>
+</g>
+</svg>
