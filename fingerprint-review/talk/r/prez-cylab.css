@@ -201,12 +201,16 @@ body.menu-mode .floatgraf {
 body.menu-mode h1, body.menu-mode h2, body.menu-mode h3,
 body.menu-mode h4, body.menu-mode h5, body.menu-mode h6 {
     font-size: 9px;
+    padding: 0;
+    border-bottom-width: 1px;
+    margin: 0 0 2px 0;
 }
 
 body.menu-mode p, body.menu-mode ol, body.menu-mode ul,
 body.menu-mode td, body.menu-mode th {
     font-size: 7px;
-    margin: 2px 0;
+    line-height: 100%;
+    margin: 0;
 }
 body.menu-mode ul, body.menu-mode ol {
     padding-left: 10px;
@@ -220,7 +224,7 @@ body.menu-mode pre {
     padding: 2px;
     border: none;
     margin: 3px 0 0 6px;
-    font-size: 4px;
+    font-size: 5px;
 }
 body.menu-mode figure {
     margin: 4.5px auto;
@@ -255,7 +259,7 @@ body.menu-mode section > img:first-child {
 }
 
 
-@media all and (min-width: 1022px) and (min-height: 766px) {
+@media screen and (min-width: 1022px) and (min-height: 766px) {
     section { width: 1022px; height: 766px; }
     div.content, header, footer { width: 976px; }
     header      { height: 96px; }
@@ -281,6 +285,105 @@ body.menu-mode section > img:first-child {
     }
     body.menu-mode {
         width: 900px;
+    }
+}
+
+@media print {
+    body, body.menu-mode {
+        margin: 0 auto;
+        overflow: visible;
+    }
+    section, body.menu-mode section {
+        display: inline-block;
+        vertical-align: top;
+        visibility: visible;
+        width: 300px;
+        height: 225px;
+        margin: 10px;
+    }
+    body.menu-mode section.currentSlide {
+    }
+    body.menu-mode section:hover,
+    body.menu-mode section.candidate {
+        box-shadow: none;
+    }
+    img, object,
+    body.menu-mode img, body.menu-mode object {
+        margin: 4px auto;
+        max-width: 280px;
+        max-height: 200px;
+    }
+    h1, h2, h3, h4, h5, h6,
+    body.menu-mode h1, body.menu-mode h2, body.menu-mode h3,
+    body.menu-mode h4, body.menu-mode h5, body.menu-mode h6 {
+        font-size: 12px;
+        padding: 0;
+        border-bottom-width: 1px;
+        margin: 0 0 4px 0;
+    }
+
+    p, ol, ul, td, th
+    body.menu-mode p, body.menu-mode ol, body.menu-mode ul,
+    body.menu-mode td, body.menu-mode th {
+        font-size: 10px;
+        line-height: 100%;
+        margin: 0;
+    }
+    ul, ol,
+    body.menu-mode ul, body.menu-mode ol {
+        padding-left: 15px;
+    }
+    ol ol, ul ul, ol ul, ul ol,
+    body.menu-mode ol ol, body.menu-mode ul ul,
+    body.menu-mode ol ul, body.menu-mode ul ol {
+        font-size: 8px;
+    }
+
+    pre, body.menu-mode pre {
+        padding: 3px;
+        border: none;
+        margin: 4.5px 0 0 9px;
+        font-size: 7.5px;
+    }
+    figure, body.menu-mode figure {
+        margin: 6.75px auto;
+    }
+    figure > p, body.menu-mode figure > p {
+        margin: 0 0 1px 0;
+        font-size: 7.5px;
+    }
+    figure > figcaption,
+    body.menu-mode figure > figcaption {
+        margin-top: 2px;
+        font-size: 5px;
+    }
+    section.title, body.menu-mode section.title { display: none }
+/*
+    section.title hgroup,
+    body.menu-mode section.title hgroup {
+        padding-top: 36px;
+    }
+    section.title h1,
+    body.menu-mode section.title h1 {
+        font-size: 15px;
+    }
+    section.title h2,
+    body.menu-mode section.title h2 {
+        font-size: 12px;
+    }
+    section.title h3,
+    body.menu-mode section.title h3 {
+        font-size: 9px;
+    }
+    section.title hgroup,
+    body.menu-mode section.title p > img {
+        height: 16px;
+        margin: 0 5px;
+    }
+*/
+    body.menu-mode section > object:first-child,
+    body.menu-mode section > img:first-child {
+        padding-top: 37.5px;
     }
 }
 

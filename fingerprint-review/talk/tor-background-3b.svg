@@ -11,8 +11,8 @@
 </rdf:RDF>
 </metadata>
 <defs>
-<marker id="Arrow2Mend" refY="0.0" refX="0.0" orient="auto">
-<path stroke-linejoin="round" d="M8.7186,4.0337l-10.926-4.0177,10.926-4.0177c-1.7455,2.3721-1.7355,5.6174,0,8.0354z" fill-rule="evenodd" transform="scale(0.6) rotate(180) translate(0,0)" stroke-width="0.62500000"/>
+<marker id="Arrow2Mend" overflow="visible" orient="auto">
+<path d="M-5.2312-2.4202,1.3244-0.0096078-5.2312,2.401c1.0743-1.4233,1.0412-3.3705,3.6E-7-4.8212z"/>
 </marker>
 <linearGradient id="lg1" x2="0.5" x1="0.5" y2="1">
 <stop stop-color="#fff" offset="0"/>

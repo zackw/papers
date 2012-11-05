@@ -61,6 +61,7 @@
     <li>Train and test on front page of each</li>
     <li>Seek to minimize size of stored fingerprints
     <li>Two classifiers: naive Bayes, Jaccard coefficient
+    <li>Test against single-hop SSH proxy, does no padding
   </ul>
 </section>
 
@@ -69,10 +70,10 @@
   <ul>
     <li>Categorizes input into classes \(C_i\) based on attributes \(A_j\)
     <li>Naivete = assume all attributes are uncorrelated
-    <li>Apply Bayes’ theorem: probability that an observed set of
-        attributes \(\bar{A}\) belongs to class \(C_i\) is
-        $$\Pr(C_i\mid\bar{A}) \propto \Pr(C_i) \prod_{A_j\in \bar{A}}
-        \Pr(A_j\mid C_i)$$
+    <li>Apply Bayes’ theorem: if you observe a set of
+        attributes \(\bar{A}\), then the probability that you've
+        observed a member of class \(C_i\) is $$\Pr(C_i\mid\bar{A})
+        \propto \Pr(C_i) \prod_{A_j\in \bar{A}} \Pr(A_j\mid C_i)$$
     <li>Choose most probable class from all available
   </ul>
 </section>
@@ -89,8 +90,8 @@
   <h2>Jaccard coefficient</h2>
   <p>Given two sets \(X\) and \(Y\), Jaccard's coefficient \(S\) is
     $$S(X,Y) = \frac{|X\cap Y|}{|X\cup Y|}$$</p>
-  <p>To classify a set \(X\), just find the class representative \(Y\)
-    that it is most similar to.
+  <p>To classify a set \(X\), find the set \(Y\) that it is most
+    similar to, and assign it the same class as \(Y\).
 </section>
 
 <section>
@@ -129,10 +130,9 @@
   <h2>Cai et al. 2012</h2>
   <ul>
     <li>Retest some now-standard techniques (naive Bayes, ad hoc SVM)
-    <li>Twist of their own: edit distance as SVM kernel
-    <li>Using ordered sequences of packet lengths
-    <li>Generalize from front pages to entire sites with hidden Markov
-      models
+    <li>New idea: edit distance as SVM kernel
+    <li>New idea: hidden Markov model to detect multi-page interaction
+      with a site
     <li>Alexa top 100 for front-page experiments
     <li>Facebook and IMDB for entire-site experiments
   </ul>
@@ -155,12 +155,9 @@
 </section>
 
 <section>
-  <h2>Edit distance (Damerau-Levenshtein)</h2>
+  <h2>Edit distance</h2>
   <ul>
-    <li>Count number of single-symbol insertions, deletions, and
-      substitutions, and adjacent-symbol transpositions, required to
-      transform string \(t\) into string \(u\)
-    <li>Satisfies all requirements of a distance metric
+    <li>Count number of <i>edits</i> to change string \(t\) into string \(u\)
     <li>For use in SVM, define kernel transformation
         $$K(t, u) = e^{-\gamma
         \left(\frac{d(t,u)}{\min(|t|,|u|)}\right)^2}$$
@@ -171,7 +168,7 @@
 </section>
 
 <section>
-  <h2>Front-page classification accuracy</h2>
+  <h2>Single page classification accuracy</h2>
   <figure>
     <object data="cai-accuracy-by-worldsize.svg"></object>
     <figcaption>reproduced from Cai et al. 2012</figcaption>
@@ -179,11 +176,17 @@
 </section>
 
 <section>
-  <h2>Hidden Markov Models</h2>
+  <h2>Hidden Markov model</h2>
+  <figure>
+    <img src="HMM.svg">
+    <figcaption style="padding-top:20px">Based on
+    a <a href="https://commons.wikimedia.org/wiki/File:HMMsequence.svg">diagram
+    from Wikimedia Commons</a></figcaption>
+  </figure>
 </section>
 
 <section>
-  <h2>Entire-site visit detection</h2>
+  <h2>Site visit detection</h2>
   <figure>
     <object data="cai-markov.svg"></object>
     <figcaption>reproduced from Cai et al. 2012</figcaption>
@@ -193,13 +196,20 @@
 <section>
   <h2>Weinberg et al. 2012</h2>
   <ul>
-    <li>Hypothesis: country scale fingerprinting highly resource constrained
     <li>Goal: minimize resource requirements at detection time
     <li>Only tried to detect visits to Alexa top ten
-    <li>Competitive accuracy with simple sliding-window classifier:
+    <li>Sliding-window classifier:
       $$\begin{multline}\log\Pr\bigl[\{u_i,d_i\}\;\text{is }\textit{site}\bigr] = \\
         \sum_{i=1}^n \log\Pr\bigl[U_i=u_i\bigr] + \sum_{i=1}^n \log\Pr\bigl[D_i=d_i\bigr]\end{multline}$$
   </ul>
+</section>
+
+<section>
+  <object data="w-traceall.svg"></object>
+</section>
+
+<section>
+  <object data="w-traceall-scan.svg"></object>
 </section>
 
 <section>
@@ -211,7 +221,7 @@
 </section>
 
 <section>
-  <h2>Recap: accuracies</h2>
+  <h2>Does fingerprinting scale?</h2>
   <table>
     <tr><th>Paper<th>Attack<th>Pages<th>Success
     <tr><td rowspan="2">Liberatore<td>Naive Bayes<td>2000<td>70%
@@ -222,17 +232,9 @@
     <tr class="bgroup"><td>Weinberg<td>Log-probability<td>60<td>98%
     (binary)
   </table>
-</section>
-
-<section>
-  <h2>Does fingerprinting <i>scale?</i></h2>
   <ul>
-    <li>Not with accuracies below 99.999…%
     <li>Research to date: \(\le2000\) sites in test set
     <li>Entire global Web: \(\sim 10^9\) sites, at least \(10\times\) that pages
-    <li>Fingerprinting for internet-scale “filtering” needs a false
-    positive rate below \(10^{-6}\) … while keeping false negatives
-    down too
   </ul>
 </section>
 
@@ -242,7 +244,34 @@
   </hgroup>
 </section>
 
-<script src="r/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/NativeMML"],
+    showProcessingMessages: true,
+    messageStyle: "normal",
+    displayAlign: "center",
+    skipStartupTypeset: false,
+    positionToHash: false,
+    showMathMenu: false,
+    errorSettings: {
+      message: ["[Math Processing Error]"],
+      style: {color: "#CC0000", "font-style":"italic"}
+    },
+    tex2jax: {
+      inlineMath: [ ['\\(','\\)'] ],
+      displayMath: [ ['$$','$$'] ],
+      balanceBraces: true,
+      skipTags: ["script","noscript","style","textarea","pre","code"],
+      processEscapes: false,
+      preview: "TeX"
+    },
+    TeX: {
+      MultLineWidth: "85%",
+    }
+  });
+</script>
+<script src="r/mathjax/MathJax.js"></script>
 <script src="r/prez.js"></script>
 </body>
 </html>
