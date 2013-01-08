@@ -1,0 +1,122 @@
+* Deep background
+
+** The secure channel and its properties
+
+confidentiality, integrity, authenticity -- precise definitions of
+each; what they _don't_ cover
+
+** Low-latency mix networks and their properties
+
+built on top of secure channels; drop-in replacement for an end-to-end
+secure channel, offers additional guarantee -- unlinkability of
+actions to actors
+
+what still isn't covered
+
+some of the research we review considers a single "proxy server"
+instead of a mix network; provides the same unlinkability guarantee to
+an eavesdropper at a single point in the network, but no protection
+if the proxy server itself is malicious.
+
+** Traffic analysis
+*** abilities of a traffic-analysis attacker
+
+information available: message size and timing; possibly one endpoint
+of a communication of interest
+
+in a packet-switched network, individual packet sizes and timings may
+be used directly, or may be aggregated to estimate size and timing of
+a higher-level message (one HTTP transaction, for instance)
+
+limited to eavesdropping on victim's messages, but may also be allowed
+to send and receive messages of their own; may or may not be able to
+communicate overtly with the victim (e.g. by enticing the victim to
+visit a web site operated by the attacker) or send probe messages
+(e.g. 'ping's) to specific computers
+
+*** goals of a traffic-analytic attacker
+
+determine a message's path through a mix network; not normally an end
+in itself
+
+knowing one endpoint of a message, determine other endpoint
+
+learn something about the content of a message or sequence of messages
+(mention VoIP decoding from VBR packet sizes)
+
+*** Website fingerprinting
+
+specific focus of this paper: two classes of traffic analysis attacks.
+both referred to as "website fingerprinting".  both feature an
+attacker eavesdropping on a victim-user at or near their location in
+the network; in particular, can observe traffic between the victim's
+computer and the first mix-network relay.  (one result suggests
+possibility of eavesdropping from afar via ping flooding, but the
+traffic under observation is still victim to first relay.)
+
+attacker may seek to determine identity of website being visited by
+victim (Web being most common application layer use of modern Net) or,
+on the assumption that victim is visiting a known website (small
+handful of very popular sites account for the bulk of modern Web
+traffic), determine what he/she is doing there.
+
+things the attacker can do with this information
+
+* Techniques for fingerprinting
+
+break down by machine-learning algo, data input
+
+* Determining website identity
+
+size of 'world', realism of traffic analyzed
+
+* Determining activity on particular website
+
+* Defenses
+
+** Application-layer padding
+
+** Mix-layer padding
+
+** Dummy traffic
+
+* Related attacks
+
+** Tracing messages through a mix network
+
+*** Tor traffic analysis using Hidden Markov Models [zhioua2012ckthmm]
+
+Markov model of Tor control protocol; uses inter-cell timing as
+primary metric; can determine when circuits are created; with training
+very close in time and space to monitored victim, can determine
+identity of each hop in a new circuit.
+
+attacker in same LAN as client, runs its own Tor sessions to gather
+training data
+
+in-practice reliability unclear
+
+
+* Unsorted papers
+
+** The Economics of Mass Surveillance and the Questionable Value of Anonymous Communications [danezis2006econ]
+
+if anonymous users are divided into communicating cliques, how many
+users must be compromised to reveal the membership of each clique?
+
+instead of giving a number, analyze several strategies for picking
+users (it's a social network, if you can find the people with the
+highest out-degree, you will compromise more groups faster)
+
+of course, attacker doesn't know out-degree a priori. traffic volume
+turns out to be an excellent proxy for high out-degree; existing
+mixnets don't even try to cloak it.  may not be the best practical
+strategy but two obvious adaptive strategies do not beat it
+
+large, open cliques are compromised first; a secret organization with
+good tradecraft (cell structure, etc) can avoid detection until long
+after substantial collateral damage (surveillance of innocents) has
+been done
+
+** A Large-Scale Study of the Evolution of Web Pages [fetterly2004pageevol]
+
