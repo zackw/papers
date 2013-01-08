@@ -1,0 +1,62 @@
+\documentclass[onecolumn]{cmuecequal}
+\geometry{hmargin=.9in}
+%\usepackage[compact,small]{titlesec}
+\begin{document}
+\title{Website Fingerprinting Attacks on Low-Latency Mix Networks}
+\author{Zachary Weinberg}
+\maketitle
+
+\thispagestyle{empty}
+
+Encryption conceals the contents of a message, but an eavesdropper can
+still learn its length, the time it was sent, where it came from, and
+where it went.  \emph{Traffic analysis} seeks to deduce information
+about an encrypted message from these observable properties.  Mix
+networks, first proposed by Chaum, conceal the source and destination
+of a message from an eavesdropper, by repeatedly encrypting it and
+then relaying it through a chain of proxy servers.  Chaum's system was
+designed for email, so it also delayed and reordered the messages to
+conceal exactly when each message was sent.  Modern “low-latency” mix
+networks such as Tor, intended for Web browsing and similar
+interactive uses of the net, cannot afford this additional feature.
+Thus, an eavesdropper on the Tor network can still observe the
+approximate size and timing of each HTTP transaction encapsulated in a
+Tor circuit.
+
+Tor in particular, and mix networks more generally, are commonly used
+as a way to evade nation-state-scale censorship of the Internet.  A
+censor controls the network infrastructure in a particular geographic
+region.  They can monitor all of the network traffic that enters or
+exits that region.  Their primary goal is to block access to specific
+content that they consider objectionable, which they do by
+blacklisting sites known to carry objectionable content and scanning
+traffic to other sites for objectionable keywords.  Mix networks
+encrypt traffic and conceal its destination, so, assuming the censor
+doesn't control any of the relays, a mix network thwarts both keyword
+and site-based filtering.  Many real censors respond to this evasive
+maneuver by attempting to block all use of the mix network; the
+network's developers respond by making their traffic harder to detect.
+At present, the mix networks are winning this arms race.  The Tor
+developers, for instance, regularly make small adjustments to their
+network client to evade individual countries' filter rules, and are
+developing steganographic tools that render Tor traffic impractical to
+distinguish from other use of the net.
+
+Another, less aggressive strategy for the censor is to permit use of
+mix networks, but detect and selectively disrupt relay chains that are
+carrying traffic to an objectionable site.  No real censor is known to
+use this strategy now, but in laboratory experiments it seems to be
+both feasible and difficult to defend against.  Thus, it is plausible
+that a censor might attempt this in the future.  We will review the
+state of the art in “fingerprinting” websites via traffic analysis,
+knowing only the size and timing of each packet in a TCP stream.  We
+will also discuss proposed defenses.  Popular websites, or at least
+their front pages, are different enough from each other that
+fingerprinting appears to be possible.  A variety of padding schemes
+have been proposed, but so far, none of them are effective, despite
+substantial overhead.  However, research to date has considered only
+fairly small sets of sites, so it is an open question whether any of
+the current techniques can be scaled up to detect particular sites
+against the background of the entire global Internet.
+
+\end{document}
