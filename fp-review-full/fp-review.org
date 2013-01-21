@@ -104,9 +104,6 @@ see argument made by [dyer2012peek] re coarse features)
 
 *** From ideality to practicality in statistical packet features masking [iacovazzi2012ideality]
 
-
-
-
 Statistical model of information leaked by packet flows; define an
 *ideal* mask as producing the same packet stream regardless of the
 behavior of the input source, then relax that in two formal ways:
@@ -133,7 +130,6 @@ attacker in same LAN as client, runs its own Tor sessions to gather
 training data
 
 in-practice reliability unclear
-
 
 * Unsorted papers
 
