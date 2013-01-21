@@ -68,7 +68,51 @@ break down by machine-learning algo, data input
 
 * Determining website identity
 
-size of 'world', realism of traffic analyzed
+(size of 'world', realism of traffic analyzed)
+
+** On Web Browsing Privacy in Anonymized NetFlows [coull2007web]
+
+focuses on extracting features from offline traces of network
+activity, particularly anonymized traces released by research
+projects.  strictly less info than would be available to an online
+attacker; on the other hand, offline processing means more CPU grunt
+available.  major divergence from eavesdropping on a proxy is
+availability of "physical server" information (don't know what server
+it is but you do know _how many_ servers have been contacted and that
+they're not the same as other servers).
+
+also look at realistic load-to-load changes in the content of a
+webpage (due to caching or dynamic content). suggest using cumulative
+load size as a third feature in addition to flow size and flow index
+(within a larger sequence of downloads), partitioning by server IP and
+then clustering 'physical' to 'logical' servers (to account for CDN IP
+diversity).  kernel density estimates as similarity metric, input to
+binary-tree Bayesian belief network for classification.
+
+closed world test using a real browser with its cache enabled. trained
+on alexa top 50, tested on top 100 (identify as one of top 50 or as
+unknown site).  true detection rate of 50% overall (chance would be
+2%); false detection 0.18%; point out that this is an unacceptably
+large info leak for supposedly anonymized data release.  per-site TD
+rate varies from 95% all the way down to 20%, correlated with dynamism
+of the site (more dynamic = less reliable identification).  drill down
+on this = critical factor for TD rate is variability in number of flows
+generated for each page load.  conversely, sites that are very simple
+get high TD rate but also high FD rate because there are lots of
+situations where something can be mistaken for them.
+
+"with regard to realistic threats to anonymized network data, these
+results show that there are certain web pages whose behavior is so
+unpredictable that they may be very difficult to detect in
+practice. also, an attacker has little chance of accurately
+identifying small, simple web pages with our techniques. complex web
+pages containing large CDNs, on the other hand, may allow an attacker
+to identify these pages within anonymized flow traces with low false
+detection rates.  finally, we have found that an attacker must
+consider the effects of locality on the training data..."
+
+repeat experiment on traffic from a real wireless hub with similar
+results (not clear what sites were in the training data).
 
 * Determining activity on particular website
 
