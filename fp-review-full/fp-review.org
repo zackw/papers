@@ -72,11 +72,49 @@ size of 'world', realism of traffic analyzed
 
 * Determining activity on particular website
 
+** Traffic Analysis of SSL Encrypted Web Browsing [heyning1998traffic]
+
+using an exhaustive crawl of a particular public site, identify
+exactly which page is being visited based on total size of data
+transferred.  point out that nearly all HTML pages have a unique size,
+and for those that aren't, disambiguation is possible based on what
+images each page loads.  suggest using a Markov model to track users
+from page to page.  brief discussion of possible countermeasures, not
+analyzed in detail.  this is fairly old and some of what it says may
+not apply to modern websites / browsers but it's interesting how
+little the attack and defense techniques have changed.
+
 * Defenses
 
 ** Application-layer padding
 
-** Mix-layer padding
+** Transport-layer padding
+
+*** Traffic Morphing: An Efficient Defense Against Statistical Traffic Analysis [wright2009traffic]
+
+
+Notion is to transform the packet sequence to be concealed so that it
+mimics the statistics of another, innocuous packet sequence.  Define a
+matrix operator that maps the probability mass function of the
+original packet sequence to the pmf of the cover sequence, and use
+mathematical optimization to minimize overhead.  Demonstrate
+effectiveness versus naive [liberatore2006inferring] and
+[wright2007language] and superiority to fixed-length padding (however,
+see argument made by [dyer2012peek] re coarse features)
+
+*** From ideality to practicality in statistical packet features masking [iacovazzi2012ideality]
+
+
+
+
+Statistical model of information leaked by packet flows; define an
+*ideal* mask as producing the same packet stream regardless of the
+behavior of the input source, then relax that in two formal ways:
+*impractical* vs *practical* masking (latter has no knowledge of the
+future) and *full* vs *partial* masking (latter accepts some residual
+leaked information in exchange for reduced overhead).  Mathematical
+algorithm for partial, practical masking; requires training on
+application behavior, but not modification of the application itself.
 
 ** Dummy traffic
 
