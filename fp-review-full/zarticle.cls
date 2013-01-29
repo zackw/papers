@@ -5,7 +5,7 @@
 % 10 point, letter paper, two column, pass other options down to article.
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions\relax
-\LoadClass[12pt,letterpaper,twocolumn]{article}
+\LoadClass[10pt,letterpaper,twocolumn]{article}
 
 % 0.5″ margins left and right.  9″ of vertical page area, with
 % geometry's defaults for margin ratio. 0.35″ between columns.
@@ -38,7 +38,8 @@
 \definecolor{dgreen}{RGB}{0,127,0}
 
 % ACM-like biblatex setup.
-\RequirePackage[style=numeric,firstinits=true,backend=biber]{biblatex}
+\RequirePackage[backend=biber,style=numeric,firstinits=true,maxnames=99,
+                sortcites=true]{biblatex}
 \DeclareNameAlias{default}{last-first}
 \DeclareFieldFormat
   [article,inbook,incollection,inproceedings,patent,thesis,unpublished]
@@ -46,18 +47,10 @@
 \DeclareFieldFormat{pages}{#1}
 \DeclareFieldFormat{url}{\url{#1}}
 \renewcommand{\intitlepunct}{\space}
-\renewbibmacro{in:}{%
-  \ifentrytype{article}{%
-  }{%
-    \printtext{\bibstring{in}\intitlepunct}%
-  }%
-}
-\renewbibmacro*{volume+number+eid}{%
-  \printfield{volume}%
-  \setunit*{\addcomma\space}%
-  \printfield{number}%
-  \setunit{\addcomma\space}%
-  \printfield{eid}}
+\renewbibmacro{in:}{}
+\renewbibmacro*{volume+number+eid}{}
+\renewbibmacro*{chapter+pages}{}
+\renewbibmacro*{note+pages}{}
 \renewbibmacro*{publisher+location+date}{%
   \printlist{publisher}%
   \setunit*{\addcomma\space}%
@@ -65,18 +58,6 @@
   \setunit*{\addcomma\space}%
   \usebibmacro{date}%
   \newunit}
-\renewbibmacro*{maintitle+booktitle}{%
-  \iffieldundef{maintitle}
-    {}
-    {\usebibmacro{maintitle}%
-     \newunit\newblock
-     \iffieldundef{volume}
-       {}
-       {\printfield{volume}%
-        \printfield{part}%
-        \setunit{\addcolon\space}}}%
-  \usebibmacro{booktitle}%
-  \setunit{\addcomma\space}}
 \AtBeginBibliography{%
   \footnotesize
   \renewcommand*{\mkbibnamelast}[1]{\textsc{#1}}%

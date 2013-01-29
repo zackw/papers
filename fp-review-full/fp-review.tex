@@ -1,5 +1,8 @@
 \documentclass{zarticle}
 \addbibresource{fp-review.bib}
+\definecolor{todocolor}{RGB}{127,0,0}
+\def\todo#1{{\color{todocolor}\bfseries [#1]}}
+\def\needcite#1{\todo{cite: #1}}
 \begin{document}
 
 \title{Unmasking Web Users and Activities:
@@ -13,6 +16,59 @@ Abstract abstract, abstract abstract abstract.
 \end{abstract}
 
 \section{Introduction}
+
+Most off-the-shelf secure network protocols provide some form of the
+conceptual \emph{secure channel} for passing messages back and forth
+between two endpoints.  A secure channel offers three security
+guarantees: \emph{confidentiality}---an attacker cannot observe the
+content of messages in transit; \emph{integrity}---an attacker cannot
+modify messages in transit; and \emph{authenticity}---an attacker
+cannot impersonate either endpoint.  These guarantees collectively
+offer a solid foundation for secure application development, but they
+are not sufficient for complete security in all situations.  Even with
+a secure channel in place, an eavesdropper can easily learn the origin
+and destination addresses of each packet, the amount of application
+data it carries, its position within a TCP stream, and other
+metainformation, such as any TCP options that are present.
+
+Of this information, the origin and destination are most sensitive;
+sometimes the information that Alice did at some point talk to Bob is
+enough to send Alice to prison!\footnote{As an extreme example, the
+  Soviet Union notoriously criminalized “contacts leading to suspicion
+  of espionage.”~\needcite{solzhenitsyn?}} A \emph{secure proxy}
+relays traffic from Alice to Bob and vice versa, so an eavesdropper at
+any single point in the network cannot tell that they are
+communicating with each other.  At most, the eavesdropper will know
+that one of them is communicating with the proxy.  This is the
+additional security guarantee of
+\emph{unlinkability}~\cite{pfitzmann2010terminology}.
+
+A secure proxy itself knows both the source and the destination of
+each message.  Even if run by people with the best of intentions, it
+is vulnerable to offline coercion to expose that
+information. \todo{something about anon.penet.fi here}.  A \emph{mix
+  network}~\needcite{chaum1978} replaces the single relay with a chain
+of relays, each of which knows only the previous and next hop;
+subverting any one relay thus reveals no more than eavesdropping would
+have. \todo{Explain why three relays are used in practice.}  Some of
+the research we review studied the behavior of secure proxies, while
+other papers examined mix networks.  For the most part, the
+differences between the two are not relevant to our discussion, so we
+will refer to both interchangeably as \emph{unlinkable channels}
+except where the difference matters.
+
+Unlinkable channels don't generally conceal the size or the timing of
+messages.  There are exceptions: Chaum's original mix design (intended
+for email) did include substantial delays at each relay in order to
+conceal timing, but this is not considered acceptable for modern
+interactive protocols such as HTTP: current-generation mix networks,
+such as Tor~\cite{dingledine2004tor}, treat their \emph{low latency}
+as a valuable feature.  Unlinkable channels may or may not disguise
+the TCP session to which each packet belongs.
+
+\subsection{Traffic Analysis}
+
+
 
 \nocite{*}\printbibliography
 \end{document}
