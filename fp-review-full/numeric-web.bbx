@@ -7,7 +7,6 @@
 
 \ExecuteBibliographyOptions{labelnumber,maxnames=99,firstinits=true}
 
-\renewcommand*{\mkbibnamelast}[1]{\textsc{#1}}
 \renewcommand{\bibfont}{\footnotesize}
 
 \DeclareNameAlias{author}{default}
@@ -28,9 +27,16 @@
 \DeclareBibliographyAlias{review}{article}
 \DeclareBibliographyAlias{*}{misc}
 
+\DeclareFieldFormat{booktitle}{#1}
+\DeclareFieldFormat{journaltitle}{#1}
+\DeclareFieldFormat{issuetitle}{#1}
+\DeclareFieldFormat{maintitle}{#1}
+
+\DeclareFieldFormat{title}{\mkbibemph{#1}}
 \DeclareFieldFormat
   [article,inbook,incollection,inproceedings,patent,thesis,unpublished]
-  {title}{#1}
+  {title}{\mkbibemph{#1}}
+
 \DeclareFieldFormat{url}{\url{#1}}
 
 \DeclareFieldFormat{bibentrysetcount}{\mkbibparens{\mknumalph{#1}}}
@@ -69,13 +75,7 @@
   \usebibmacro{bibindex}%
   \usebibmacro{begentry}%
   \usebibmacro{author/translator+others}%
-  \setunit{\labelnamepunct}\newblock
-  \usebibmacro{title}%
-  \newunit
-  \usebibmacro{date}%
-  \newunit
-  \printlist{language}%
-  \newunit\newblock
+  \usebibmacro{date+title+language}
   \usebibmacro{byauthor}%
   \newunit\newblock
   \usebibmacro{bytranslator+others}%
@@ -478,28 +478,14 @@
     {\newunit
      \printfield{series}%
      \setunit{\addspace}}%
-  \usebibmacro{volume+number+eid+issue}%
-  \newunit}
-
-\newbibmacro*{title+issuetitle}{%
-  \usebibmacro{periodical}%
-  \setunit*{\addspace}%
-  \iffieldundef{series}
-    {}
-    {\newunit
-     \printfield{series}%
-     \setunit{\addspace}}%
-  \usebibmacro{volume+number+eid+issue}%
-  \newunit}
-
-\newbibmacro*{volume+number+eid+issue}{%
   \printfield{volume}%
   \setunit*{\adddot}%
   \printfield{number}%
   \setunit{\addcomma\space}%
   \printfield{eid}%
   \setunit{\addcolon\space}%
-  \printfield{issue}}
+  \printfield{issue}%
+  \newunit}
 
 \newbibmacro*{event+venue+organization}{%
   \printfield{eventtitle}%
