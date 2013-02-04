@@ -51,15 +51,17 @@ there is only one relay (this style of unlinkable channel is commonly
 known as a \emph{proxy server}), the relay itself knows both the
 source and the destination of each message.  Even if run by people
 with the best of intentions, a proxy server is vulnerable to offline
-coercion to expose that information. \todo{something about
-  anon.penet.fi here}.  A \emph{mix network}~\needcite{chaum1978}
-replaces the single relay with a chain of relays, each of which knows
-only the previous and next hop; subverting any one relay thus reveals
-no more than eavesdropping would have. \todo{Explain why three relays
-  are used in practice.}  Some of the research we review studied the
-behavior of proxy servers, while other papers examined mix networks.
-We will refer to both as unlinkable channels except where the
-difference matters.
+coercion to expose that information.\footnote{In another extreme
+  example, the anonymous email relay \textsf{anon.penet.fi} closed
+  down rather than comply with court orders to unmask its
+  users.~\cite{newman1996church}} A \emph{mix
+  network}~\cite{chaum1981mix} replaces the single relay with a chain
+of relays, each of which knows only the previous and next hop;
+subverting any one relay thus reveals no more than eavesdropping would
+have. \todo{Explain why three relays are used in practice.}  Some of
+the research we review studied the behavior of proxy servers, while
+other papers examined mix networks.  We will refer to both as
+unlinkable channels except where the difference matters.
 
 Unlinkable channels don't generally conceal the size or the timing of
 messages.  There are exceptions: Chaum's original mix design (intended
@@ -103,5 +105,60 @@ relays, it may also seek to discover whether a particular victim is
 sending traffic through those relays. \todo{Expand on bootstrapping
   single-point surveillance to distributed traffic correlation.}
 
-\nocite{*}\printbibliography
+\subsection{Website Fingerprinting}
+
+This review focuses on two classes of traffic analysis attacks, both
+of which are referred to in the literature as “website
+fingerprinting.”  Both feature an attacker eavesdropping on a
+victim-user at or near the victim's location in the network;
+specifically, the attacker is assumed to be able to observe traffic
+between the victim's computer and the first relay in the unlinkable
+channel.  Therefore, the attacker already knows something about the
+victim, and their goal is to learn something about what they are using
+the unlinkable channel for.  (One result discussed
+below~\needcite{ping-flooding-fingerprint} suggests the possibility of
+fingerprinting from afar by flooding the victim with ICMP “ping”
+messages, but the traffic so observed is still the traffic between the
+victim's computer and the first relay.)
+
+In one class of fingerprinting attacks, the attacker simply seeks to
+determine which Web sites the victim is browsing via the unlinkable
+channel.  The Web being the most common application layer use of the
+modern Internet, it is a safe bet that the victim is using it;
+however, for the same reason, the number of possible sites that the
+victim might be browsing is enormous.  Most published attacks of this
+form limit themselves to a relatively small number of sites, usually
+the most popular 100 to 10,000, either based on local traffic
+sampling, or the global rankings published by Alexa.  These are not
+terribly realistic when one considers \emph{why} the attacker might
+want to know which sites their victim browses; we will come back to
+this point later.
+
+In the other class of attacks, the attacker assumes that the victim is
+browsing a particular website, one of the enormously popular ones, and
+attempts to learn something about what they're doing on that site.
+The data stream that these sites produce when loaded is predictable,
+and more importantly, has predictable variation that depends on, for
+instance, the file size of the victim's profile photo, which may well
+uniquely identify the victim.  (The attacker knows the address of the
+victim's computer, but that doesn't mean they already know the
+victim's Facebook account ID.)  These attacks are more realistic, but
+since they only look at data coming from one site, application-level
+countermeasures are feasible.
+
+\section{Identifying Websites}
+
+\subsection{Laboratory-scale experiments}
+
+\subsection{Larger experiments}
+
+\section{Identifying Users of Large Social Networks}
+
+\section{Countermeasures}
+
+\section{Related attacks}
+
+\section{Discussion}
+
+\printbibliography
 \end{document}

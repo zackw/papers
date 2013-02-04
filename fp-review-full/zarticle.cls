@@ -22,11 +22,10 @@
 \AtBeginDocument
  {\sfcode\csname\encodingdefault\string\textquotedblright\endcsname=0}
 
-% Font choices up for debate, but I think these are inarguably
-% superior to Computer Modern, and should be available with any
-% recent version of TeX Live.
-\RequirePackage[charter]{mathdesign}
-\RequirePackage{inconsolata}
+% font choices
+\RequirePackage{lmodern}  % backstop - ensure no T1-incompatible fonts
+\RequirePackage{fourier}   % body Utopia and matching math
+\renewcommand{\sfdefault}{fxb} % “linux biolinum” looks better with Utopia
 
 % This package must be loaded after any fonts.
 \RequirePackage[final]{microtype}
@@ -36,8 +35,11 @@
 \RequirePackage{color}
 \RequirePackage[colorlinks=true,urlcolor=blue,citecolor=dgreen]{hyperref}
 \definecolor{dgreen}{RGB}{0,127,0}
+\urlstyle{sf}
 
-% ACM-like biblatex setup.
+% Personal biblatex setup (not corresponding to anyone's house style)
+\RequirePackage[american]{babel}
+\RequirePackage{csquotes}
 \RequirePackage[bibstyle=numeric-web,citestyle=numeric,
                 backend=biber,sortcites=true]{biblatex}
 
