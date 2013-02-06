@@ -43,6 +43,24 @@
 \DeclareFieldFormat{labelnumberwidth}{\mkbibbrackets{#1}}
 \DeclareFieldFormat{shorthandwidth}{\mkbibbrackets{#1}}
 
+% various eprint additions
+\def\blx@usenix@url#1/#2/%
+  {http://static.usenix.org/events/#1/tech/full_papers/#2/#2_html/}
+\DeclareFieldFormat{eprint:usenix}{%
+  \mkbibacro{USENIX}\addcolon\space
+  \ifhyperref
+    {\iffieldundef{url}
+      {\href{\blx@usenix@url #1/}{\nolinkurl{#1}}}
+      {\href{\thefield{url}}{\nolinkurl{#1}}}}
+    {\nolinkurl{#1}}}
+
+\def\blx@anonbib@url#1/{http://freehaven.net/anonbib/cache/#1.pdf}
+\DeclareFieldFormat{eprint:anonbib}{%
+  \mkbibacro{ANONBIB}\addcolon\space
+  \ifhyperref
+    {\href{\blx@anonbib@url #1/}{\nolinkurl{#1}}}
+    {\nolinkurl{#1}}}
+
 \defbibenvironment{bibliography}
   {\list
      {\printtext[labelnumberwidth]{%
@@ -75,7 +93,7 @@
   \usebibmacro{bibindex}%
   \usebibmacro{begentry}%
   \usebibmacro{author/translator+others}%
-  \usebibmacro{date+title+language}
+  \usebibmacro{date+title+language}%
   \usebibmacro{byauthor}%
   \newunit\newblock
   \usebibmacro{bytranslator+others}%
@@ -366,9 +384,9 @@
   \printfield{type}%
   \setunit*{\addspace}%
   \printfield{number}%
-  \setunit*{\addcomma\space}
+  \setunit*{\addcomma\space}%
   \printfield{version}%
-  \setunit*{\addcomma\space}
+  \setunit*{\addcomma\space}%
   \printlist{institution}%
   \newunit\newblock
   \usebibmacro{link}%
@@ -384,7 +402,7 @@
   \usebibmacro{byauthor}%
   \newunit\newblock
   \printfield{type}%
-  \newunit
+  \setunit*{\addcomma\space}%
   \printlist{institution}%
   \newunit\newblock
   \usebibmacro{link}%

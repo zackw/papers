@@ -50,18 +50,21 @@ end-to-end, so the relay(s) cannot themselves eavesdrop; however, if
 there is only one relay (this style of unlinkable channel is commonly
 known as a \emph{proxy server}), the relay itself knows both the
 source and the destination of each message.  Even if run by people
-with the best of intentions, a proxy server is vulnerable to offline
-coercion to expose that information.\footnote{In another extreme
-  example, the anonymous email relay \textsf{anon.penet.fi} closed
-  down rather than comply with court orders to unmask its
-  users.~\cite{newman1996church}} A \emph{mix
+with the best of intentions, a proxy server is vulnerable to coercion
+to expose that information.\footnote{As a less extreme example, the
+  email relay \textsf{anon.penet.fi} shut down under ongoing legal
+  pressure to unmask its users.~\cite{newman1996church}} A \emph{mix
   network}~\cite{chaum1981mix} replaces the single relay with a chain
 of relays, each of which knows only the previous and next hop;
 subverting any one relay thus reveals no more than eavesdropping would
-have. \todo{Explain why three relays are used in practice.}  Some of
-the research we review studied the behavior of proxy servers, while
-other papers examined mix networks.  We will refer to both as
-unlinkable channels except where the difference matters.
+have.  In practice, three relays are used, because a two-relay chain
+is insufficient to defend against attacks by pairs of colluding
+malicious relays, but a chain of four or more relays offers only
+marginal additional security at substantial cost in
+latency.~\cite{wright2002analysis,wright2003defending} Some of the
+research we review studied the behavior of proxy servers, while other
+papers examined mix networks.  We will refer to both as unlinkable
+channels except where the difference matters.
 
 Unlinkable channels don't generally conceal the size or the timing of
 messages.  There are exceptions: Chaum's original mix design (intended
@@ -87,23 +90,22 @@ estimate the size of a higher-level message, such as an HTTP
 transaction.  TCP control bits can also reveal higher-level message
 boundaries.
 
-A traffic-analytic attacker on an unlinkable channel is generally
-assumed to be eavesdropping at a point where it can observe one
-endpoint of the channel.  It can observe but not modify the traffic to
-and from its victim.  It is also allowed to send and receive traffic
-of its own to public and attacker-controlled servers, and to make use
-of the same unlinkable-channel relays as the victim, but not to
-subvert the operation of those relays.  It may or may not be able to
-communicate overtly with the victim (for instance by enticing the
-victim to visit an attacker-operated website), and it may or may not
-operate its own malicious relays.
-
-The attacker's goal may be to determine the other endpoint or to learn
-something about the content of the traffic.  \todo{Discuss VoIP
-  decoding from VBR packet size.}  If the attacker operates malicious
-relays, it may also seek to discover whether a particular victim is
-sending traffic through those relays. \todo{Expand on bootstrapping
-  single-point surveillance to distributed traffic correlation.}
+There are a wide variety of threat models in the literature for
+traffic-analytic attackers on unlinkable channels.  The attacker may
+be located at several different places within the network, and may
+have one, two, or several listening posts.  It may be strictly an
+eavesdropper, or may be allowed to generate its own traffic, or may
+even operate its own malicious relays.  It may be able to communicate
+overtly with its victims, for instance by enticing them to visit an
+attacker-controlled website; this is more powerful than it might
+sound, since a malicious website can execute code (in a restricted,
+but not at all foolproof, environment) on its victims'
+computers.~\cite{barth2008securing} However, “Byzantine” attacks, in
+which the attacker interferes with the correct operation of the
+unlinkable channel protocol, are considered a separate class of
+threat.  The attacker's goals are even more diverse, ranging from
+the deduction of encrypted channel content to tracing messages through
+the relay chain to identifying communicants.
 
 \subsection{Website Fingerprinting}
 
@@ -119,24 +121,33 @@ the unlinkable channel for.  (One result discussed
 below~\needcite{ping-flooding-fingerprint} suggests the possibility of
 fingerprinting from afar by flooding the victim with ICMP “ping”
 messages, but the traffic so observed is still the traffic between the
-victim's computer and the first relay.)
+victim's computer and the first relay.)  In one class of
+fingerprinting attacks, the attacker simply seeks to determine which
+Web sites the victim is browsing via the unlinkable channel.  In the
+other class, the attacker assumes that the victim is browsing a
+particular website, and attempts to learn something about what they're
+doing there.
 
-In one class of fingerprinting attacks, the attacker simply seeks to
-determine which Web sites the victim is browsing via the unlinkable
-channel.  The Web being the most common application layer use of the
-modern Internet, it is a safe bet that the victim is using it;
-however, for the same reason, the number of possible sites that the
-victim might be browsing is enormous.  Most published attacks of this
-form limit themselves to a relatively small number of sites, usually
-the most popular 100 to 10,000, either based on local traffic
-sampling, or the global rankings published by Alexa.  These are not
-terribly realistic when one considers \emph{why} the attacker might
-want to know which sites their victim browses; we will come back to
-this point later.
+\section{Identifying Websites}
 
-In the other class of attacks, the attacker assumes that the victim is
-browsing a particular website, one of the enormously popular ones, and
-attempts to learn something about what they're doing on that site.
+The Web being the most common application layer use of the modern
+Internet, it is a safe bet that the victim is using it; however, for
+the same reason, the number of possible sites that the victim might be
+browsing is enormous.  Most published attacks of this form limit
+themselves to a relatively small number of sites, usually the most
+popular 100 to 10,000, either based on local traffic sampling, or the
+global rankings published by Alexa.  These are not terribly realistic
+when one considers \emph{why} the attacker might want to know which
+sites their victim browses; we will come back to this point later.
+
+\subsection{Laboratory-scale experiments}
+
+\subsection{Larger experiments}
+
+\section{Identifying Activity}
+
+\subsection{Unmasking Users of Social Networks}
+
 The data stream that these sites produce when loaded is predictable,
 and more importantly, has predictable variation that depends on, for
 instance, the file size of the victim's profile photo, which may well
@@ -145,14 +156,6 @@ victim's computer, but that doesn't mean they already know the
 victim's Facebook account ID.)  These attacks are more realistic, but
 since they only look at data coming from one site, application-level
 countermeasures are feasible.
-
-\section{Identifying Websites}
-
-\subsection{Laboratory-scale experiments}
-
-\subsection{Larger experiments}
-
-\section{Identifying Users of Large Social Networks}
 
 \section{Countermeasures}
 
