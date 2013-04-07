@@ -17,78 +17,61 @@ Abstract abstract, abstract abstract abstract.
 
 \section{Introduction}
 
-Most off-the-shelf secure network protocols provide some form of the
-conceptual \emph{secure channel} for passing messages back and forth
-between two endpoints.  A secure channel offers three security
-guarantees: \emph{confidentiality}---an attacker cannot observe the
-content of messages in transit; \emph{integrity}---an attacker cannot
-modify messages in transit; and \emph{authenticity}---an attacker
-cannot impersonate either endpoint.  These guarantees collectively
-offer a solid foundation for secure application development, but they
-are not sufficient for complete security in all situations.
+\emph{Traffic analysis} is the craft of deducing information about the
+content of an encrypted message from any data that remains observable
+despite the encryption, such as its sender, recipient, length, time of
+transmission, or its relationship to other events.  Classically, one
+might deduce that a naval vessel has received new orders if it
+abruptly changes course shortly after an encrypted radio broadcast.
+\todo{More history?}
 
-\subsection{Unlinkable Channels}
+A protocol which provides cryptographic confidentiality, integrity,
+and authenticity on top of a best-effort, cleartext infrastructure is
+generally referred to as a “secure channel,” but traffic analysis can
+extract information from most secure-channel protocols used on the
+modern Internet, damaging to some extent the theoretical guarantee of
+confidentiality.  In this paper we will review the state of the art in
+traffic analysis specifically of HTTP (World Wide Web) transactions
+relayed through proxies which are intended to guarantee the anonymity
+of their users.
 
-Even with a secure channel in place, an eavesdropper can easily learn
-the origin and destination addresses of each packet, the amount of
-application data it carries, its position within a TCP stream, and
-other metainformation, such as any TCP options that are present.  Of
-this information, the origin and destination are most sensitive;
-sometimes the information that Alice did at some point talk to Bob is
-enough to send Alice to prison!\footnote{As an extreme example, the
-  Soviet Union notoriously criminalized “contacts leading to suspicion
-  of espionage.”~\cite{solzh74gulag:svpsh}}  An \emph{unlinkable
-  channel} is a secure channel that passes through one or more relay
-hosts, so that an eavesdropper at any single point in the network
-cannot tell that the endpoints are communicating with each other.  At
-most, the eavesdropper will know that one of the endpoints is
-communicating with one of the relays.  This is the additional security
-guarantee of \emph{unlinkability}~\cite{pfitzmann2010terminology}.
+\subsection{Levels of Anonymity}
 
-The secure channel within an unlinkable channel is established
-end-to-end, so the relay(s) cannot themselves eavesdrop; however, if
-there is only one relay (this style of unlinkable channel is commonly
-known as a \emph{proxy server}), the relay itself knows both the
-source and the destination of each message.  Even if run by people
-with the best of intentions, a proxy server is vulnerable to coercion
-to expose that information.\footnote{As a less extreme example, the
-  email relay \textsf{anon.penet.fi} shut down under ongoing legal
-  pressure to unmask its users.~\cite{newman1996church}} A \emph{mix
-  network}~\cite{chaum1981mix} replaces the single relay with a chain
-of relays, each of which knows only the previous and next hop;
-subverting any one relay thus reveals no more than eavesdropping would
-have.  In practice, three relays are used, because a two-relay chain
-is insufficient to defend against attacks by pairs of colluding
-malicious relays, but a chain of four or more relays offers only
-marginal additional security at substantial cost in
-latency.~\cite{wright2002analysis,wright2003defending} Some of the
-research we review studied the behavior of proxy servers, while other
-papers examined mix networks.  We will refer to both as unlinkable
-channels except where the difference matters.
+“Anonymity” is an overloaded term.  Following
+Pfitzmann~\cite{pfitzmann2010terminology}, in this paper we will
+distinguish three levels of anonymity protection.  An \emph{overt}
+secure protocol (such as TLS or SSH) conceals the content of each
+message but makes no effort to hide the sender and recipient of each
+message (that is, the IP source and destination addresses).  The
+information that Alice did at some point talk to Bob has sometimes
+been enough to send Alice to prison!\footnote{As an extreme example,
+  the Soviet Union notoriously criminalized “contacts leading to
+  suspicion of espionage.”~\cite{solzh1974gulag:svpsh}} An
+eavesdropper can also learn the amount of application data each packet
+carries, its position within a TCP stream, and other metainformation,
+such as any TCP options that are present.
 
-Unlinkable channels don't generally conceal the size or the timing of
-messages.  There are exceptions: Chaum's original mix design (intended
-for email) did include substantial delays at each relay in order to
-conceal timing, but this is not considered acceptable for modern
-interactive protocols such as HTTP: current-generation mix networks,
-such as Tor~\cite{dingledine2004tor}, treat their \emph{low latency}
-as a valuable feature.  Unlinkable channels may or may not disguise
-the TCP session to which each packet belongs.
+An \emph{unlinkable} protocol additionally prevents an eavesdropper at
+any single point in the network from learning both the sender and the
+recipient of each message.  Depending on the eavesdropper's location,
+they may be able to learn that Alice is sending messages to
+\emph{someone}, or that Bob is receiving messages from \emph{someone},
+but they should not be able to learn that Alice is communicating with
+Bob.  Unlinkability is the level of protection provided by most
+anonymity services in wide use on the public Internet.  It is normally
+achieved by passing the traffic through one or more relays, such that
+each knows only the previous and next hop; a secure channel is still
+established end-to-end, so the relays themselves cannot observe
+message contents.  This design originates with \textcite{chaum1981mix}
+and will be discussed in more detail below.
 
-\subsection{Traffic Analysis}
+Finally, \emph{unobservable} traffic is indistinguishable from
+background chatter, so an adversary cannot be sure that any given
+station is talking to \emph{anyone}.  Unobservability represents an
+ideal; although there are a few proposals, no unobservable protocol
+has been made practical.  \todo{expand}
 
-Traffic analysis is the craft of deducing information about the
-content of a secret message from what is still observable.
-Classically, this was its origin, destination, timing, and
-relationship to other events: for instance, if we overhear an
-encrypted radio message directed to a naval base, and shortly
-thereafter an aircraft carrier group leaves that base, we can deduce
-that the message was orders for that carrier group.  In a modern
-packet-switched network, traffic analysis relies on message size and
-timing.  Packet sizes may be used directly, or may be aggregated to
-estimate the size of a higher-level message, such as an HTTP
-transaction.  TCP control bits can also reveal higher-level message
-boundaries.
+\subsection{Attacking Unlinkability}
 
 There are a wide variety of threat models in the literature for
 traffic-analytic attackers on unlinkable channels.  The attacker may
@@ -105,7 +88,39 @@ which the attacker interferes with the correct operation of the
 unlinkable channel protocol, are considered a separate class of
 threat.  The attacker's goals are even more diverse, ranging from
 the deduction of encrypted channel content to tracing messages through
-the relay chain to identifying communicants.
+the relay chain to identifying communicants. \todo{sprinkle cites in
+  this paragraph}
+
+Unlinkable protocols don't generally conceal the size or the timing of
+messages.  There are exceptions: \citeauthor{chaum1981mix}'s original
+design~\cite{chaum1981mix} (intended for email) did include
+substantial delays at each relay in order to conceal timing, but this
+is not considered acceptable for modern interactive protocols such as
+HTTP: current-generation mix networks, such as
+Tor~\cite{dingledine2004tor}, treat their \emph{low latency} as a
+valuable feature.  Unlinkable channels may or may not disguise the TCP
+session to which each packet belongs. \todo{talk about how this leads
+  to attacks}
+
+When an unlinkable protocol uses only one relay, the relay is
+colloquially known as a “proxy server,” and is a point of
+vulnerability, since it knows the source and destination of every
+message.  Even if run with the best of intentions, proxy servers may
+come under coercion to expose that information.\footnote{In one
+  notorious case from the early Internet, the email relay
+  \textsf{anon.penet.fi} shut down under ongoing legal pressure to
+  unmask its users.~\cite{newman1996church}} A \emph{mix
+  network}~\cite{chaum1981mix} replaces the single relay with a chain
+of relays, each of which knows only the previous and next hop;
+subverting any one relay thus reveals no more than eavesdropping would
+have.  In practice, three relays are used, because a two-relay chain
+is insufficient to defend against attacks by pairs of colluding
+malicious relays, but a chain of four or more relays offers only
+marginal additional security at substantial cost in
+latency.~\cite{wright2002analysis,wright2003defending} Some of the
+research we review studied the behavior of proxy servers, while other
+papers examined mix networks.  We will refer to both as unlinkable
+protocols except where the difference matters.
 
 \subsection{Website Fingerprinting}
 
@@ -118,50 +133,68 @@ between the victim's computer and the first relay in the unlinkable
 channel.  Therefore, the attacker already knows something about the
 victim, and their goal is to learn something about what they are using
 the unlinkable channel for.  (One result discussed
-below~\cite{gong2011fingerprinting} suggests the possibility of
-fingerprinting from afar by flooding the victim with ICMP “ping”
-messages, but the traffic so observed is still the traffic between the
-victim's computer and the first relay.)  In one class of
-fingerprinting attacks, the attacker simply seeks to determine which
-Web sites the victim is browsing via the unlinkable channel.  In the
-other class, the attacker assumes that the victim is browsing a
-particular website, and attempts to learn something about what they're
-doing there.
+below~\cite{gong2011remote} suggests the possibility of fingerprinting
+from afar by flooding the victim with ICMP “ping” messages, but the
+traffic so observed is still the traffic between the victim's computer
+and the first relay.)  In one class of fingerprinting attacks, the
+attacker simply seeks to determine which Web sites the victim is
+browsing via the unlinkable channel.  In the other class, the attacker
+assumes that the victim is browsing a particular website, and attempts
+to learn something about what they're doing there.
 
-\section{Identifying Websites}
+\section{Early Work}
 
-The Web being the most common application layer use of the modern
-Internet, it is a safe bet that the victim is using it; however, for
-the same reason, the number of possible sites that the victim might be
-browsing is enormous.  Most published attacks of this form limit
-themselves to a relatively small number of sites, usually the most
-popular 100 to 10,000, either based on local traffic sampling, or the
-global rankings published by Alexa.  These are not terribly realistic
-when one considers \emph{why} the attacker might want to know which
-sites their victim browses; we will come back to this point later.
+The World Wide Web has existed since 1990, and since 1994 it has been
+possible to configure individual websites for \emph{overt} secure
+communications.  The earliest attempts we are aware of, to perform
+traffic analysis of the Web's protocols, are from
+1998~(\textcite{cheng1998traffic}) and
+2002~(\textcite{hintz2002fingerprinting,sun2002statistical}).  Despite
+how much the Web has evolved since then, these three papers anticipate
+nearly all subsequent work on the topic.  
 
-\subsection{Laboratory-scale experiments}
 
-\subsection{Larger experiments}
+%% \todo{Machine learning, techniques, cost}
 
-\section{Identifying Activity}
+%% \section{Identifying Websites}
 
-\subsection{Unmasking Users of Social Networks}
+%% The Web being the most common application layer use of the modern
+%% Internet, it is a safe bet that the victim is using it; however, for
+%% the same reason, the number of possible sites that the victim might be
+%% browsing is enormous.  Most published attacks of this form limit
+%% themselves to a relatively small number of sites, usually the most
+%% popular 100 to 10,000, either based on local traffic sampling, or the
+%% global rankings published by Alexa.  These are not terribly realistic
+%% when one considers \emph{why} the attacker might want to know which
+%% sites their victim browses; we will come back to this point later.
 
-The data stream that these sites produce when loaded is predictable,
-and more importantly, has predictable variation that depends on, for
-instance, the file size of the victim's profile photo, which may well
-uniquely identify the victim.  (The attacker knows the address of the
-victim's computer, but that doesn't mean they already know the
-victim's Facebook account ID.)  These attacks are more realistic, but
-since they only look at data coming from one site, application-level
-countermeasures are feasible.
+%% \subsection{Laboratory-scale experiments}
 
-\section{Countermeasures}
+%% \subsection{Larger experiments}
 
-\section{Related attacks}
+%% \section{Identifying Activity}
 
-\section{Discussion}
+%% \subsection{Unmasking Users of Social Networks}
+
+%% The data stream that these sites produce when loaded is predictable,
+%% and more importantly, has predictable variation that depends on, for
+%% instance, the file size of the victim's profile photo, which may well
+%% uniquely identify the victim.  (The attacker knows the address of the
+%% victim's computer, but that doesn't mean they already know the
+%% victim's Facebook account ID.)  These attacks are more realistic, but
+%% since they only look at data coming from one site, application-level
+%% countermeasures are feasible.
+
+%% \section{Countermeasures}
+
+%% \todo{application-layer padding, transport-layer padding, dummy
+%%   traffic, full-on steganography}
+
+%% \section{Related attacks}
+
+%% \todo{tracing messages through a mix, etc}
+
+%% \section{Discussion}
 
 \printbibliography
 \end{document}
