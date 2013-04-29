@@ -32,7 +32,7 @@
 
 % These packages must be loaded in this order.
 \RequirePackage[hyphens]{url}
-\RequirePackage{color}
+\RequirePackage{xcolor}
 \RequirePackage[colorlinks=true,urlcolor=blue,citecolor=dgreen]{hyperref}
 \definecolor{dgreen}{RGB}{0,127,0}
 \urlstyle{sf}
