@@ -7,11 +7,6 @@
 \def\needcite#1{\todo{cite: #1}}
 \begin{document}
 
-\setbox37=\hbox{\scriptsize%
-ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz}
-\edef\lht{\the\ht37}
-\edef\ldp{\the\dp37}
-
 \title{Unmasking Web Users and Activities:
   A review of the literature on traffic analysis of the modern Internet}
 \author{Zachary Weinberg}
@@ -277,6 +272,7 @@ subsequent work on the topic.
 
 \printbibliography
 
+\clearpage\onecolumn
 \appendix
 \section{Illustrative Packet Traces}
 \input http.tikz

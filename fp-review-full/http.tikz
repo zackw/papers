@@ -1,5 +1,13 @@
-\begin{figure*}[p]
-\centering
+% measure the text we're going to use, so we can force consistent text
+% alignment; we do this with primitive TeX for efficiency
+% I *think* box register 0 is scratch, but it's hard to tell
+\begingroup
+\setbox0=\hbox{\scriptsize%
+ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz}
+\newdimen\lht \lht=\ht0
+\newdimen\ldp \ldp=\dp0
+%
+\begin{figure*}[h!]%
 \begin{tikzpicture}[x=1cm,y=-1cm,
     annote/.style={
         rectangle,%draw, help lines,
@@ -220,4 +228,4 @@
 };
 \end{tikzpicture}
 \end{figure*}
-\endinput
+\endgroup\endinput

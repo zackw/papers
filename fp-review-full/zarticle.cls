@@ -22,6 +22,10 @@
 \AtBeginDocument
  {\sfcode\csname\encodingdefault\string\textquotedblright\endcsname=0}
 
+% float alignment - look into `floatrow' if this needs to get more
+% complicated
+\g@addto@macro\@floatboxreset\centering
+
 % font choices
 \RequirePackage{lmodern}  % backstop - ensure no T1-incompatible fonts
 \RequirePackage{fourier}   % body Utopia and matching math
