@@ -7,10 +7,10 @@
 \ProcessOptions\relax
 \LoadClass[10pt,letterpaper,twocolumn]{article}
 
-% 0.5″ margins left and right.  9″ of vertical page area, with
+% 0.5" left margin, 1.5" right.  10" of vertical page area, with
 % geometry's defaults for margin ratio. 0.35″ between columns.
 \RequirePackage{geometry}
-\geometry{hmargin=0.5in,textheight=9in,columnsep=0.35in}
+\geometry{lmargin=0.5in,rmargin=1.5in,textheight=10in,columnsep=0.35in}
 
 % These packages must be loaded before any fonts.
 \RequirePackage[utf8]{inputenc}

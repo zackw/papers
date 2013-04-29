@@ -1,9 +1,16 @@
 \documentclass{zarticle}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric}
 \addbibresource{fp-review.bib}
 \definecolor{todocolor}{RGB}{127,0,0}
 \def\todo#1{{\color{todocolor}\bfseries [#1]}}
 \def\needcite#1{\todo{cite: #1}}
 \begin{document}
+
+\setbox37=\hbox{\scriptsize%
+ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz}
+\edef\lht{\the\ht37}
+\edef\ldp{\the\dp37}
 
 \title{Unmasking Web Users and Activities:
   A review of the literature on traffic analysis of the modern Internet}
@@ -117,10 +124,7 @@ have.  In practice, three relays are used, because a two-relay chain
 is insufficient to defend against attacks by pairs of colluding
 malicious relays, but a chain of four or more relays offers only
 marginal additional security at substantial cost in
-latency.~\cite{wright2002analysis,wright2003defending} Some of the
-research we review studied the behavior of proxy servers, while other
-papers examined mix networks.  We will refer to both as unlinkable
-protocols except where the difference matters.
+latency.~\cite{wright2002analysis,wright2003defending}.
 
 \subsection{Website Fingerprinting}
 
@@ -136,22 +140,97 @@ the unlinkable channel for.  (One result discussed
 below~\cite{gong2011remote} suggests the possibility of fingerprinting
 from afar by flooding the victim with ICMP “ping” messages, but the
 traffic so observed is still the traffic between the victim's computer
-and the first relay.)  In one class of fingerprinting attacks, the
-attacker simply seeks to determine which Web sites the victim is
-browsing via the unlinkable channel.  In the other class, the attacker
-assumes that the victim is browsing a particular website, and attempts
-to learn something about what they're doing there.
+and the first relay.)
 
-\section{Early Work}
+In one class of fingerprinting attacks, the attacker simply seeks to
+determine which Web sites the victim is browsing via the unlinkable
+channel; we'll refer to this as the \emph{identify-site} attack.  Some
+identify-site attacks we review studied the behavior of proxy servers,
+while other papers examined mix networks, and a few compared both.  We
+will only highlight which of the two was studied when the difference
+matters.
+
+In the other class, the attacker knows or assumes that the victim is
+browsing a particular website, and attempts to learn something about
+what they're doing there.  This we shall call the \emph{within-site}
+attack.  Within-site attacks may be applied to either sort of
+unlinkable channel, but unlike identify-site attacks, they are also
+relevant to the default \emph{overt} channel used by HTTPS.
+
+\subsection{HTTP's Network Behavior}
 
 The World Wide Web has existed since 1990, and since 1994 it has been
 possible to configure individual websites for \emph{overt} secure
-communications.  The earliest attempts we are aware of, to perform
-traffic analysis of the Web's protocols, are from
-1998~(\textcite{cheng1998traffic}) and
-2002~(\textcite{hintz2002fingerprinting,sun2002statistical}).  Despite
-how much the Web has evolved since then, these three papers anticipate
-nearly all subsequent work on the topic.  
+communications.  HTTP, the basic application-layer protocol, has not
+changed significantly since the adoption of version 1.1 in 1996.
+Whether or not encapsulated in a secure channel, HTTP exhibits
+characteristic network behavior which is of use to traffic analysis.
+The client always sends first in HTTP, transmitting a \emph{query}
+which is met with a \emph{response} from the server.  A TCP connection
+can be reused for several query-response pairs, but the client cannot
+begin a new query until it has received the complete response to its
+previous query, nor can the server begin a response before the query
+is fully received.\footnote{Theoretically, HTTP 1.1 supports
+  \emph{pipelining}, which lifts this restriction, but unlike the rest
+  of protocol 1.1, pipelining has never seen wide adoption.  In the
+  past few years, radical revisions of HTTP, such as Google's SPDY,
+  have been proposed and adopted to some extent; we are not aware of
+  any research into how this changes the situation for an
+  eavesdropper.}  Therefore, an eavesdropper at the TCP layer will see
+each party alternate between sending and receiving, and the aggregate
+TCP payload size of each server-to-client burst is a close
+approximation to the file size of the object requested.  To enhance
+parallelism, browsers open anywhere between two and ten simultaneous
+connections to the same site, allowing them to request several items
+at once (e.g.\ all the images referenced by an HTML page); each such
+connection behaves as described.
+
+Some, but not all, unlinkable channel protocols disguise the
+characteristic HTTP traffic pattern to some extent.  For instance, Tor
+multiplexes all proxied TCP connections onto a small number of
+long-lived “circuits,” hiding the simultaneous connections aspect of
+HTTP.
+
+\section{Early Work}
+
+The earliest attempts we are aware of, to perform traffic analysis of
+the Web's protocols, are from 1998 and 2002.
+\textcite{cheng1998traffic}, the very earliest publicly available
+analysis, presents a within-site attack on overt HTTPS.  They make use
+of HTTP's query-response traffic pattern to determine the size of
+individual pages and/or embedded resources, and then match those sizes
+against a previously-generated table of sizes for \emph{all} the
+publicly visible URLs on that site.  They observe that 90\% of HTML
+files on the sites they studied have unique sizes, and similarly for
+images (image files almost always have internal compression, so their
+file size depends on their contents as well as their dimensions).
+They do not explicitly consider how long an identification might last,
+but they do mention modeling a dynamically updated page as a
+collection of static pages, one for each size it is known to have had.
+They refine this naive matching approach with a Markov model of the
+user's browsing behavior, which allows them to make an educated guess
+which of a set of pages with the same size fingerprint has been
+loaded.  They then describe a variety of defenses, all based on
+automated addition of padding at the HTTP layer, and simulate each
+defense's effects on the identifiability of pages within three
+“representative” websites.  They find that random padding is not
+effective---the adversary can simply average it out---and that padding
+all responses to the TCP MTU is effective for small files but adds
+unacceptably high overhead.
+
+\textcite{hintz2002fingerprinting} and \textcite{sun2002statistical}
+are the earliest presentations of the identify-site attack.  Both
+studied simple proxies that did not disguise HTTP's traffic pattern at
+all.  \citeauthor{hintz2002fingerprinting} is the first to use the
+term “fingerprint,” referring to an unordered set of HTTP response
+sizes for the objects which constitute a single webpage, and the first
+to consider pages as aggregate entities rather than each URL in
+isolation.  \citeauthor{sun2002statistical} 
+
+
+Despite how much the Web has evolved since then, these three papers,
+especially \citeauthor{sun2002statistical}, anticipate nearly all
+subsequent work on the topic.
 
 
 %% \todo{Machine learning, techniques, cost}
@@ -197,4 +276,9 @@ nearly all subsequent work on the topic.
 %% \section{Discussion}
 
 \printbibliography
+
+\appendix
+\section{Illustrative Packet Traces}
+\input http.tikz
+
 \end{document}
