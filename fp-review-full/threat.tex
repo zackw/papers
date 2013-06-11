@@ -1,0 +1,85 @@
+\section{Threat Models for Fingerprinting}
+
+\begin{figure*}%
+\begin{tikzpicture}[every node/.style={align=center}]
+\node [draw,shape=circle] (s1) at (4,0.75) {};
+\node [draw,shape=circle] (s2) at (4,0) {};
+\node [draw,shape=circle] (s3) at (4,-0.75) {};
+\node at (5.5,0) {Small, fixed set\\of web servers};
+\draw (4.25,1) -- ++(0.05,0) -- ++(0,-2) -- ++(-0.05,0) ;
+
+\coordinate [left=1.5cm of s2] (c) {};
+
+\node [draw, left=1cm of s2, cloud, aspect=2] (cl) { \strut } ;
+
+\node [draw,left=2.5cm of c] (p) {Unlinkability\\relay};
+\node [draw,left=1cm of p] (e) {Eavesdropping\\network\\router} ;
+\node [draw,left=1cm of e] (v) {Targeted client\\(scripted browser)} ;
+
+\draw (v) -- (e) (e) -- (p) (p) -- (cl) ;
+
+\draw [dotted] (cl.west) -- (c)
+      (c) -- (s1)
+      (c) -- (s2)
+      (c) -- (s3) ;
+
+\end{tikzpicture}%
+\caption{Laboratory topology for fingerprinting experiments.}%
+\label{f:labtopology}%
+\end{figure*}
+
+Nearly all of the existing research on website fingerprinting has been
+carried out in what we might call a laboratory environment.
+Specifically, regardless of the attacker's goals (within-site,
+identify-site, identify-user), experiments have been conducted using
+roughly the network topology shown in figure~\ref{f:labtopology}.
+Relative to the conditions an attacker “in the field” would likely
+encounter, this configuration is simplified in three ways.  The
+topology is \emph{fixed} for the course of the experiment; the
+targeted client does not move around in the network, and it always
+uses the same initial unlinkability relay.  (The latter of these is
+more realistic than the former.  Proxy servers tend to have stable IP
+addresses, and Tor clients choose a small set of “guard” nodes to use
+for all connections, changing them only at long intervals.)
+
+Also, the eavesdropping router sees \emph{only one traffic source},
+the targeted client.  This may seem like a valid assumption, as the
+attacker may well conduct their eavesdropping one network hop from the
+target.  Modern WiFi hubs, DSL modems, and the like are full-fledged
+computing platforms, running poorly-secured management software, which
+could be exploited to install a monitor---if it isn't already present
+in the factory install; lately telcos are notorious for spying on
+their customers.\needcite{???}  However, these devices are installed
+for the use of an entire household (1--10 people) or office (10--50
+people), or as a public amenity, say at a café (20--100 people at any
+given time).  Even if there is only one client \emph{computer} ever
+connected via the eavesdropping router, that computer is likely to
+generate HTTP traffic which is uninformative regarding the target
+\emph{human}: automatic software updates, for instance, are carried
+out over HTTP nowadays.  If the eavesdropper is more than one hop from
+the target, their situation is even worse: each IP address sending
+them traffic could conceal dozens of clients behind a NAT gateway.
+(NAT can be detected~\cite{elie2005timestamp,krmivcek2009netflow} but
+that doesn't help the adversary decide which packet streams to pay
+attention to.)
+
+Finally, and perhaps most significantly, the set of servers that the
+target might attempt to contact is \emph{small} and \emph{fixed}.  The
+largest study to date~\todo{Sun et al?} considered a universe of the
+20,000 most frequently contacted servers as recorded by a departmental
+Web proxy.  Contrast the 670,000,000 distinct websites reported in
+June 2013 by
+Netcraft\footnote{\url{http://news.netcraft.com/archives/2013/06/06/june-2013-web-server-survey-3.html}}
+or even the 100,000 sites which are sufficiently popular to have
+stable Alexa rankings\footnote{\url{http://www.alexa.com/faqs/?p=134}}.
+Furthermore, only studies focusing on the contents of a \emph{single}
+server investigate pages other than the “front page” of each server,
+Front pages, which express the site's corporate identity, are
+plausibly more different from each other than internal pages, which
+are often a stock set of “chrome” wrapped around a blob of text.
+
+\subsection{The Adversary's Goals}
+
+To develop more realistic threat models for fingerprinting, we must
+first consider the adversary's goals.  \todo{one of the early papers
+did discuss this a bit}  

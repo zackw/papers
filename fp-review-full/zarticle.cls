@@ -29,7 +29,8 @@
 % font choices
 \RequirePackage{lmodern}  % backstop - ensure no T1-incompatible fonts
 \RequirePackage{fourier}   % body Utopia and matching math
-\renewcommand{\sfdefault}{fxb} % “linux biolinum” looks better with Utopia
+\RequirePackage[defaultsans,scale=0.95]{lato}
+%\renewcommand{\sfdefault}{iwona} % looks better with Utopia
 
 % This package must be loaded after any fonts.
 \RequirePackage[final]{microtype}
