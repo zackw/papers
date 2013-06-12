@@ -1,38 +1,197 @@
 \section{Threat Models for Fingerprinting}
 
-\begin{figure*}%
-\begin{tikzpicture}[every node/.style={align=center}]
-\node [draw,shape=circle] (s1) at (4,0.75) {};
-\node [draw,shape=circle] (s2) at (4,0) {};
-\node [draw,shape=circle] (s3) at (4,-0.75) {};
-\node at (5.5,0) {Small, fixed set\\of web servers};
-\draw (4.25,1) -- ++(0.05,0) -- ++(0,-2) -- ++(-0.05,0) ;
-
-\coordinate [left=1.5cm of s2] (c) {};
-
-\node [draw, left=1cm of s2, cloud, aspect=2] (cl) { \strut } ;
-
-\node [draw,left=2.5cm of c] (p) {Unlinkability\\relay};
-\node [draw,left=1cm of p] (e) {Eavesdropping\\network\\router} ;
-\node [draw,left=1cm of e] (v) {Targeted client\\(scripted browser)} ;
-
-\draw (v) -- (e) (e) -- (p) (p) -- (cl) ;
-
-\draw [dotted] (cl.west) -- (c)
-      (c) -- (s1)
-      (c) -- (s2)
-      (c) -- (s3) ;
-
+\begin{figure*}[t!]%
+\begin{tikzpicture}[every node/.style={align=center,draw}]
+\matrix [draw=none]
+{
+   \node (a) {Targeted client};
+&[5mm]
+   \node (b) {Eavesdropping\\router};
+&[10mm]
+   \node (c) [cloud,aspect=2] {\strut};
+&[7.5mm]
+   \foreach \y/\l in {5mm/da,0mm/db,-5mm/dc} \node [circle] (\l) at (0,\y) {};
+   \coordinate [above=0.5mm] (d0) at (da.north) ;
+   \coordinate [below=0.5mm] (d1) at (dc.south) ;
+&[1mm]
+   \draw [decorate,decoration={brace,amplitude=2mm}] (d0 -| 0,0) -- (d1 -| 0,0);
+&[1mm]
+   \node (e) [draw=none] {Fixed, small set\\of web servers};
+\\
+};
+\draw (a) edge (b)
+      (b) edge (c)
+      (c) edge (da)
+      (c) edge (db)
+      (c) edge (dc)
+;
 \end{tikzpicture}%
 \caption{Laboratory topology for fingerprinting experiments.}%
-\label{f:labtopology}%
+\label{f:lab.topology}%
 \end{figure*}
+
+\begin{figure*}[t!]%
+\begin{tikzpicture}[every node/.style={align=center,draw}]
+\matrix[draw=none,column sep=3mm,row sep=2mm]
+{
+&[4mm]
+&[3mm]
+&[3mm]
+&
+  \node (t1) [shape=circle] at (-6mm,6mm) {};
+  \node (t2) [shape=circle,draw=none] at (-2mm,2mm) {};
+  \node (t3) [shape=circle,draw=none] at (2mm,-2mm) {};
+  \node (t4) [shape=circle] at (6mm,-6mm) {};
+  \foreach \xy in {(-3mm,3mm),(-1mm,1mm),(1mm,-1mm),(3mm,-3mm)}
+    \fill \xy circle (0.75mm) ;
+\\
+\node (c1) at (0,-8.49mm) {};
+\node (c2) [draw=none] at (0,-5.66mm) {};
+\node (c3) [draw=none] at (0,-2.83mm) {};
+\node (c4) [draw=none] at (0,0) {};
+\node (c5) [draw=none] at (0,2.83mm) {};
+\node (c6) [draw=none] at (0,5.66mm) {};
+\node (c7) at (0,8.49mm) {};
+  \foreach \xy in {(0,-4.24mm),(0,-1.41mm),(0,1.41mm),(0,4.24mm)}
+    \fill \xy circle (0.666mm) ;
+&
+  \node (cloud1) [cloud,aspect=2] {\textit{5--10 hops}};
+&
+  \node (eve) {Eavesdropping\\backbone router};
+&
+  \node (cloud2) [cloud,aspect=2] {\textit{5--10 hops}};
+&
+\\
+&
+&
+&
+&
+  \node (d1) [shape=circle] at (6mm,6mm) {};
+  \node (d2) [shape=circle,draw=none] at (4mm,4mm) {};
+  \node (d3) [shape=circle,draw=none] at (2mm,2mm) {};
+  \node (d4) [shape=circle,draw=none] at (0mm,0mm) {};
+  \node (d5) [shape=circle,draw=none] at (-2mm,-2mm) {};
+  \node (d6) [shape=circle,draw=none] at (-4mm,-4mm) {};
+  \node (d7) [shape=circle] at (-6mm,-6mm) {};
+  \foreach \xy in {(-3mm,-3mm),(-1mm,-1mm),(1mm,1mm),(3mm,3mm)}
+    \fill \xy circle (0.75mm) ;
+\\
+};
+\draw (cloud1) edge (eve)
+      (eve) edge (cloud2) ;
+\foreach \n in {c1,c2,c3,c4,c5,c6,c7} \draw (\n) edge (cloud1) ;
+\foreach \n in {t1,t2,t3,t4} \draw (cloud2) edge (\n) ;
+\foreach \n in {d1,d2,d3,d4,d5,d6,d7} \draw (cloud2) edge (\n);
+
+\draw [decorate,decoration={brace,amplitude=2mm}]
+  ($(c1.south west)+(-1mm,-1mm)$) -- ($(c7.north west)+(-1mm,1mm)$) ;
+\draw [decorate,decoration={brace,amplitude=2mm}]
+  ($(t1.north)+(0,1mm)$) -- ($(t4.east)+(1mm,0)$) ;
+\draw [decorate,decoration={brace,amplitude=2mm}]
+  ($(d1.east)+(1mm,0)$) -- ($(d7.south)+(0,-1mm)$) ;
+
+\node [draw=none,anchor=east] at ($(c1)!0.5!(c7) + (-4mm,0)$)
+ {\phantom{10}5\,000\,000--\\100\,000\,000\phantom{--}\\clients\\monitored}
+;
+\node [draw=none,anchor=south west] at ($(t1)!0.5!(t4) + (3mm,3mm)$)
+ {Blocked sites\\(100--10\,000 servers)}
+;
+\node [draw=none,anchor=north west] at ($(d1)!0.5!(d7) + (1mm,-1mm)$)
+ {Ignored sites\\($\sim$50\,000\,000 servers)}
+;
+\end{tikzpicture}%
+\caption{The usual hypothetical topology for censorship
+  circumvention.}%
+\label{f:cens.topology}%
+\end{figure*}
+
+\begin{figure*}[t!]%
+\begin{tikzpicture}[every node/.style={align=center,draw}]
+\matrix (a) [draw=none,row sep=2mm,nodes={anchor=east}]
+{
+  \node (a1) {Targeted client $1$} ;\\
+  \foreach \y in {-1.5mm,0,1.5mm}
+    \fill (a1.center |- 0,\y) circle (0.5mm) ;\\
+  \node (a2) {Targeted client $M$} ;\\
+  \node (a3) {Ignored client $1$} ;\\
+  \foreach \y in {-1.5mm,0,1.5mm}
+    \fill (a1.center |- 0,\y) circle (0.5mm) ;\\
+  \node (a4) {Ignored client $N$} ;\\
+};
+\node [draw=none,below=1mm] at (a4.south) {\itshape 5--100
+  clients\\\itshape total} ;
+\matrix[draw=none,matrix anchor=b1.west,column sep=3mm,row sep=2mm]
+  at ($(a2.east)!0.5!(a3.east) + (5mm,0)$)
+{
+&
+&
+&[10mm]
+&
+  \node (t1) [shape=circle] at (-6mm,6mm) {};
+  \node (t2) [shape=circle,draw=none] at (-2mm,2mm) {};
+  \node (t3) [shape=circle,draw=none] at (2mm,-2mm) {};
+  \node (t4) [shape=circle] at (6mm,-6mm) {};
+  \foreach \xy in {(-3mm,3mm),(-1mm,1mm),(1mm,-1mm),(3mm,-3mm)}
+    \fill \xy circle (0.75mm) ;
+\\
+  \coordinate (b1) {};
+&
+  \node (b2) [draw=none,fill=gray,shape=circle,outer sep=0pt] {};
+&
+  \node (eve) {Eavesdropping\\router};
+&
+  \node (cloud) [cloud,aspect=2] {\strut};
+&
+\\
+&
+&
+&
+&
+  \node (d1) [shape=circle] at (6mm,6mm) {};
+  \node (d2) [shape=circle,draw=none] at (4mm,4mm) {};
+  \node (d3) [shape=circle,draw=none] at (2mm,2mm) {};
+  \node (d4) [shape=circle,draw=none] at (0mm,0mm) {};
+  \node (d5) [shape=circle,draw=none] at (-2mm,-2mm) {};
+  \node (d6) [shape=circle,draw=none] at (-4mm,-4mm) {};
+  \node (d7) [shape=circle] at (-6mm,-6mm) {};
+  \foreach \xy in {(-3mm,-3mm),(-1mm,-1mm),(1mm,1mm),(3mm,3mm)}
+    \fill \xy circle (0.75mm) ;
+\\
+};
+\node (b2l) [draw=none,anchor=base west,inner sep=0pt]
+  at ($(b2.north)+(2mm,8mm)$) {\textit{0--2 hops}};
+\draw (b2l.south west) edge ($(b2.north)+(0,0.5mm)$) ;
+
+\foreach \n in {a1,a2,a3,a4} \draw (\n.east) edge (b1) ;
+\draw ($(a1.east)!0.5!(a2.east)$) edge (b1)
+      ($(a3.east)!0.5!(a4.east)$) edge (b1) ;
+
+\draw (b1) edge (b2)
+      (b2) edge (eve)
+      (eve) edge (cloud) ;
+\foreach \n in {t1,t2,t3,t4} \draw (cloud) edge (\n) ;
+\foreach \n in {d1,d2,d3,d4,d5,d6,d7} \draw (cloud) edge (\n);
+\draw [decorate,decoration={brace,amplitude=2mm}]
+  ($(t1.north)+(0,1mm)$) -- ($(t4.east)+(1mm,0)$) ;
+\draw [decorate,decoration={brace,amplitude=2mm}]
+  ($(d1.east)+(1mm,0)$) -- ($(d7.south)+(0,-1mm)$) ;
+\node [draw=none,anchor=south west] at ($(t1)!0.5!(t4) + (3mm,3mm)$)
+ {Sites of interest\\(1000--100\,000 \emph{pages})}
+;
+\node [draw=none,anchor=north west] at ($(d1)!0.5!(d7) + (1mm,-1mm)$)
+ {Ignored sites\\($\sim$10\,billion \emph{pages})}
+;
+\end{tikzpicture}%
+\caption{Our proposed realistic topology for fingerprinting attacks.}%
+\label{f:real.topology}%
+\end{figure*}
+
 
 Nearly all of the existing research on website fingerprinting has been
 carried out in what we might call a laboratory environment.
 Specifically, regardless of the attacker's goals (within-site,
 identify-site, identify-user), experiments have been conducted using
-roughly the network topology shown in figure~\ref{f:labtopology}.
+roughly the network topology shown in figure~\ref{f:lab.topology}.
 Relative to the conditions an attacker “in the field” would likely
 encounter, this configuration is simplified in three ways.  The
 topology is \emph{fixed} for the course of the experiment; the
@@ -82,4 +241,4 @@ are often a stock set of “chrome” wrapped around a blob of text.
 
 To develop more realistic threat models for fingerprinting, we must
 first consider the adversary's goals.  \todo{one of the early papers
-did discuss this a bit}  
+did discuss this a bit}
