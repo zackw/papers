@@ -67,11 +67,12 @@ established end-to-end, so the relays themselves cannot observe
 message contents.  This design originates with \textcite{chaum1981mix}
 and will be discussed in more detail below.
 
-Finally, \emph{unobservable} traffic is indistinguishable from
-background chatter, so an adversary cannot be sure whether any given
-station is talking to \emph{anyone}.  Unobservability represents an
-ideal; although there are a few proposals, no unobservable protocol
-has been made practical.  \todo{expand}
+Finally, \emph{unobservable} traffic is (computationally)
+indistinguishable from background chatter, so an eavesdropper cannot tell
+whether any given station is talking to \emph{anyone}.
+Unobservability represents an ideal; although there are a few
+proposals, no unobservable protocol has been made practical.
+\todo{expand}
 
 \subsection{Attacking Unlinkability}
 
@@ -152,7 +153,22 @@ browsing a particular website, and attempts to learn something about
 what they're doing there.  This we shall call the \emph{within-site}
 attack.  Within-site attacks may be applied to either sort of
 unlinkable channel, but unlike identify-site attacks, they are also
-relevant to the default \emph{overt} channel used by HTTPS.
+relevant to the default \emph{overt} channel used by HTTPS.  They come
+in two major subclasses.  \emph{Identify-user} attacks seek to
+identify the social network profile belonging to the user doing the
+browsing, assuming the adversary doesn't already know this from the
+client's IP address.  This can be done, for instance, if users'
+profile photos in aggregate are considered public data; \emph{which}
+profile photo is linked from a given page is supposed to be secret,
+but the photos tend to have unique file sizes, so the adversary can
+simply match them against a
+database.~\cite{herrmann2012analyzing,pironti2012identifying}
+\emph{State-tracing} attacks seek to extract confidential information
+from the sequence of observable state transitions in a Web
+application.  For instance, reconstructing the sequence of questions
+presented by a tax-preparation website may reveal the target's
+approximate income, marital status, and other such highly confidential
+data.~\cite{zhang2010sidebuster}
 
 \subsection{HTTP's Network Behavior}
 

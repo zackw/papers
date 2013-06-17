@@ -57,7 +57,7 @@
 &
   \node (cloud1) [cloud,aspect=2] {\textit{5--10 hops}};
 &
-  \node (eve) {Eavesdropping\\backbone router};
+  \node (eve) {Backbone router\\with IP blacklist};
 &
   \node (cloud2) [cloud,aspect=2] {\textit{5--10 hops}};
 &
@@ -96,12 +96,11 @@
 \node [draw=none,anchor=south west] at ($(t1)!0.5!(t4) + (3mm,3mm)$)
  {Blocked sites\\(100--10\,000 servers)}
 ;
-\node [draw=none,anchor=north west] at ($(d1)!0.5!(d7) + (1mm,-1mm)$)
- {Ignored sites\\($\sim$50\,000\,000 servers)}
+\node [draw=none,anchor=north west] at ($(d1)!0.5!(d7) + (0mm,-1mm)$)
+ {Ignored sites\\($\sim$500\,000\,000 servers)}
 ;
 \end{tikzpicture}%
-\caption{The usual hypothetical topology for censorship
-  circumvention.}%
+\caption{Model topology for large-scale network censorship.}%
 \label{f:cens.topology}%
 \end{figure*}
 
@@ -186,56 +185,84 @@
 \label{f:real.topology}%
 \end{figure*}
 
-
 Nearly all of the existing research on website fingerprinting has been
 carried out in what we might call a laboratory environment.
 Specifically, regardless of the attacker's goals (within-site,
 identify-site, identify-user), experiments have been conducted using
 roughly the network topology shown in figure~\ref{f:lab.topology}.
-Relative to the conditions an attacker “in the field” would likely
-encounter, this configuration is simplified in three ways.  The
-topology is \emph{fixed} for the course of the experiment; the
-targeted client does not move around in the network, and it always
-uses the same initial unlinkability relay.  (The latter of these is
-more realistic than the former.  Proxy servers tend to have stable IP
-addresses, and Tor clients choose a small set of “guard” nodes to use
-for all connections, changing them only at long intervals.)
+This topology is static; it does not change over the course of the
+experiment.  There is only one traffic source, the targeted client,
+and it is directly connected to the eavesdropping router.  The
+unlinkability relay(s) are all on the far side of this router.  The
+set of HTTP requests that the client might make is small and fixed.
+For identify-site attacks, most of the literature attempts to
+discriminate the front pages of a few hundred servers.  For
+within-site attacks, there is only one server, and a similar number of
+pages on that server are considered.  (Identify-user attacks have
+historically been at larger scale than state-tracing attacks.)
 
-Also, the eavesdropping router sees \emph{only one traffic source},
-the targeted client.  This may seem like a valid assumption, as the
-attacker may well conduct their eavesdropping one network hop from the
-target.  Modern WiFi hubs, DSL modems, and the like are full-fledged
-computing platforms, running poorly-secured management software, which
-could be exploited to install a monitor---if it isn't already present
-in the factory install; lately telcos are notorious for spying on
-their customers.\needcite{???}  However, these devices are installed
-for the use of an entire household (1--10 people) or office (10--50
-people), or as a public amenity, say at a café (20--100 people at any
-given time).  Even if there is only one client \emph{computer} ever
-connected via the eavesdropping router, that computer is likely to
-generate HTTP traffic which is uninformative regarding the target
-\emph{human}: automatic software updates, for instance, are carried
-out over HTTP nowadays.  If the eavesdropper is more than one hop from
-the target, their situation is even worse: each IP address sending
-them traffic could conceal dozens of clients behind a NAT gateway.
-(NAT can be detected~\cite{elie2005timestamp,krmivcek2009netflow} but
-that doesn't help the adversary decide which packet streams to pay
-attention to.)
+Website fingerprinting is often discussed in the same breath as
+large-scale surveillance and/or censorship of the global network, so
+it is useful to contrast the usual assumed topology for that, shown in
+figure~\ref{f:cens.topology}.  Note the enormously larger scale.
+Country-scale “filtering” of the Internet must be enforced against
+millions of clients, and must consider \emph{all} servers worldwide as
+potential sources of undesirable material.  The number of servers that
+actually do carry undesirable material is much smaller, and only some
+of those come to the notice of the censor, but it is still a long
+list.  Thus, country-scale censors are limited to lightweight
+strategies for real-time blockade, such as IP address and keyword
+blacklists on backbone routers.  More sophisticated techniques, such
+as active probes for circumvention tools, are applied only when some
+lightweight detection strategy triggers for a particular address, and
+may take hours to react.~\cite{aase2012whiskey}~\needcite{active probe
+  Tor thingy}
 
-Finally, and perhaps most significantly, the set of servers that the
-target might attempt to contact is \emph{small} and \emph{fixed}.  The
-largest study to date~\todo{Sun et al?} considered a universe of the
-20,000 most frequently contacted servers as recorded by a departmental
-Web proxy.  Contrast the 670,000,000 distinct websites reported in
-June 2013 by
+Fingerprinting is intrinsically heavier-weight than may be practical
+on a backbone router.  General-purpose machine learning algorithms, as
+used by most of the literature, have not been designed to run under
+realtime constraints; even deliberately low-cost techniques,
+e.g.\ that suggested in passing in~\cite{weinberg2012stegotorus},
+require TCP stream reconstruction.  We suggest that a more plausible
+location for a fingerprinting eavesdropper is a network hub near, but
+not necessarily adjacent to, the target.  Unlike backbone routers,
+these devices tend to be over-provisioned for the amount of traffic
+they carry, so they have the headroom to run more elaborate analyses.
+Also unlike backbone routers, they are built on general-purpose,
+familiar computing environments (such as Linux or NetBSD) and their
+management interfaces are more likely to be remotely exploitable to
+install malware.\needcite{???}  However, network hubs, even at the
+very edge of the network, are installed for the use of an entire
+household (1--10 people) or office (10--50 people), or as a public
+amenity, say at a café (20--100 people at any given time).  Even if
+there is only one client \emph{computer} ever connected via the
+eavesdropping router, that computer is likely to generate HTTP traffic
+which is uninformative regarding the target \emph{human}: automatic
+software updates, for instance, are carried out over HTTP nowadays.
+If the eavesdropper is more than one hop from the target, their
+situation is even worse: each IP address sending them traffic could
+conceal dozens of clients behind a NAT gateway.  (NAT can be
+detected~\cite{elie2005timestamp,krmivcek2009netflow} but that doesn't
+help the adversary decide which packet streams to pay attention to.)
+
+This brings us to the topology in figure~\ref{f:real.topology}.
+
+
+The largest study to date~\cite{sun2002statistical} considered a
+universe of the 20,000 most frequently contacted servers as recorded
+by a departmental Web proxy.  Contrast the 670,000,000 distinct
+websites reported in June 2013 by
 Netcraft\footnote{\url{http://news.netcraft.com/archives/2013/06/06/june-2013-web-server-survey-3.html}}
 or even the 100,000 sites which are sufficiently popular to have
-stable Alexa rankings\footnote{\url{http://www.alexa.com/faqs/?p=134}}.
+stable Alexa
+rankings\footnote{\url{http://www.alexa.com/faqs/?p=134}}.
+
 Furthermore, only studies focusing on the contents of a \emph{single}
 server investigate pages other than the “front page” of each server,
 Front pages, which express the site's corporate identity, are
 plausibly more different from each other than internal pages, which
 are often a stock set of “chrome” wrapped around a blob of text.
+
 
 \subsection{The Adversary's Goals}
 
