@@ -279,11 +279,19 @@ drawing on sources beyond the Alexa top $N$'s front pages, such as:
 \end{itemize}
 
 \paragraph{How practical is it to conceal within-site details via
-  application layer countermeasures?} This would be a detailed case
-study, probably on Wikipedia (since I have contacts).  Develop a
-threat model, enumerating all potentially-sensitive pieces of
-information that might be revealed via traffic analysis (not just via
-message length), such as:
+  application layer countermeasures?} While there are concrete
+proposals for semi-automated detection and masking of “side channels”
+(including resource length) in Web
+applications~\cite{backes2013sidechannel, chapman2011automated,
+  zhang2010sidebuster}, to our knowledge no one has attempted to
+deploy them on a large public website.  We are considering a detailed
+case study of such a deployment, probably on Wikipedia (whose
+developers have indicated interest in aggressive anti-surveillance
+measures).
+
+It would first be necessary to produce a threat model, enumerating all
+potentially-sensitive pieces of information that might be revealed via
+traffic analysis (not just via message length), such as:
 
 \begin{itemize}
 \item Which page is being visited?
@@ -294,85 +302,129 @@ message length), such as:
 \item Is this IP address making edits?
 \item Is this IP address accessing WP as a logged-in user? Do they
   have administrative privileges?
-\item Probably more.
 \end{itemize}
 
-And explore ways to conceal them, such as:
+We would then explore ways to conceal this information.  Some things
+can be done immediately, such as deployment of SPDY, which (at least
+theoretically) eliminates the strict turn-taking pattern of HTTP and
+therefore should make the pattern of subresource loads for each page
+less obvious; with some tuning, it might be possible to eliminate that
+pattern entirely.  Other simple changes to server configuration should
+also help, such as making sure that the HTTP request and response
+headers do not change size upon login.  The main project, though,
+would be (with the assistance of the Wikimedia organization) to
+implement, test, and deploy a scheme for automated dataset-aware
+padding of encyclopedia pages.  This would not necessarily make
+\emph{all} of the pages indistinguishable, but it would ensure that
+there were enough possibilities for each page load that learning
+anything interesting from each event was infeasible.  It could also
+make sense to precache resources that might or might not be needed,
+such as scripts and style sheets for the page editor, in order to
+disguise whether the editor was ever used.  (Note however that it may
+be infeasible to hide the fact that an IP address has just made an
+edit, since this intrinsically involves transmitting the new text to
+the server, so the HTTP request cannot help but be larger than
+normal.)
 
-\begin{itemize}
-\item SPDY (at least theoretically should mask resource loads)
-\item Other adjustments to server configuration (e.g.\ make sure
-  response headers do not change length upon login)
-\item Automated, dataset-aware padding
-\item Precaching of resources that may or may not actually get used
-  (e.g.\ JS for editor)
-\end{itemize}
+\paragraph{Can we bake traffic-analysis resistance into the next
+generation of Internet protocols?}  It is probably not feasible to
+eliminate traffic analytic attacks on the present generation of
+Internet protocols.  There are too many ways in which critical state
+is exposed to the network, and too many basic mechanisms can barely
+handle the amount of security that's already been bolted onto them.
+The next-generation protocols currently being designed
+(e.g. XIA~\cite{xia2013xia}) treat security as a principal design
+goal, and we expect it will be easier to explore \emph{generic}
+(without application-layer support) traffic analysis resistance in
+this context.
 
-\paragraph{Can we bake unobservability, or at least unlinkability,
-  guarantees into the next generation of Internet protocols?}
+This is an open ended exploratory project.  We will limit its scope to
+document publication and retrieval, primarily because this application
+is more latency-tolerant than anything related to real-time
+conversations (chat, VoIP, etc.) and secondarily because this is the
+principal battlefield for online censorship and surveillance.  Note
+that we are not giving up much; the existing capabilities of the “Web
+platform” already permit construction of applications with nearly all
+logic on the client side, the server only acting as a distribution
+point for static data, and planned additional features will only make
+this easier.  In fact, moving logic to the client automatically
+reduces users' exposure to traffic analysis: for instance, it would
+not be nearly as easy to extract information from a tax-preparation
+application if its logic was transmitted to the client all at once,
+and only the finished paperwork was sent back, instead of a long
+sequence of questions and answers being sent over the network one at a
+time.
 
-Plans already on the table include content addressing, aggressive
-caching (auto-CDN), ubiquitous encryption.
+Publish-retrieve systems with some degree of anonymity, censorship
+resistance, and/or surveillance resistance have been proposed before;
+designs of note include Free Haven~\cite{dingledine2000freehaven},
+Tangler~\cite{waldman2001tangler}, and the Eternity
+Service~\cite{anderson1996eternity, benes2001strongeternity}. So far
+none has achieved wide deployment, and some have been found to have
+serious flaws~\cite{kugler2003gnunet}.  Distributed caches can reveal
+retrieval history; even when caches are not supposed to be able to
+learn decryption keys for the content they hold, as
+in~\textcite{serjantov2002anonymizing}, keyword searches for
+undesirable content can finger caches that hold it, and thus the users
+that might have retrieved it.
 
-Limit scope to document publication; power of Web browser platform
-means this isn't giving up much (and relying on client-side logic
-rather than smart servers may itself improve matters)
+However, the basic notion of distributed storage for self-validating,
+content-addressed material seems sound, and presents a number of
+desirable affordances: The threat models and designs in this space
+typically do include explicit consideration of retrieval anonymity and
+censorship and surveillance resistance.  Opportunistic retrieval and
+caching (or validation) offer a degree of unobservability, by offering
+a node plausible deniability as to whether any given data object was
+retrieved by a human.  Tangler in particular suggests a way toward
+genuinely oblivious caching, i.e.\ the presence of a particular
+encrypted blob in a cache need not reveal that a particular document
+has ever been retrieved through that cache (even if the adversary
+knows \emph{some} of the documents that that blob can produce).
+Finally, although it is not directly related to the question of
+traffic analysis, these systems all build on a notion of signing keys
+for content, which could supersede the Web's creaky scheme of
+certificate authorities (as long as some method can be found to
+name these keys which isn't inscrutable to humans).
 
-Extensive existing literature on publish/retrieve systems with
-anonymity in mind (Freehaven, Tangler, ...)
+\section{Social Considerations}
 
-Affordances:
+We are also concerned with what the “new” Web, providing (let us
+suppose) true anonymity for readers, strong pseudonymity for authors,
+and strong guarantees that content once published cannot be removed,
+will look like as a social phenomenon.  In particular, the
+\emph{present} online culture has tendencies toward groupthink, abuse
+of outsiders, and general hostility toward anyone who looks like a
+tempting target. One might argue that “baking in” masks for everyone
+to hide behind will only make all of this worse.
 
-Opportunistic retrieval and caching (or validation) conceals
-human-directed traffic
+We first observe that no technical measure can hope to distinguish
+“legitimate” political speech from harassment of private citizens from
+straight-up trolling with certainty.  Merely deciding whether or not a
+document expresses a negative opinion, in the general case, is an
+AI-complete problem.\footnote{By analogy to NP-completeness,
+  “AI-complete” refers to problems that, if solved in software, would
+  imply that a human-equivalent artificial intelligence had been
+  created.}  Creating a network that would somehow prevent online
+abuse without also chilling political speech acts is \emph{harder}
+than AI-complete: even if we had the necessary AI, who would get to
+decide what policy it would apply?  Consider that one person's idea of
+a legitimate political cartoon may be another person's idea of
+\textit{lèse-majesté} or blasphemy.
 
-Signing keys for content could supersede creaky CA system
+However, we do not think the situation is hopeless.  Spam filters are
+not perfect, but do a good enough job to be useful, especially in
+conjunction with human moderation.  The same statistical and heuristic
+techniques could be applied to filter out trolls and bullies.
+Further, content filters and moderation are not intrinsically
+unethical; what is problematic from a freedom-of-speech perspective is
+when they are imposed on individuals who would prefer not to have
+them, or when they are used to punish the authors of controversial
+content.  We suggest that the application layer could offer different
+views of the same site to all visitors, allowing them to pick their
+desired level of curation.  Exactly how this would work is beyond the
+scope of the present proposal, but we are interested in developing it
+further, down the road.
 
-Tantalizing possibilities toward oblivious caching (Tangler, that
-other one)
-
-Explicit attention to censorship frustration in at least some threat
-models.
-
-But:
-
-Caches reveal retrieval history
-
-Keyword searches for undesirable content can finger users who
-retrieved the same thing
-
-Names become inscrutable
-
-\section{Ethical Considerations}
-
-Claim: any system that affords censorship-resistant publication will
-also afford abuse of individuals through unwanted publicity. No
-technical measure can distinguish “legitimate” political speech from
-harassment of private citizens from straight-up trolling with
-certainty.  It's worse than an AI-complete problem; even assuming we
-had human-equivalent AI, who gets to define the AI's ethics?
-
-(give examples of controversial content)
-
-Claim: situation is not totally hopeless:
-
-- Spam filters are not perfect, but do a good enough job to be useful,
-esp. in conjunction with human moderation.  No reason the same
-statistical and heuristic techniques could not be applied to filter
-out trolls and bullies.
-
-- Content filters and moderation are not intrinsically unethical; what
-is problematic from a freedom-of-speech perspective is when they are
-imposed on individuals who would prefer not to have them, or when they
-are used to punish the authors of controversial content.
-
-- Application layer protocols could be designed to permit multiple
-views of the same site: pick your desired level of curation.
-
-This is all beyond the scope of the present research program, but
-could become relevant down the road.
-
-\clearpage
 \printbibliography
 
 \end{document}
