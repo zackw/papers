@@ -1,0 +1,378 @@
+\documentclass{zarticle}
+\addbibresource{proposal.bib}
+\addbibresource{../fp-review-full/fp-review.bib}
+\definecolor{todocolor}{RGB}{127,0,0}
+\def\todo#1{{\color{todocolor}\bfseries [#1]}}
+\def\needcite#1{\todo{cite: #1}}
+\begin{document}
+
+\title{Thesis Proposal --- DRAFT}
+\author{Zachary Weinberg}
+\maketitle
+
+\begin{abstract}
+Traffic analysis is specifically excluded from the standard threat
+model for a secure channel.  We claim that this has become
+unrealistic, and that failure to include traffic analysis in the
+threat model leads to exploitable vulnerabilities “in the wild.”  We
+propose to study these vulnerabilities and develop countermeasures.
+\end{abstract}
+
+\section{Background}
+
+\emph{Traffic analysis} is the craft of extracting information from a
+secure channel, using whatever data is still observable despite
+encryption. Often this is metadata, such as the source, destination,
+establishment time, and duration of the connection, and the protocol
+in use.  In a typical modern packet-switched network, it is also
+possible to observe when each individual packet is sent and the size
+of its encrypted payload, and to perform TCP stream reassembly.  The
+adversary may also be able to correlate observations of network
+traffic at more than one point in the topology, or to correlate
+network events with other events.  For instance, if the adversary
+observes a large client-server upload to
+\textsf{commons.wikimedia.org} at the same time as a new image appears
+on that site, they may deduce that the image was uploaded by the
+client under observation.
+
+Traffic analysis has been practiced since the Great Game of the 19th
+century, if not longer, but came into its own with the use of radio
+for military communications in World War I.  French intelligence was
+able to locate German encampments via radio direction finding, and
+identify transmissions as originating from HQ, infantry, or cavalry
+divisions because each produced a different volume and pattern of
+traffic.  In the Pacific theater of World War II, both sides were able
+to make educated guesses at upcoming naval maneuvers from radio
+traffic volume, changes in callsigns, time correlation of signals, and
+so on.~\cite{kahn1967codebreakers}
+
+Nowadays, traffic analysis is more often applied to messages on a
+network of some sort.  Felten~\cite{felten2013decl} observes that the
+mere fact of a call placed to certain special-purpose telephone
+numbers reveals “basic and often sensitive” information about the
+caller.  There are dedicated support hotlines for survivors of
+domestic violence, people considering suicide, and sufferers from
+various forms of addiction; there are also lines dedicated to
+anonymously reporting government misconduct, tax fraud, illegal
+firearms, and other crimes.  If phone call records are analyzed over
+time, they reveal the “social graph” and can even indicate the nature
+of personal connections; Felten observes that regular late-night phone
+calls suggest a long-distance intimate relationship.  The “dragnet”
+surveillance programs (PRISM, X-KEYSCORE, etc.)\ recently revealed to
+be conducted by the United States' intelligence
+apparatus~\cite{greenwald2013nsa} rely on traffic analysis as a
+first-stage filter: phone numbers registered outside the USA, calls to
+people known to have called people on various “watch lists,” apparent
+use of encryption, etc.\ all trigger more aggressive data collection.
+
+\subsection{Unlinkability}
+
+Because it is so easy to extract information from the source and
+destination of encrypted communications, protocols have been developed
+specifically to conceal this information.  In addition to all the
+properties of a secure channel, an \emph{unlinkable} channel protocol
+seeks to ensure that no eavesdropper at a single point in the network
+can learn \emph{both endpoints} of the channel.  That is, no
+eavesdropper can tell that Alice is talking to Bob over an unlinkable
+channel, but eavesdroppers can still tell that Alice and Bob are
+talking to \emph{someone}.  (This definition is due to
+Pfitzmann~\cite{pfitzmann2010terminology}.  Whether or not active
+attackers are considered depends on the writer.)
+
+The standard technique for providing unlinkability, invented by
+Chaum~\cite{chaum1981mix}, is to pass each message through one or more
+“relays,” layering encryption so that each relay only knows the
+preceding and next link in the chain. One relay is enough against most
+eavesdroppers, but provides no protection if the relay itself is
+malicious; operators of popular single-hop “proxy services” or
+“anonymous remailers” may, and indeed have, come under coercion to
+expose their users.~\cite{newman1996church,
+  singel2007hushmail,ackerman2013lavabit} Similarly, a two-hop chain
+is vulnerable to a pair of cooperating malicious relays.  In
+principle, a three-hop chain is secure unless the adversary controls a
+significant fraction of the network, and more hops only add
+overhead~\cite{wright2002analysis, wright2003defending}.
+
+Chaum's original design was geared for email, so it imposed
+significant delays at each relay in order to conceal the exact time of
+each message.  This delay is unacceptable for interactive applications
+(such as online chat and Web browsing), and the current generation of
+“low latency” unlinkable services, such as
+Tor~\cite{dingledine2004tor}, deliberately omit it.  This opens an
+avenue for “intersection” attacks by adversaries who \emph{do} control
+a significant fraction of the network, or who can observe traffic at
+many points in the network; these are formally out of scope, but have
+still received a good deal of attention in the literature,
+e.g.~\cite{danezis2003statistical, danezis2004continuous,
+  danezis2005statistical, danezis2007twosided, murdoch2007sampled,
+  shmatikov2006timing, overlier2006locating} Defenses against these
+attacks are still being researched, although a few simple tactics have
+been deployed, such as “guard nodes”~\cite{overlier2006locating}: the
+attacks are most effective if a malicious node is directly connected
+to a client, so by always beginning one's chains with the same node
+for an extended period, one avoids having any of one's traffic be
+exposed to a malicious node (assuming that the initial choice is
+sound).
+
+\subsection{Confidentiality of Message Length}
+
+The standard mathematical definition of “confidentiality” assumes that
+all messages are the same length.  In practice, this is not true, and
+as recently demonstrated~\cite{duong2012crime,gluck2013breach}, that
+permits serious active attacks on protocols that compress data before
+encryption.  But even a pure eavesdropper can learn something from the
+size of a message.
+
+HTTP (over any secure channel, unlinkable or not) is particularly
+vulnerable to this attack because it exhibits strict turn-taking
+behavior: a single TCP connection can be reused for several
+query-response pairs, but the client cannot begin a new query until it
+has received the complete response to its previous query, nor can the
+server begin a response before the query is fully
+received.\footnote{HTTP 1.1 includes a \emph{pipelining} mechanism
+  that lifts this restriction, but unlike the rest of protocol 1.1,
+  pipelining has never seen wide adoption.  In the past few years,
+  radical revisions of HTTP which also lift this restriction, such as
+  Google's SPDY, have been proposed and adopted to some extent; we are
+  not aware of any research into how this changes the situation for an
+  eavesdropper.}  Thus, the approximate length of each request and its
+corresponding response is apparent to an eavesdropper capable of TCP
+stream reconstruction.  Furthermore, most web pages incorporate by
+reference a set of “resources,” such as images, style sheets, and
+scripts, which must be loaded in separate HTTP transactions (unless
+cached); thus two pages of approximately the same length may be
+distinguishable because they refer to different resource sets.
+
+We will give three examples of concrete breaches of confidentiality
+via message length analysis.  All these attacks assume an adversary
+eavesdropping directly, or perhaps at one or two hops' remove, upon a
+specific, known target user who is browsing the Web.  The simplest
+attack observes that the vast majority of Facebook and Google profile
+images have a unique size.  Detecting the HTTPS request for this
+image, and measuring its length, thus permits an eavesdropper to
+associate a particular social-network identity with a particular IP
+address.~\cite{herrmann2012analyzing, pironti2012identifying} A more
+sophisticated “state tracing” attack seeks to reconstruct a sequence
+of page loads from the lengths of HTTPS traffic bursts.  Since the
+structure of a public website is known to the attacker, this reveals
+how the targeted user is interacting with the site.  Applied to a
+search engine, this can reveal queries~\cite{castelluccia2010private};
+applied to a tax-preparation website, this can reveal the target's
+approximate income, marital status, and other such highly confidential
+data.~\cite{zhang2010sidebuster} Finally, if the targeted user is
+browsing the Web via an unlinkable channel, an eavesdropper may be
+able to identify the \emph{site} that is being accessed from the
+pattern of response sizes.  This possibility has received substantial
+attention in the literature, e.g.~\cite{cai2012touching,
+  cheng1998traffic, coull2007web, dyer2012peekaboo} but it is unclear
+to us whether it can be scaled from these laboratory experiments
+(typically covering at most a few thousand sites' front pages) to the
+entire Web.
+
+The basic defense against an eavesdropper extracting information from
+message length is, of course, to pad messages.  However, if done
+poorly, padding won't help at all; for instance, padding each packet
+up to the nearest multiple of 512 or 1024 bytes adds only a trivial
+amount of uncertainty to the length of a much longer message.  If done
+more thoughtfully, padding can help, but often at unacceptable cost in
+transmission time.  The best known techniques rely on
+application-layer knowledge of the full dataset whose members are to
+be indistinguishable (or clustered into indistinguishable
+groups).~\cite{chen2010side, mather2012pinpointing,
+  backes2013sidechannel} While this may be practical for
+e.g.\ Facebook to apply to all its profile photos, it is no “magic
+bullet” that will fix all the sites on the net.  (Compare the notion
+of ideal steganography~\cite{hopper2009provably}; it works great
+provided you know the true distribution of covertexts, which in
+practice can't even be modeled well.)
+
+\subsection{Unobservability}
+
+An \emph{unobservable} protocol would have the property that no
+eavesdropper could tell that anyone was talking at all.  This is a
+very strong property, approached by some physical radio
+encodings~\cite{pickholtz1982theory,yu2007dsss} but not actually
+achieved when there is any cleartext structure to the data
+transmitted~\cite{jia2013blind}, or if all transmitters don't
+continuously broadcast at maximum gain (which is obviously
+undesirable).  In packet networks, where it is not \emph{possible} for
+all nodes to transmit continuously all the time, unobservability is
+generally not even considered.  A weaker definition is for no
+eavesdropper to be able to tell whether any node is the
+\emph{originator} of a message.  Even this weaker notion, at least to
+date, requires too much “dummy” traffic to be considered practical,
+and the topic has been neglected.
+
+Unobservability, in the strong sense, is the only theoretically-sound
+defense against an arbitrarily powerful traffic-analytic attacker,
+so we suggest that the topic should be revisited, with specific
+attention to whether the weak definition will suffice against
+realistic attackers, and how much of that “dummy” traffic can be made
+to be useful.
+
+\section{Research Questions}
+
+We propose to investigate the extent to which traffic analysis really
+does destroy confidentiality, and how practical it is to do something
+about it.  Concretely, we plan to investigate the following three
+questions.
+
+\paragraph{To what extent does size-and-timing analysis destroy
+  confidentiality?}  As discussed above, this has been studied to some
+extent, but mostly in “laboratory” settings.  The most concrete
+results are all to do with single sites: learning search queries, user
+profile images, answers to questions on a question-and-answer site
+(e.g.\ for tax preparation).  Except for profile images, these involve
+active interaction with the site.  One avenue for further exploration
+would be to study whether “passive” browsing on a large, complicated
+site reveals interesting things about the user.  Wikipedia has lots of
+innocuous articles, a fair number that one might be embarrassed to
+admit one has read, and a handful that are so politically or
+culturally sensitive that they cannot even be referred to in some
+circles.  If these pages (or clusters of pages) can be distinguished
+by content length or detailed packet timings, that enables the
+adversary to learn something interesting.  Similarly, social-blogging
+sites such as Tumblr carry an enormous range of content, with op-ed
+columns, art, kittens, personal journals, and pornography all jumbled
+up together.  Facebook is complicated enough that it is likely to
+present a radically different network traffic profile for different
+logged-in users.  (No study to date has looked at logged-in users in
+detail.)
+
+When an unlinkable channel is used, the adversary needs to identify
+the site being accessed before they can do any of the above, and it
+may be enough for them to know that a particular site is being
+accessed.  (Existing “Internet filtering” programs, however motivated,
+rely on blocking of entire websites as their principal
+tactic.~\cite{aase2012whiskey}) While this too has been studied, it
+has not been studied in what we would consider a realistic
+\emph{field} setting.  Specifically, most of the literature attempts
+to discriminate the front pages of a few hundred servers, and examines
+only one traffic source, whereas country-scale “filtering” applies to
+millions of clients and and must consider \emph{all} servers worldwide as
+potential sources of undesirable material.  The number of servers that
+actually do carry undesirable material is much smaller, and only some
+of those come to the notice of the censor, but the list still
+potentially extends to tens of thousands of addresses.  Furthermore,
+front pages, which express the site's corporate identity, are
+plausibly more different from each other than internal pages, which
+are often a stock set of “chrome” wrapped around a blob of text.
+
+As a first step toward a more realistic field study of site
+identification, we propose to assess a much larger sample of sites,
+drawing on sources beyond the Alexa top $N$'s front pages, such as:
+
+\begin{itemize}
+\item URL shorteners contain links to material that people thought
+  worth publicizing, indiscriminately as to topic.  (It will probably
+  be necessary to manually categorize the material.)
+\item “Scraping” sites operated for the specific purpose of sharing
+  links of interest, often with categorization, such as Digg, Reddit,
+  Metafilter, and (some areas of) 4chan.
+\item Special-purpose directories of sites, such as the Hidden Wiki,
+  which lists sites operated as Tor hidden services (hidden services
+  conceal the identity of the site operator, so these sites are more
+  likely than the average to carry controversial content).
+\item Programmatically traversing internal and external links on sites
+  revealed by all of the above.
+\item Exhaustive “crawls” of sites of particular interest, e.g.\ Wikipedia.
+\end{itemize}
+
+\paragraph{How practical is it to conceal within-site details via
+  application layer countermeasures?} This would be a detailed case
+study, probably on Wikipedia (since I have contacts).  Develop a
+threat model, enumerating all potentially-sensitive pieces of
+information that might be revealed via traffic analysis (not just via
+message length), such as:
+
+\begin{itemize}
+\item Which page is being visited?
+\item Which \emph{category} of page (main, Talk:, User:, etc; topic
+  clusters) is being visited?
+\item What language? (Currently exposed via server hostname, but might
+  not be forever.)
+\item Is this IP address making edits?
+\item Is this IP address accessing WP as a logged-in user? Do they
+  have administrative privileges?
+\item Probably more.
+\end{itemize}
+
+And explore ways to conceal them, such as:
+
+\begin{itemize}
+\item SPDY (at least theoretically should mask resource loads)
+\item Other adjustments to server configuration (e.g.\ make sure
+  response headers do not change length upon login)
+\item Automated, dataset-aware padding
+\item Precaching of resources that may or may not actually get used
+  (e.g.\ JS for editor)
+\end{itemize}
+
+\paragraph{Can we bake unobservability, or at least unlinkability,
+  guarantees into the next generation of Internet protocols?}
+
+Plans already on the table include content addressing, aggressive
+caching (auto-CDN), ubiquitous encryption.
+
+Limit scope to document publication; power of Web browser platform
+means this isn't giving up much (and relying on client-side logic
+rather than smart servers may itself improve matters)
+
+Extensive existing literature on publish/retrieve systems with
+anonymity in mind (Freehaven, Tangler, ...)
+
+Affordances:
+
+Opportunistic retrieval and caching (or validation) conceals
+human-directed traffic
+
+Signing keys for content could supersede creaky CA system
+
+Tantalizing possibilities toward oblivious caching (Tangler, that
+other one)
+
+Explicit attention to censorship frustration in at least some threat
+models.
+
+But:
+
+Caches reveal retrieval history
+
+Keyword searches for undesirable content can finger users who
+retrieved the same thing
+
+Names become inscrutable
+
+\section{Ethical Considerations}
+
+Claim: any system that affords censorship-resistant publication will
+also afford abuse of individuals through unwanted publicity. No
+technical measure can distinguish “legitimate” political speech from
+harassment of private citizens from straight-up trolling with
+certainty.  It's worse than an AI-complete problem; even assuming we
+had human-equivalent AI, who gets to define the AI's ethics?
+
+(give examples of controversial content)
+
+Claim: situation is not totally hopeless:
+
+- Spam filters are not perfect, but do a good enough job to be useful,
+esp. in conjunction with human moderation.  No reason the same
+statistical and heuristic techniques could not be applied to filter
+out trolls and bullies.
+
+- Content filters and moderation are not intrinsically unethical; what
+is problematic from a freedom-of-speech perspective is when they are
+imposed on individuals who would prefer not to have them, or when they
+are used to punish the authors of controversial content.
+
+- Application layer protocols could be designed to permit multiple
+views of the same site: pick your desired level of curation.
+
+This is all beyond the scope of the present research program, but
+could become relevant down the road.
+
+\clearpage
+\printbibliography
+
+\end{document}
