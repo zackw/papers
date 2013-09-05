@@ -45,26 +45,8 @@
 % Personal biblatex setup (not corresponding to anyone's house style)
 \RequirePackage[american]{babel}
 \RequirePackage{csquotes}
-\RequirePackage[bibstyle=numeric,citestyle=numeric,backend=biber,
-                sortcites=true,firstinits=true,maxbibnames=99,]{biblatex}
+\RequirePackage[bibstyle=numeric-web,citestyle=numeric,backend=biber,
+                sortcites=true,firstinits=true,maxbibnames=99]{biblatex}
 \renewcommand{\bibfont}{\footnotesize}
-
-% slight adjustments to the numeric citation style
-%\newcommand*{\textmulticitedelim}{\addsemicolon\space}
-%\renewbibmacro*{textcite}{%
-%  \iffieldequals{namehash}{\cbx@lasthash}
-%    {\textmulticitedelim}
-%    {\cbx@tempa
-%     \ifnameundef{labelname}
-%       {\printfield[citetitle]{labeltitle}}
-%       {\printnames{labelname}}%
-%     \addspace\bibopenbracket}%
-%  \ifnumequal{\value{citecount}}{1}
-%    {\usebibmacro{prenote}}
-%    {}%
-%  \usebibmacro{cite}%
-%  \savefield{namehash}{\cbx@lasthash}%
-%  \gdef\cbx@tempa{\bibclosebracket\textmulticitedelim}}
-
 
 \endinput
