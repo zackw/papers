@@ -1,4 +1,4 @@
-\documentclass{zarticle}
+\documentclass[twoside]{zarticle}
 \addbibresource{proposal.bib}
 \addbibresource{../fp-review-full/fp-review.bib}
 \definecolor{todocolor}{RGB}{127,0,0}
@@ -179,12 +179,19 @@ transmission time.  The best known techniques rely on
 application-layer knowledge of the full dataset whose members are to
 be indistinguishable (or clustered into indistinguishable
 groups).~\cite{chen2010side, mather2012pinpointing,
-  backes2013sidechannel} While this may be practical for
-e.g.\ Facebook to apply to all its profile photos, it is no “magic
-bullet” that will fix all the sites on the net.  (Compare the notion
-of ideal steganography~\cite{hopper2009provably}; it works great
-provided you know the true distribution of covertexts, which in
-practice can't even be modeled well.)
+  backes2013sidechannel} To our knowledge, no one has attempted to
+deploy these techniques in the field.  We expect that a large,
+well-staffed site could apply dataset-aware padding to high-value
+information (such as the profile images mentioned above) with a
+reasonable amount of effort.  However, development of “turnkey”
+software to enable anyone to fortify their site against message-length
+snooping with minimal effort will be more difficult, and may run up
+against unforeseen gaps between theory and practice.  Compare the
+notion of ideal steganography~\cite{hopper2009provably}, which is
+provably unbreakable, provided the sender knows the true distribution
+of covertexts.  In practice, this distribution can only be modeled
+crudely, so steganography as deployed in the field is quite
+weak~\cite{boehme2010steganalysis}.
 
 \subsection{Unobservability}
 
