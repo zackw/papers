@@ -1,4 +1,5 @@
-\documentclass[twoside]{zarticle}
+\documentclass[oneside]{zarticle}
+%\documentclass[twoside]{zarticle}
 \addbibresource{proposal.bib}
 \addbibresource{../fp-review-full/fp-review.bib}
 \definecolor{todocolor}{RGB}{127,0,0}
@@ -401,22 +402,22 @@ and strong guarantees that content once published cannot be removed,
 will look like as a social phenomenon.  In particular, the
 \emph{present} online culture has tendencies toward groupthink, abuse
 of outsiders, and general hostility toward anyone who looks like a
-tempting target. One might argue that “baking in” masks for everyone
-to hide behind will only make all of this worse.
+tempting target. “Baking in” masks for everyone to hide behind might
+only make all of this worse.
 
-We first observe that no technical measure can hope to distinguish
-“legitimate” political speech from harassment of private citizens from
-straight-up trolling with certainty.  Merely deciding whether or not a
-document expresses a negative opinion, in the general case, is an
-AI-complete problem.\footnote{By analogy to NP-completeness,
-  “AI-complete” refers to problems that, if solved in software, would
-  imply that a human-equivalent artificial intelligence had been
-  created.}  Creating a network that would somehow prevent online
-abuse without also chilling political speech acts is \emph{harder}
-than AI-complete: even if we had the necessary AI, who would get to
-decide what policy it would apply?  Consider that one person's idea of
-a legitimate political cartoon may be another person's idea of
-\textit{lèse-majesté} or blasphemy.
+We cannot expect the system to weed out groupthink, abuse,
+etc.\ automatically.  The simpler task of categorizing statements of
+opinion as positive or negative is intractable for computers, despite
+substantial research attention (recent surveys
+include~\textcite{liu2012mining,pang2008mining}).  It requires enough
+contextual information and background knowledge to be difficult even
+for humans, particularly when the content might be
+satirical~\cite{lamarre2009satire}.  Furthermore, one person's idea of
+fair political commentary may be another person's idea of
+\textit{lèse-majesté}, blasphemy, defamation, or trolling.  Including
+any fixed definition of “abuse,” perhaps even of “spam,” in the system
+would open an avenue for the very censorship we were trying to
+prevent.
 
 However, we do not think the situation is hopeless.  Spam filters are
 not perfect, but do a good enough job to be useful, especially in
