@@ -2,10 +2,10 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{zarticle}[2013/01/24 Personal article class customizations]
 
-% 10 point, letter paper, two column, pass other options down to article.
+% 10 point, letter paper, pass other options down to article.
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions\relax
-\LoadClass[10pt,letterpaper,twocolumn]{article}
+\LoadClass[10pt,letterpaper]{article}
 
 % 0.5" left margin, 1.5" right.  10" of vertical page area, with
 % geometry's defaults for margin ratio. 0.35″ between columns.
