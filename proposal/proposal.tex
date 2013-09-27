@@ -1,4 +1,4 @@
-\documentclass[oneside]{zarticle}
+\documentclass[oneside,tinymargin]{zarticle}
 %\documentclass[twoside]{zarticle}
 \usepackage{multicol}
 \addbibresource{proposal.bib}
@@ -14,16 +14,53 @@
 
 \begin{multicols}{2}
 
-\begin{abstract}
+\section{Overview}
+
 Traffic analysis is specifically excluded from the standard threat
 model for a secure channel.  We claim that this has become
 unrealistic, and that failure to include traffic analysis in the
 threat model leads to exploitable vulnerabilities “in the wild.”  We
 propose to study these vulnerabilities and develop countermeasures.
-\end{abstract}
 
 \section{Background}
 
+The secure communications protocols commonly used on the present-day
+Internet, such as TLS~\cite{dierks2008tls}, SSH~\cite{ylonen2006ssh},
+and IPsec~\cite{kent2005ipsec} (in some configurations) conform to a
+stock theoretical security model known as the \emph{secure channel}.
+As defined, for instance, in~\textcite{ferguson2010ceng}, a secure
+channel passes messages back and forth between two communicating
+parties.  Against an adversary with realistically bounded
+computational resources, it makes these three guarantees, with limits
+as noted:
+
+\begin{description}
+\item[Authenticity:] Both parties receive evidence demonstrating that
+  their counterparty is who it claims to be, not an impersonator or
+  man-in-the-middle.  Assuring the credibility of this evidence is a
+  topic in itself; here we just observe that it is evidence, not
+  proof.
+
+\item[Integrity:] If the adversary modifies a message in transit, the
+  recipient will know.  The adversary can, however, prevent some or
+  all messages from being received in the first place.  In fact, it is
+  safest for the recipient to behave as if any modified messages were
+  never received.~\cite{mitchell2005error} Reliability is left to a
+  separate mechanism (usually TCP or similar), which can operate
+  either below or above the layer that provides security.
+
+\item[Confidentiality:] The adversary cannot learn the contents of any
+  message, but can still observe each message's length and the time it
+  was sent.  The adversary is also aware of the identities of both
+  parties (as expressed by the aforementioned evidence) and the
+  overall duration of the channel's existence.  The adversary may be
+  able to extract significant information from these clues, and it is
+  this flaw which we propose to address in detail.
+\end{description}
+
+\subsection{Traffic Analysis}
+
+\noindent
 \emph{Traffic analysis} is the craft of extracting information from a
 secure channel, using whatever data is still observable despite
 encryption. Often this is metadata, such as the source, destination,
@@ -39,19 +76,19 @@ observes a large client-server upload to
 on that site, they may deduce that the image was uploaded by the
 client under observation.
 
-Traffic analysis has been practiced since the Great Game of the 19th
-century, if not longer, but came into its own with the use of radio
-for military communications in World War I.  French intelligence was
-able to locate German encampments via radio direction finding, and
-identify transmissions as originating from HQ, infantry, or cavalry
-divisions because each produced a different volume and pattern of
-traffic.  In the Pacific theater of World War II, both sides were able
-to make educated guesses at upcoming naval maneuvers from radio
-traffic volume, changes in callsigns, time correlation of signals, and
-so on.~\cite{kahn1967codebreakers}
+As described in \textcite{kahn1967codebreakers}, traffic analysis has
+been practiced since the Great Game of the 19th century, if not
+longer, but came into its own with the use of radio for military
+communications in World War I.  French intelligence was able to locate
+German encampments via radio direction finding, and identify
+transmissions as originating from HQ, infantry, or cavalry divisions
+because each produced a different volume and pattern of traffic.  In
+the Pacific theater of World War II, both sides were able to make
+educated guesses at upcoming naval maneuvers from radio traffic
+volume, changes in callsigns, time correlation of signals, and so on.
 
 Nowadays, traffic analysis is more often applied to messages on a
-network of some sort.  Felten~\cite{felten2013decl} observes that the
+network of some sort.  \textcite{felten2013decl} observes that the
 mere fact of a call placed to certain special-purpose telephone
 numbers reveals “basic and often sensitive” information about the
 caller.  There are dedicated support hotlines for survivors of
@@ -80,22 +117,22 @@ can learn \emph{both endpoints} of the channel.  That is, no
 eavesdropper can tell that Alice is talking to Bob over an unlinkable
 channel, but eavesdroppers can still tell that Alice and Bob are
 talking to \emph{someone}.  (This definition is due to
-Pfitzmann~\cite{pfitzmann2010terminology}.  Whether or not active
+\textcite{pfitzmann2010terminology}.  Whether or not active
 attackers are considered depends on the writer.)
 
 The standard technique for providing unlinkability, invented by
-Chaum~\cite{chaum1981mix}, is to pass each message through one or more
+\textcite{chaum1981mix}, is to pass each message through one or more
 “relays,” layering encryption so that each relay only knows the
 preceding and next link in the chain. One relay is enough against most
 eavesdroppers, but provides no protection if the relay itself is
 malicious; operators of popular single-hop “proxy services” or
 “anonymous remailers” may, and indeed have, come under coercion to
-expose their users.~\cite{newman1996church,
-  singel2007hushmail,ackerman2013lavabit} Similarly, a two-hop chain
-is vulnerable to a pair of cooperating malicious relays.  In
-principle, a three-hop chain is secure unless the adversary controls a
-significant fraction of the network, and more hops only add
-overhead~\cite{wright2002analysis, wright2003defending}.
+expose their users.~\cite{newman1996church, singel2007hushmail,
+  ackerman2013lavabit} Similarly, a two-hop chain is vulnerable to a
+pair of cooperating malicious relays.  In principle, a three-hop chain
+is secure unless the adversary controls a significant fraction of the
+network, and more hops only add overhead.~\cite{wright2002analysis,
+  wright2003defending}
 
 Chaum's original design was geared for email, so it imposed
 significant delays at each relay in order to conceal the exact time of
@@ -195,14 +232,14 @@ notion of ideal steganography~\cite{hopper2009provably}, which is
 provably unbreakable, provided the sender knows the true distribution
 of covertexts.  In practice, this distribution can only be modeled
 crudely, so steganography as deployed in the field is quite
-weak~\cite{boehme2010steganalysis}.
+weak.~\cite{boehme2010steganalysis}
 
 \subsection{Unobservability}
 
 An \emph{unobservable} protocol would have the property that no
 eavesdropper could tell that anyone was talking at all.  This is a
 very strong property, approached by some physical radio
-encodings~\cite{pickholtz1982theory,yu2007dsss} but not actually
+encodings~\cite{pickholtz1982theory, yu2007dsss} but not actually
 achieved when there is any cleartext structure to the data
 transmitted~\cite{jia2013blind}, or if all transmitters don't
 continuously broadcast at maximum gain (which is obviously
@@ -415,7 +452,7 @@ substantial research attention (recent surveys
 include~\textcite{liu2012mining,pang2008mining}).  It requires enough
 contextual information and background knowledge to be difficult even
 for humans, particularly when the content might be
-satirical~\cite{lamarre2009satire}.  Furthermore, one person's idea of
+satirical.~\cite{lamarre2009satire} Furthermore, one person's idea of
 fair political commentary may be another person's idea of
 \textit{lèse-majesté}, blasphemy, defamation, or trolling.  Including
 any fixed definition of “abuse,” perhaps even of “spam,” in the system

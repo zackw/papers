@@ -2,15 +2,26 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{zarticle}[2013/01/24 Personal article class customizations]
 
+% Special option for minimal margins for screen drafts.
+\newif\if@tinymargin \@tinymarginfalse
+\DeclareOption{tinymargin}{\@tinymargintrue}
+
 % 10 point, letter paper, pass other options down to article.
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions\relax
 \LoadClass[10pt,letterpaper]{article}
 
-% 0.5" left margin, 1.5" right.  10" of vertical page area, with
-% geometry's defaults for margin ratio. 0.35″ between columns.
 \RequirePackage{geometry}
-\geometry{lmargin=0.5in,rmargin=1.5in,textheight=10in,columnsep=0.35in}
+\if@tinymargin
+  \geometry{textwidth=6.5in, textheight=10in, columnsep=0.35in,
+            lmargin=0.1in, rmargin=0.1in, tmargin=0.1in, bmargin=0.1in,
+            paperwidth=6.8in, paperheight=10.2in}
+  \AtBeginDocument{\pagestyle{empty}}
+\else
+  % 0.5" left margin, 1.5" right.  10" of vertical page area, with
+  % geometry's defaults for margin ratio. 0.35″ between columns.
+  \geometry{lmargin=0.5in,rmargin=1.5in,textheight=10in,columnsep=0.35in}
+\fi
 
 % These packages must be loaded before any fonts.
 \RequirePackage[utf8]{inputenc}
