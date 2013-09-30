@@ -16,11 +16,30 @@
 
 \section{Overview}
 
-Traffic analysis is specifically excluded from the standard threat
-model for a secure channel.  We claim that this has become
-unrealistic, and that failure to include traffic analysis in the
-threat model leads to exploitable vulnerabilities “in the wild.”  We
-propose to study these vulnerabilities and develop countermeasures.
+Traffic analysis is excluded from the standard threat model for a
+secure channel, not because it isn't a serious threat in theory, but
+because the only well-understood countermeasure is the brute-force
+tactic of transmitting at maximum bandwidth around the clock, whether
+or not one has anything to say; this is considered unacceptably
+expensive even in the face of a serious
+threat~\cite{ferguson2010ceng}.  Recently demonstrated
+attacks~\cite{duong2012crime, herrmann2012analyzing,
+  zhang2010sidebuster, cai2012touching, overlier2006locating} indicate
+that traffic analysis may be a more serious threat than had been
+assumed; serious enough that we cannot really call a network protocol
+\emph{secure} if it does not protect against it.  Recent news
+reports~\cite{greenwald2013nsa} indicate that (as had been suspected
+for some time) state actors do engage in large-scale surveillance of
+the global telecommunications network, with traffic analysis as one of
+several techniques employed.
+
+In view of the above, we believe the time is ripe for a careful
+investigation of sophisticated, therefore less expensive,
+countermeasures for traffic analysis.  We propose to begin this
+investigation with careful field studies of the severity of the
+problem, and the deployability and effectiveness of existing
+\emph{ad hoc} solutions.  Based on the results of these studies,
+we will then explore the [...]
 
 \section{Background}
 
