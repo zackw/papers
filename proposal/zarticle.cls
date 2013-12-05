@@ -9,18 +9,18 @@
 % 10 point, letter paper, pass other options down to article.
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions\relax
-\LoadClass[10pt,letterpaper]{article}
+\LoadClass[12pt,letterpaper,onecolumn]{article}
 
 \RequirePackage{geometry}
 \if@tinymargin
-  \geometry{textwidth=6.5in, textheight=10in, columnsep=0.35in,
+  \geometry{textwidth=6in, textheight=10in, columnsep=0.35in,
             lmargin=0.1in, rmargin=0.1in, tmargin=0.1in, bmargin=0.1in,
             paperwidth=6.8in, paperheight=10.2in}
   \AtBeginDocument{\pagestyle{empty}}
 \else
-  % 0.5" left margin, 1.5" right.  10" of vertical page area, with
-  % geometry's defaults for margin ratio. 0.35″ between columns.
-  \geometry{lmargin=0.5in,rmargin=1.5in,textheight=10in,columnsep=0.35in}
+  % 0.5" left margin, 2" right.  10" of vertical page area, with
+  % geometry's defaults for margin ratio.
+  \geometry{lmargin=0.5in,rmargin=2in,textheight=10in}
 \fi
 
 % These packages must be loaded before any fonts.

@@ -1,6 +1,6 @@
 \documentclass[oneside,tinymargin]{zarticle}
+%\documentclass[oneside]{zarticle}
 %\documentclass[twoside]{zarticle}
-\usepackage{multicol}
 \addbibresource{proposal.bib}
 \addbibresource{../fp-review-full/fp-review.bib}
 \definecolor{todocolor}{RGB}{127,0,0}
@@ -12,34 +12,43 @@
 \author{Zachary Weinberg}
 \maketitle
 
-\begin{multicols}{2}
-
 \section{Overview}
 
-Traffic analysis is excluded from the standard threat model for a
-secure channel, not because it isn't a serious threat in theory, but
-because the only well-understood countermeasure is the brute-force
-tactic of transmitting at maximum bandwidth around the clock, whether
-or not one has anything to say; this is considered unacceptably
-expensive even in the face of a serious
-threat~\cite{ferguson2010ceng}.  Recently demonstrated
-attacks~\cite{duong2012crime, herrmann2012analyzing,
-  zhang2010sidebuster, cai2012touching, overlier2006locating} indicate
-that traffic analysis may be a more serious threat than had been
-assumed; serious enough that we cannot really call a network protocol
-\emph{secure} if it does not protect against it.  Recent news
-reports~\cite{greenwald2013nsa} indicate that (as had been suspected
-for some time) state actors do engage in large-scale surveillance of
-the global telecommunications network, with traffic analysis as one of
-several techniques employed.
+Traffic analysis is a class of techniques to extract information from
+encrypted messages based on what is still observable despite the
+encryption, such as the source and destination of each message, its
+length, and the time it was sent.  These techniques have been
+successfully used since the 19th century, if not longer, and are a
+staple of modern signals intelligence.~\cite{kahn1967codebreakers,
+  greenwald2013nsa} Despite the potential for severe invasion of
+privacy based \emph{only} on capture of
+metadata~\cite{felten2013decl}, the modern Internet is largely
+unprotected against traffic analysis. Anonymizing “overlay” networks
+such as Tor and I2P conceal the source and destination of traffic, at
+significant cost to both latency and transfer rate, and do not conceal
+the size or timing of messages.
 
-In view of the above, we believe the time is ripe for a careful
-investigation of sophisticated, therefore less expensive,
-countermeasures for traffic analysis.  We propose to begin this
-investigation with careful field studies of the severity of the
-problem, and the deployability and effectiveness of existing
-\emph{ad hoc} solutions.  Based on the results of these studies,
-we will then explore the [...]
+Both theoretical and practical studies of countermeasures for size-
+and timing-based traffic analysis are thin on the ground.  Concealing
+size is thought to incur prohibitive overhead~\cite{ferguson2010ceng};
+concealing timing is thought to be inherently in conflict with low
+latency as desired for human-interactive
+protocols.~\cite{acquisti2003economics} At the same time, laboratory
+studies of the power of size-based traffic analysis are easy to
+find~\cite{duong2012crime, herrmann2012analyzing, zhang2010sidebuster,
+  cai2012touching, overlier2006locating} but may overstate the
+attack's feasibility in the field.~\cite{perry2013fpcritique}
+
+We will present results from \emph{field} studies of size-based
+traffic analysis attacks on the World Wide Web specifically,
+demonstrating that the attack is hampered by sheer scale, and
+susceptible to server-side countermeasures applied by each individual
+website, with acceptable overhead.  We also outline a design for a
+next-generation transport architecture which includes countermeasures
+for traffic analysis in general (not just size-based attacks).
+Building these countermeasures into the design allows them to operate
+at much lower levels of overhead, in turn allowing us to enable them
+for \emph{all} traffic.
 
 \section{Background}
 
@@ -493,5 +502,4 @@ scope of the present proposal, but we are interested in developing it
 further, down the road.
 
 \printbibliography
-\end{multicols}
 \end{document}
