@@ -1,11 +1,12 @@
-\documentclass[oneside,tinymargin]{zarticle}
-%\documentclass[oneside]{zarticle}
+%\documentclass[oneside,tinymargin]{zarticle}
+\documentclass[oneside]{zarticle}
 %\documentclass[twoside]{zarticle}
 \addbibresource{proposal.bib}
 \addbibresource{../fp-review-full/fp-review.bib}
 \definecolor{todocolor}{RGB}{127,0,0}
 \def\todo#1{{\color{todocolor}\bfseries [#1]}}
 \def\needcite#1{\todo{cite: #1}}
+\hyphenation{ano-nym-ity}
 \begin{document}
 
 \title{Thesis Proposal --- DRAFT}
@@ -14,41 +15,44 @@
 
 \section{Overview}
 
-Traffic analysis is a class of techniques to extract information from
-encrypted messages based on what is still observable despite the
-encryption, such as the source and destination of each message, its
-length, and the time it was sent.  These techniques have been
-successfully used since the 19th century, if not longer, and are a
-staple of modern signals intelligence.~\cite{kahn1967codebreakers,
-  greenwald2013nsa} Despite the potential for severe invasion of
-privacy based \emph{only} on capture of
-metadata~\cite{felten2013decl}, the modern Internet is largely
-unprotected against traffic analysis. Anonymizing “overlay” networks
-such as Tor and I2P conceal the source and destination of traffic, at
-significant cost to both latency and transfer rate, and do not conceal
-the size or timing of messages.
+\emph{Traffic analysis} is a class of techniques for extracting
+information from a secure channel, using whatever data is still
+observable despite encryption.  It is a staple of signals
+intelligence, practiced for over a century, and historically quite
+successful in the field.~\cite{kahn1967codebreakers} Defenses against
+some types of traffic analysis are well-understood and deployed.
+However, traffic analysis based on the size and timing of messages has
+historically been dismissed as intractable to protect against in
+general, and too difficult and/or unreliable for an adversary to
+attempt.~\cite{ferguson2010ceng}
 
-Both theoretical and practical studies of countermeasures for size-
-and timing-based traffic analysis are thin on the ground.  Concealing
-size is thought to incur prohibitive overhead~\cite{ferguson2010ceng};
-concealing timing is thought to be inherently in conflict with low
-latency as desired for human-interactive
-protocols.~\cite{acquisti2003economics} At the same time, laboratory
-studies of the power of size-based traffic analysis are easy to
-find~\cite{duong2012crime, herrmann2012analyzing, zhang2010sidebuster,
-  cai2012touching, overlier2006locating} but may overstate the
-attack's feasibility in the field.~\cite{perry2013fpcritique}
+Recent research (reviewed below) suggests that size- and timing-based
+traffic analysis may be a practical attack on the modern Internet, at
+least for deep-pocketed adversaries.  Consistent with this, in the
+past year evidence has surfaced suggesting that national intelligence
+agencies may engage in this type of traffic analysis as one aspect of
+surveillance programs aiming to capture as much global data traffic as
+possible.~\cite{greenwald2013nsa} But there is a controversy in the
+literature about whether the reported attacks are practical outside of
+laboratory conditions, and some results suggest that defenses may be
+easier than previously assumed.
 
-We will present results from \emph{field} studies of size-based
-traffic analysis attacks on the World Wide Web specifically,
-demonstrating that the attack is hampered by sheer scale, and
-susceptible to server-side countermeasures applied by each individual
-website, with acceptable overhead.  We also outline a design for a
-next-generation transport architecture which includes countermeasures
-for traffic analysis in general (not just size-based attacks).
-Building these countermeasures into the design allows them to operate
-at much lower levels of overhead, in turn allowing us to enable them
-for \emph{all} traffic.
+We are conducting investigations into size-based traffic analysis “in
+the field” on the modern Internet, by a sophisticated but
+realistically constrained adversary.  We expect to find that while
+these attacks can reveal \emph{some} information about (for instance)
+which websites a surveillance target is perusing, the sheer scale of
+the global Internet hampers even a deep-pocketed adversary, and that
+server-side countermeasures, with acceptable overhead, may be deployed
+by individual websites to completely obscure high-value data (such as
+social network identity).
+
+Looking further ahead, we also outline a design for a next-generation
+transport architecture which includes countermeasures for traffic
+analysis in general (not just size-based attacks).  Building these
+countermeasures into the architecture allows them to operate at much
+lower levels of overhead, in turn allowing their use for \emph{all}
+traffic.
 
 \section{Background}
 
@@ -74,7 +78,7 @@ as noted:
   all messages from being received in the first place.  In fact, it is
   safest for the recipient to behave as if any modified messages were
   never received.~\cite{mitchell2005error} Reliability is left to a
-  separate mechanism (usually TCP or similar), which can operate
+  separate “transport” protocol (such as TCP), which can operate
   either below or above the layer that provides security.
 
 \item[Confidentiality:] The adversary cannot learn the contents of any
@@ -88,21 +92,20 @@ as noted:
 
 \subsection{Traffic Analysis}
 
-\noindent
-\emph{Traffic analysis} is the craft of extracting information from a
-secure channel, using whatever data is still observable despite
-encryption. Often this is metadata, such as the source, destination,
-establishment time, and duration of the connection, and the protocol
-in use.  In a typical modern packet-switched network, it is also
-possible to observe when each individual packet is sent and the size
-of its encrypted payload, and to perform TCP stream reassembly.  The
-adversary may also be able to correlate observations of network
+As mentioned above, traffic analysis extracts confidential information
+from a secure channel, using whatever clues are still observable
+despite encryption.  Most secure channel protocols do not conceal
+metadata such as the source, destination, establishment time, and
+duration of the connection, and the protocol in use.  In a typical
+modern packet-switched network, it is also possible to observe when
+each individual packet is sent, and the size of its encrypted payload.
+The adversary may also be able to correlate observations of network
 traffic at more than one point in the topology, or to correlate
-network events with other events.  For instance, if the adversary
-observes a large client-server upload to
-\textsf{commons.wikimedia.org} at the same time as a new image appears
-on that site, they may deduce that the image was uploaded by the
-client under observation.
+network events with other events.  For instance, if an adversary
+observes a large client-server upload to \textsf{commons.wikimedia.org}
+at the same time as a new image appears on that site, they may deduce
+that the image was uploaded by the client under observation, even
+though the contents of the upload were encrypted.
 
 As described in \textcite{kahn1967codebreakers}, traffic analysis has
 been practiced since the Great Game of the 19th century, if not
@@ -116,19 +119,19 @@ educated guesses at upcoming naval maneuvers from radio traffic
 volume, changes in callsigns, time correlation of signals, and so on.
 
 Nowadays, traffic analysis is more often applied to messages on a
-network of some sort.  \textcite{felten2013decl} observes that the
-mere fact of a call placed to certain special-purpose telephone
-numbers reveals “basic and often sensitive” information about the
-caller.  There are dedicated support hotlines for survivors of
-domestic violence, people considering suicide, and sufferers from
+switched communications network.  \textcite{felten2013decl} observes
+that the mere fact of a call placed to certain special-purpose
+telephone numbers reveals “basic and often sensitive” information
+about the caller.  There are dedicated support hotlines for survivors
+of domestic violence, people considering suicide, and sufferers from
 various forms of addiction; there are also lines dedicated to
 anonymously reporting government misconduct, tax fraud, illegal
 firearms, and other crimes.  If phone call records are analyzed over
 time, they reveal the “social graph” and can even indicate the nature
 of personal connections; Felten observes that regular late-night phone
-calls suggest a long-distance intimate relationship.  The “dragnet”
+calls suggest a long-distance intimate relationship.  The large-scale
 surveillance programs (PRISM, X-KEYSCORE, etc.)\ recently revealed to
-be conducted by the United States' intelligence
+be conducted by various nations' intelligence
 apparatus~\cite{greenwald2013nsa} rely on traffic analysis as a
 first-stage filter: phone numbers registered outside the USA, calls to
 people known to have called people on various “watch lists,” apparent
@@ -136,7 +139,7 @@ use of encryption, etc.\ all trigger more aggressive data collection.
 
 \subsection{Unlinkability}
 
-Because it is so easy to extract information from the source and
+Because it is easy to extract information from the source and
 destination of encrypted communications, protocols have been developed
 specifically to conceal this information.  In addition to all the
 properties of a secure channel, an \emph{unlinkable} channel protocol
@@ -145,52 +148,61 @@ can learn \emph{both endpoints} of the channel.  That is, no
 eavesdropper can tell that Alice is talking to Bob over an unlinkable
 channel, but eavesdroppers can still tell that Alice and Bob are
 talking to \emph{someone}.  (This definition is due to
-\textcite{pfitzmann2010terminology}.  Whether or not active
-attackers are considered depends on the writer.)
+\textcite{pfitzmann2010terminology}.  Whether or not active attackers
+are considered depends on the writer.)
 
 The standard technique for providing unlinkability, invented by
 \textcite{chaum1981mix}, is to pass each message through one or more
-“relays,” layering encryption so that each relay only knows the
-preceding and next link in the chain. One relay is enough against most
-eavesdroppers, but provides no protection if the relay itself is
-malicious; operators of popular single-hop “proxy services” or
-“anonymous remailers” may, and indeed have, come under coercion to
-expose their users.~\cite{newman1996church, singel2007hushmail,
+“relays,” (also known as “mixers”), layering encryption so that each
+relay only knows the preceding and next link in the chain. One relay
+is enough against most eavesdroppers, but provides no protection if
+the relay itself is subverted.  Operators of popular single-hop “proxy
+services” or “anonymous remailers” may, and indeed have, come under
+coercion to expose publishers of controversial
+content.~\cite{newman1996church, singel2007hushmail,
   ackerman2013lavabit} Similarly, a two-hop chain is vulnerable to a
 pair of cooperating malicious relays.  In principle, a three-hop chain
 is secure unless the adversary controls a significant fraction of the
 network, and more hops only add overhead.~\cite{wright2002analysis,
   wright2003defending}
 
-Chaum's original design was geared for email, so it imposed
-significant delays at each relay in order to conceal the exact time of
+Chaum's original design was intended for email. It imposed significant
+delays at each relay, in order to conceal the transmission time of
 each message.  This delay is unacceptable for interactive applications
-(such as online chat and Web browsing), and the current generation of
-“low latency” unlinkable services, such as
-Tor~\cite{dingledine2004tor}, deliberately omit it.  This opens an
-avenue for “intersection” attacks by adversaries who \emph{do} control
-a significant fraction of the network, or who can observe traffic at
-many points in the network; these are formally out of scope, but have
-still received a good deal of attention in the literature,
-e.g.~\cite{danezis2003statistical, danezis2004continuous,
-  danezis2005statistical, danezis2007twosided, murdoch2007sampled,
-  shmatikov2006timing, overlier2006locating} Defenses against these
-attacks are still being researched, although a few simple tactics have
-been deployed, such as “guard nodes”~\cite{overlier2006locating}: the
-attacks are most effective if a malicious node is directly connected
-to a client, so by always beginning one's chains with the same node
-for an extended period, one avoids having any of one's traffic be
-exposed to a malicious node (assuming that the initial choice is
-sound).
+(such as online chat and Web browsing), so the current generation of
+“low latency” unlinkable protocols, such as
+Tor~\cite{dingledine2004tor} and I2P~\cite{i2p.undated.i2p},
+deliberately omit it.  This opens an avenue for “intersection” attacks
+by adversaries who \emph{do} control a significant fraction of the
+network, or who can observe traffic at many points in the network;
+these are formally out of scope, but have still received a good deal
+of attention in the literature, e.g.~\cite{danezis2003statistical,
+  danezis2004continuous, danezis2005statistical, danezis2007twosided,
+  murdoch2007sampled, shmatikov2006timing, overlier2006locating}
+Defenses against these attacks are still being researched, although a
+few simple tactics have been deployed, such as “guard
+nodes”~\cite{overlier2006locating}: the attacks are most effective if
+a malicious node is directly connected to a client, so by always
+beginning one's chains with the same node for an extended period, one
+avoids having any of one's traffic be exposed to a malicious node
+(assuming that the initial choice is sound).
 
 \subsection{Confidentiality of Message Length}
 
 The standard mathematical definition of “confidentiality” assumes that
-all messages are the same length.  In practice, this is not true, and
-as recently demonstrated~\cite{duong2012crime,gluck2013breach}, that
-permits serious active attacks on protocols that compress data before
-encryption.  But even a pure eavesdropper can learn something from the
-size of a message.
+all messages are the same length, even though in practice, this is not
+true.  This is not a minor loophole; as recently
+demonstrated~\cite{duong2012crime,gluck2013breach}, compressing data
+before encryption (thus causing each message's length to depend
+directly on its contents) can allow an active attacker to recover the
+plaintext.  Pure eavesdroppers can also learn something from the
+length of a message.  For instance, if there is a server that will,
+for anyone, upon request, produce one of a relatively small number of
+static documents, then the eavesdropper can record all such documents'
+lengths in advance, and from then on, determine which one is being
+sent to a surveillance target by measuring the length of the
+transmission.  This describes at least part of the behavior of nearly
+all public Web servers.
 
 HTTP (over any secure channel, unlinkable or not) is particularly
 vulnerable to this attack because it exhibits strict turn-taking
@@ -215,28 +227,27 @@ distinguishable because they refer to different resource sets.
 We will give three examples of concrete breaches of confidentiality
 via message length analysis.  All these attacks assume an adversary
 eavesdropping directly, or perhaps at one or two hops' remove, upon a
-specific, known target user who is browsing the Web.  The simplest
-attack observes that the vast majority of Facebook and Google profile
-images have a unique size.  Detecting the HTTPS request for this
-image, and measuring its length, thus permits an eavesdropper to
-associate a particular social-network identity with a particular IP
+specific, known target who is browsing the Web.  The simplest attack
+observes that the vast majority of Facebook and Google profile images
+have a unique size.  Detecting the HTTPS request for this image, and
+measuring its length, thus permits an eavesdropper to associate a
+particular social-network identity with a particular IP
 address.~\cite{herrmann2012analyzing, pironti2012identifying} A more
 sophisticated “state tracing” attack seeks to reconstruct a sequence
 of page loads from the lengths of HTTPS traffic bursts.  Since the
 structure of a public website is known to the attacker, this reveals
-how the targeted user is interacting with the site.  Applied to a
+how the targeted person is interacting with the site.  Applied to a
 search engine, this can reveal queries~\cite{castelluccia2010private};
 applied to a tax-preparation website, this can reveal the target's
 approximate income, marital status, and other such highly confidential
-data.~\cite{zhang2010sidebuster} Finally, if the targeted user is
-browsing the Web via an unlinkable channel, an eavesdropper may be
-able to identify the \emph{site} that is being accessed from the
-pattern of response sizes.  This possibility has received substantial
-attention in the literature, e.g.~\cite{cai2012touching,
-  cheng1998traffic, coull2007web, dyer2012peekaboo} but it is unclear
-to us whether it can be scaled from these laboratory experiments
-(typically covering at most a few thousand sites' front pages) to the
-entire Web.
+data.~\cite{zhang2010sidebuster} Finally, if the target is browsing
+the Web via an unlinkable channel, an eavesdropper may be able to
+identify the \emph{site} that is being accessed from the pattern of
+response sizes.  This possibility has received substantial attention
+in the literature, e.g.~\cite{cai2012touching, cheng1998traffic,
+  coull2007web, dyer2012peekaboo} but it is unclear to us whether it
+can be scaled from these laboratory experiments (typically covering at
+most a few thousand sites' front pages) to the entire Web.
 
 The basic defense against an eavesdropper extracting information from
 message length is, of course, to pad messages.  However, if done
@@ -279,13 +290,6 @@ eavesdropper to be able to tell whether any node is the
 date, requires too much “dummy” traffic to be considered practical,
 and the topic has been neglected.
 
-Unobservability, in the strong sense, is the only theoretically-sound
-defense against an arbitrarily powerful traffic-analytic attacker,
-so we suggest that the topic should be revisited, with specific
-attention to whether the weak definition will suffice against
-realistic attackers, and how much of that “dummy” traffic can be made
-to be useful.
-
 \section{Research Questions}
 
 We propose to investigate the extent to which traffic analysis really
@@ -296,12 +300,12 @@ questions.
 \paragraph{To what extent does size-and-timing analysis destroy
   confidentiality?}  As discussed above, this has been studied to some
 extent, but mostly in “laboratory” settings.  The most concrete
-results are all to do with single sites: learning search queries, user
+results are all to do with single sites: learning search queries, personal
 profile images, answers to questions on a question-and-answer site
 (e.g.\ for tax preparation).  Except for profile images, these involve
 active interaction with the site.  One avenue for further exploration
 would be to study whether “passive” browsing on a large, complicated
-site reveals interesting things about the user.  Wikipedia has lots of
+site reveals interesting things about the reader.  Wikipedia has lots of
 innocuous articles, a fair number that one might be embarrassed to
 admit one has read, and a handful that are so politically or
 culturally sensitive that they cannot even be referred to in some
@@ -310,10 +314,10 @@ by content length or detailed packet timings, that enables the
 adversary to learn something interesting.  Similarly, social-blogging
 sites such as Tumblr carry an enormous range of content, with op-ed
 columns, art, kittens, personal journals, and pornography all jumbled
-up together.  Facebook is complicated enough that it is likely to
-present a radically different network traffic profile for different
-logged-in users.  (No study to date has looked at logged-in users in
-detail.)
+together.  Facebook is complicated enough that it is likely to present
+a radically different network traffic profile for different logged-in
+users. No study to date has looked at logged-in users of any site in
+detail.
 
 When an unlinkable channel is used, the adversary needs to identify
 the site being accessed before they can do any of the above, and it
@@ -349,6 +353,8 @@ drawing on sources beyond the Alexa top $N$'s front pages, such as:
   which lists sites operated as Tor hidden services (hidden services
   conceal the identity of the site operator, so these sites are more
   likely than the average to carry controversial content).
+\item Lists of sites and/or URLs known to have been blocked by
+  specific “Internet filtering” software products.
 \item Programmatically traversing internal and external links on sites
   revealed by all of the above.
 \item Exhaustive “crawls” of sites of particular interest, e.g.\ Wikipedia.
@@ -402,7 +408,7 @@ edit, since this intrinsically involves transmitting the new text to
 the server, so the HTTP request cannot help but be larger than
 normal.)
 
-\paragraph{Can we bake traffic-analysis resistance into the next
+\paragraph{Can we build traffic-analysis resistance into the next
 generation of Internet protocols?}  It is probably not feasible to
 eliminate traffic analytic attacks on the present generation of
 Internet protocols.  There are too many ways in which critical state
@@ -414,7 +420,7 @@ goal, and we expect it will be easier to explore \emph{generic}
 (without application-layer support) traffic analysis resistance in
 this context.
 
-This is an open ended exploratory project.  We will limit its scope to
+This is an open-ended exploratory project.  We will limit its scope to
 document publication and retrieval, primarily because this application
 is more latency-tolerant than anything related to real-time
 conversations (chat, VoIP, etc.) and secondarily because this is the
@@ -424,8 +430,8 @@ platform” already permit construction of applications with nearly all
 logic on the client side, the server only acting as a distribution
 point for static data, and planned additional features will only make
 this easier.  In fact, moving logic to the client automatically
-reduces users' exposure to traffic analysis: for instance, it would
-not be nearly as easy to extract information from a tax-preparation
+reduces exposure to traffic analysis: for instance, it would not be
+nearly as easy to extract information from a tax-preparation
 application if its logic was transmitted to the client all at once,
 and only the finished paperwork was sent back, instead of a long
 sequence of questions and answers being sent over the network one at a
@@ -441,8 +447,8 @@ serious flaws~\cite{kugler2003gnunet}.  Distributed caches can reveal
 retrieval history; even when caches are not supposed to be able to
 learn decryption keys for the content they hold, as
 in~\textcite{serjantov2002anonymizing}, keyword searches for
-undesirable content can finger caches that hold it, and thus the users
-that might have retrieved it.
+undesirable content can reveal caches that hold it, and thus groups of
+people who might have retrieved it.
 
 However, the basic notion of distributed storage for self-validating,
 content-addressed material seems sound, and presents a number of
@@ -470,8 +476,8 @@ and strong guarantees that content once published cannot be removed,
 will look like as a social phenomenon.  In particular, the
 \emph{present} online culture has tendencies toward groupthink, abuse
 of outsiders, and general hostility toward anyone who looks like a
-tempting target. “Baking in” masks for everyone to hide behind might
-only make all of this worse.
+tempting target.  Automatic provision of masks for everyone to hide
+behind might only make all of this worse.
 
 We cannot expect the system to weed out groupthink, abuse,
 etc.\ automatically.  The simpler task of categorizing statements of
