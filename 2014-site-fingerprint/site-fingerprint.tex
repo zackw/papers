@@ -1,0 +1,16 @@
+\documentclass{zarticle}
+\usepackage{tikz}
+\usetikzlibrary{shapes.symbols,shapes.geometric,decorations.pathreplacing,calc}
+\addbibresource{shared.bib}
+\definecolor{todocolor}{RGB}{127,0,0}
+\def\todo#1{{\color{todocolor}\bfseries [#1]}}
+\def\needcite#1{\todo{cite: #1}}
+\begin{document}
+
+% big figures
+\input threat.tikz
+\input http.tikz
+
+\printbibliography
+
+\end{document}
