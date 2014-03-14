@@ -1,5 +1,5 @@
 \begin{figure*}[t!]%
-\begin{tikzpicture}[every node/.style={align=center,draw}]
+\begin{tikzpicture}[every node/.style={align=center,draw,font={\footnotesize}}]
 \matrix [draw=none]
 {
    \node (a) {Targeted client};
@@ -29,13 +29,13 @@
 \end{figure*}
 
 \begin{figure*}[t!]%
-\begin{tikzpicture}[every node/.style={align=center,draw}]
+\begin{tikzpicture}[every node/.style={align=center,draw,font={\footnotesize}}]
 \matrix[draw=none,column sep=3mm,row sep=2mm]
 {
 &[4mm]
 &[3mm]
 &[3mm]
-&
+&[-2mm]
   \node (t1) [shape=circle] at (-6mm,6mm) {};
   \node (t2) [shape=circle,draw=none] at (-2mm,2mm) {};
   \node (t3) [shape=circle,draw=none] at (2mm,-2mm) {};
@@ -103,7 +103,7 @@
 \end{figure*}
 
 \begin{figure*}[t!]%
-\begin{tikzpicture}[every node/.style={align=center,draw}]
+\begin{tikzpicture}[every node/.style={align=center,draw,font={\footnotesize}}]
 \matrix (a) [draw=none,row sep=2mm,nodes={anchor=east}]
 {
   \node (a1) {Targeted client $1$} ;\\
