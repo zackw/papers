@@ -1,8 +1,8 @@
 %\documentclass[oneside,tinymargin]{zarticle}
 \documentclass[oneside]{zarticle}
 %\documentclass[twoside]{zarticle}
-\addbibresource{proposal.bib}
-\addbibresource{../fp-review-full/fp-review.bib}
+\usepackage[doublespacing]{setspace}
+\addbibresource{shared.bib}
 \definecolor{todocolor}{RGB}{127,0,0}
 \def\todo#1{{\color{todocolor}\bfseries [#1]}}
 \def\needcite#1{\todo{cite: #1}}
@@ -507,5 +507,7 @@ desired level of curation.  Exactly how this would work is beyond the
 scope of the present proposal, but we are interested in developing it
 further, down the road.
 
+\clearpage
+\singlespacing
 \printbibliography
 \end{document}
