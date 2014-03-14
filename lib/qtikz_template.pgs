@@ -1,0 +1,8 @@
+\documentclass{zarticle}
+\usepackage{tikz}
+\usepackage[active,pdftex,tightpage]{preview}
+\PreviewEnvironment[]{tikzpicture}
+\PreviewEnvironment[]{pgfpicture}
+\begin{document}
+<>
+\end{document}
