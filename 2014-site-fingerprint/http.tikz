@@ -3,16 +3,21 @@
 % I *think* box register 0 is scratch, but it's hard to tell
 \begingroup
 \setbox0=\hbox{\scriptsize%
-ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz}
+ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz%
+\scshape%
+ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz%
+}
 \newdimen\lht \lht=\ht0
 \newdimen\ldp \ldp=\dp0
 %
-\begin{figure*}%
-\begin{tikzpicture}[x=1cm,y=-1cm,
+% canned styles
+%
+\tikzset{
+    x=1cm,
+    y=-1cm,
     annote/.style={
-        rectangle,%draw, help lines,
-        text width=7cm,%text=black,
-        anchor=west,
+        rectangle,right,inner sep=0pt,outer sep=0pt,
+        text width=6.235cm,
         align=justify,
         font=\footnotesize
 },
@@ -48,12 +53,14 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz}
             label position=below
         }}}}
 },
-]
-%\draw [help lines] (0,0) rectangle (16.5,25) ;
-
-\coordinate (ancol) at (9,0) ;
-
-\begin{scope}[xshift=-0.75cm,yshift=-0.425cm,local bounding box=basehttp]
+}%
+%
+% each individual graphic is drawn in its own tikzpicture and saved in a box,
+% because this seems to be the sanest way to get them treated atomically for
+% alignment
+%
+\newsavebox{\basehttpbox}%
+\begin{lrbox}{\basehttpbox}\begin{tikzpicture}
 \node [csctrl,label={syn}] at (1.075,1) {};
 \node [scctrl,label={$\mbox{syn}\atop\mbox{ack}$}] at (1.325,1) {};
 \node [csctrl,label={ack}] at (1.575,1) {};
@@ -71,20 +78,10 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz}
 \draw [decorate,decoration={brace,amplitude=1mm}] (rr) -- (rl) ;
 \draw [] (1,1) -- (7.75,1) ;
 \node [below] at ($(rl)!0.5!(rr)$) {\scriptsize Response} ;
-\end{scope}
-
-%\draw [help lines] (basehttp.north west) rectangle (basehttp.south east);
-
-\node [annote] at (basehttp -| ancol) {%
-   In HTTP, the client speaks first, sending a \emph{request}
-   which receives a \emph{response} from the server.  The request
-   has an in-band terminator, but originally, the response ended
-   when the server closed the TCP connection.  Rendering an HTML
-   page often requires many requests and responses, so this is
-   inefficient.
-};
-
-\begin{scope}[xshift=-0.75cm,yshift=-0.25cm,local bounding box=sconns]
+\end{tikzpicture}\end{lrbox}%
+%
+\newsavebox{\scconsbox}%
+\begin{lrbox}{\scconsbox}\begin{tikzpicture}
 \node [cs,inner xsep=4mm] at (1.475,3.825) {};
 \node [sc,inner xsep=4mm] at (2.525,3.825) {};
 \node [sc,inner xsep=4mm] at (3.525,3.825) {};
@@ -126,23 +123,10 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz}
          (3,6)   -- +(4,0)
          (6,6.625) -- +(3,0)
          (6,7.125)   -- +(3,0);
-\end{scope}
-
-%\draw [help lines] (sconns.north west) rectangle (sconns.south east);
-
-\node [annote] at (sconns -| ancol) {%
-   \emph{Simultaneous connections} provide parallelism without
-   any protocol changes; the client simply makes more than one
-   TCP connection and transmits a request on each. However, this
-   incurs substantial server-side overhead, so clients must limit
-   themselves to only a few connections per server, producing this
-   characteristic connection pattern.  First the HTML page is retrieved
-   by itself, then the images and other resources required to render it
-   are retrieved in batches of four to eight.  Clients try to parse the
-   page for its resources while it is still downloading.
-};
-
-\begin{scope}[xshift=-0.75cm,local bounding box=keepalive]
+\end{tikzpicture}\end{lrbox}%
+%
+\newsavebox{\keepalivebox}%
+\begin{lrbox}{\keepalivebox}\begin{tikzpicture}
 \node [cs,inner xsep=2mm] at (1.275,9.5) {};
 \node [sc,inner xsep=3mm] at (2.125,9.5) {};
 \node [cs,inner xsep=2mm] at (3.25,9.5) {};
@@ -160,22 +144,12 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz}
 \node [sc,inner xsep=3mm] at (7.625,10.125) {};
 \node [sc,inner xsep=3mm] at (8.625,10.125) {};
 
-
 \draw (1,9.5) -- +(6,0)
       (3,10.125) -- +(6,0) ;
-\end{scope}
-
-%\draw [help lines] (keepalive.north west) rectangle (keepalive.south east);
-
-\node [annote] at (keepalive -| ancol) {%
-   \emph{Keep-alives} augment the protocol to
-   allow one TCP connection to carry a sequence of requests and responses.
-   Still, only one side can transmit at any point in time, and the server
-   cannot respond to requests out of order.  Keep-alives are now ubiquitous.
-};
-
-\begin{scope}[xshift=-0.75cm,yshift=0.5cm,local bounding box=pipelining]
-
+\end{tikzpicture}\end{lrbox}%
+%
+\newsavebox{\pipelinebox}%
+\begin{lrbox}{\pipelinebox}\begin{tikzpicture}
 \node [cs, inner xsep=2mm] at (1.275, 13) {};
 \node [cs, inner xsep=2mm,fill=red!90!black] at (2, 13) {};
 \node [cs, inner xsep=2mm,fill=green!60!black] at (2.725, 13) {};
@@ -190,18 +164,10 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz}
 \node [sc, inner xsep=3mm,fill=blue!50]        at (8, 13) {};
 
 \draw (1,13) -- +(7.375,0) ;
-\end{scope}
-
-%\draw [help lines] (pipelining.north west) rectangle (pipelining.south east);
-
-\node [annote] at (pipelining -| ancol) {%
-   \emph{Pipelining}, another protocol enhancement, allows the client to
-   send several requests without waiting for a response.  The server
-   must still respond to requests in order.  Pipelining is rarely used
-   on the public Web, due to buggy implementations.
-};
-
-\begin{scope}[xshift=-0.75cm,yshift=-0.5cm,local bounding box=tls]
+\end{tikzpicture}\end{lrbox}%
+%
+\newsavebox{\tlsbox}%
+\begin{lrbox}{\tlsbox}\begin{tikzpicture}
 \node [csctrl,label={syn}] at (1.075,15) {};
 \node [scctrl,label={$\mbox{syn}\atop\mbox{ack}$}] at (1.325,15) {};
 \node [csctrl,label={ack}] at (1.575,15) {};
@@ -219,16 +185,62 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz}
 
 \draw [] (1,15) -- (8.075,15) ;
 \node [right] at (8.075,15) {\Large \ldots};
-\end{scope}
+\end{tikzpicture}\end{lrbox}%
+%
+\begin{figure*}%
+\begin{tikzpicture}[x=1cm,y=-1cm]
 
-%\draw [help lines] (tls.north west) rectangle (tls.south east);
-
-\node [annote] at (tls -| ancol) {%
+\matrix [matrix anchor=north west,
+         inner sep=0pt, outer sep=0pt,
+         column sep={9cm,between origins}, row sep=1em] {%
+\node [anchor=west] {\usebox{\basehttpbox}};%
+&%
+\node [annote]{%
+   In HTTP, the client speaks first, sending a \emph{request}
+   which receives a \emph{response} from the server.  The request
+   has an in-band terminator, but originally, the response ended
+   when the server closed the TCP connection.  Rendering an HTML
+   page often requires many requests and responses, so this is
+   inefficient.};%
+\\%
+\node [anchor=west] {\usebox{\scconsbox}};%
+&%
+\node [annote]{%
+   \emph{Simultaneous connections} provide parallelism without
+   any protocol changes; the client simply makes more than one
+   TCP connection and transmits a request on each. However, this
+   incurs substantial server-side overhead, so clients must limit
+   themselves to only a few connections per server, producing this
+   characteristic connection pattern.  First the HTML page is retrieved
+   by itself, then the images and other resources required to render it
+   are retrieved in batches of four to eight.  Clients try to parse the
+   page for its resources while it is still downloading.};%
+\\%
+\node [anchor=west] {\usebox{\keepalivebox}};%
+&%
+\node [annote]{%
+   \emph{Keep-alives} augment the protocol to allow one TCP connection
+   to carry a sequence of requests and responses.  Still, only one
+   side can transmit at a time, and the server cannot respond to
+   requests out of order.  Keep-alives are now ubiquitous.};%
+\\%
+\node [anchor=west] {\usebox{\pipelinebox}};%
+&%
+\node [annote]{%
+   \emph{Pipelining}, another protocol enhancement, allows the client
+   to send several requests without waiting for a response.  The
+   server still cannot respond to requests out of order.  Pipelining
+   is rarely used on the public Web, due to buggy implementations.};%
+\\%
+\node [anchor=west] {\usebox{\tlsbox}};%
+&%
+\node [annote]{%
    \emph{TLS} (formerly called \emph{SSL}) is a secure channel protocol
    inserted between HTTP and TCP.  TLS encrypts application data (shown in red)
    but does not affect its packetization; the HTTP query-response pattern is
    still apparent.  It also adds setup overhead to each connection, making
-   keep-alives more important.
+   keep-alives more important.};%
+\\%
 };
 \end{tikzpicture}
 \caption{Illustrative HTTP packet traces (not to scale)}
