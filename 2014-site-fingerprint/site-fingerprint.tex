@@ -1,5 +1,6 @@
-\documentclass{zarticle}
+\documentclass[tinymargin]{zarticle}
 \usepackage{tikz}
+\usepackage{placeins}
 \usetikzlibrary{shapes.symbols,shapes.geometric,decorations.pathreplacing,calc}
 \addbibresource{shared.bib}
 \definecolor{todocolor}{RGB}{127,0,0}
@@ -148,11 +149,80 @@ long-lived “circuits,” hiding the simultaneous connections aspect of
 HTTP.  The alternating send and receive bursts are still visible, but
 it is harder to determine the exact size of each item.
 
+\section{Threat Modeling}
+
+\section{Analysis of URL Lists}
+
+However fingerprinting is carried out, the adversary must have a list
+of “sites of interest,” which in practice means a list of URLs for web
+\emph{pages} which will be machine-classified somehow.  Alexa
+Internet, Inc.\ publishes an ordered list of the “top 1,000,000
+websites,” updated daily, based on data collected from a “sample of
+all internet users.”~\cite{alexa.undated.topsites} Most existing
+results on site fingerprinting (there are exceptions,
+e.g.~\todo{citations}) take the first $N$ entries in this list as of
+some date (choice of $N$ depending on the paper), and test one or more
+classifiers on the base URL
+(\textsf{http://www.\textit{site.domain}/}) of each; this is usually
+described as being able to distinguish “the Alexa top $N$ sites”
+without further qualification.
+
+This practice is methodologically questionable for several reasons.
+Most important is that the page retrieved by the base URL of any given
+site is often \emph{not} representative of the “typical” page on that
+site.  For an illustrative example, \textsf{wikipedia.org} has been
+among Alexa's top ten for several years now (usually at position 6, 7,
+or 8).  If you type “\textsf{wikipedia.org}” into a browser's URL bar
+without further qualification you will be automatically taken to
+\url{https://www.wikipedia.org/}.  Compare this page to the
+English-language front page, \url{https://en.wikipedia.org/}, and both
+of them to a few actual encyclopedia articles,
+e.g. \url{https://en.wikipedia.org/wiki/Ouachita_madtom}.  In each
+case the overall page structure is radically different, and so is the
+network traffic generated.
+
+The Wikipedia example also demonstrates how Alexa's list discards
+distinctions which may be important to a realistic attacker.  Alexa
+usually assigns “site rank” to entire domains, \textsf{wikipedia.org}
+in this case.  But Wikipedia (the organization) considers itself to
+publish \emph{many} encyclopedias, one in each of the languages that
+has attracted a community of authors; each language therefore gets its
+own subdomain.  A nation-state adversary concerned with enforcing
+political orthodoxy may have no problem with traffic to Wikipedia in
+the national language, but frown upon traffic to other languages'
+encyclopedias.  Similarly, several of Alexa's top 25 sites are
+blogging and social networking services which host a range of content
+limited only by human imagination and/or the terms of service.  It is
+practically certain that any nontrivial exercise in “filtering” would
+want to block some, but not all, of the content on
+\textsf{wordpress.com}, for instance.
+
+Beyond these concerns, Alexa does not document its own methodology, so
+it is impossible to assess the accuracy of its ranking.  In
+particular, they rely heavily on data from an unspecified set of
+browser extensions which are instrumented to report site visits.
+Without knowing which extensions these are and how widely installed
+they are, we can't tell how representative their sample is.
+
+
+
+\subsection{Alexa}
+
+\subsection{Twitter global sample}
+
+\subsection{Peacefire censorship lists}
+
+\subsection{If time permits: DMoz}
+
+\subsection{If time permits: Indiana U clickstream}
+
+(access needs to be formally requested and then they mail you a hard drive)
 
 \printbibliography
 \clearpage
 \appendix
 \section{Figures}
+\FloatBarrier
 
 \input threat.tikz
 
