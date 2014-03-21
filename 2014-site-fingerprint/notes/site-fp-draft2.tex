@@ -1,0 +1,229 @@
+\documentclass[tinymargin]{zarticle}
+\usepackage{tikz}
+\usepackage{placeins}
+\usetikzlibrary{shapes.symbols,shapes.geometric,decorations.pathreplacing,calc}
+\addbibresource{shared.bib}
+\definecolor{todocolor}{RGB}{127,0,0}
+\def\todo#1{{\color{todocolor}\bfseries [#1]}}
+\def\needcite#1{\todo{cite: #1}}
+\begin{document}
+
+\title{The Practicality of Website Fingerprinting at Global Scale}
+\author{Zachary Weinberg}
+\date{\today}
+\maketitle
+
+\begin{abstract}
+\textit{Website fingerprinting} is a traffic-analytic attack which
+aims to determine which websites, or perhaps even which specific
+pages, a targeted individual is browsing, despite their use of an
+“anonymity” service to conceal the ultimate destination of their
+traffic.  A fingerprinting attacker loads each site of interest
+themselves (using the same anonymity service), measures the network
+traffic profile of each page load, and trains a machine classifier to
+map traffic profiles back to sites.
+
+To date, in the public literature, fingerprinting attacks have only
+been attempted under laboratory conditions: only one targeted client,
+no “background” network activity, and a tiny set of potential
+destination pages, almost always the front pages of the “top
+100--10,000 websites” taken from a list published by the Alexa
+Corporation.  As such, despite plausible levels of success for a
+laboratory test (classifier accuracies exceeding 90\% have been
+claimed), it is unclear whether the attack is feasible “in the wild,”
+facing orders of magnitude more servers (let alone \emph{pages}),
+dozens to thousands of targeted clients (depending on the threat
+model) with configurations not under the attacker's control, and
+nontrivial levels of background traffic.
+
+In this paper we compare the Alexa list to several other public
+sources of big lists of URLs, \todo{summarize conclusions here}.
+\end{abstract}
+
+\section{Introduction}
+
+\emph{Traffic analysis} is a class of techniques for extracting
+information from a secure channel, using whatever data is still
+observable despite encryption.  It is a staple of signals
+intelligence, practiced for over a century, and historically quite
+successful in the field.~\cite{kahn1967codebreakers} Most secure
+channel protocols do not conceal metadata such as the source,
+destination, establishment time, and duration of the connection, and
+the protocol in use.  To illustrate the sensitivity of this
+information, \textcite{felten2013decl} observes that the mere fact of
+a call placed to certain special-purpose telephone numbers reveals
+“basic and often sensitive” information about the caller.  There are
+dedicated support hotlines for survivors of domestic violence, people
+considering suicide, and sufferers from various forms of addiction;
+there are also lines dedicated to anonymously reporting government
+misconduct, tax fraud, illegal firearms, and other crimes.
+\citeauthor{felten2013decl} also points out that if phone call records
+are analyzed over time, they reveal the “social graph” and can even
+indicate the nature of personal connections; for instance, regular
+late-night phone calls suggest a long-distance intimate relationship.
+
+\subsection{Unlinkability}
+
+Because it is easy to extract information from the source and
+destination of encrypted communications, protocols have been developed
+specifically to conceal this information.  In addition to all the usual
+properties of a secure channel, an \emph{unlinkable} channel protocol
+seeks to ensure that no eavesdropper at a single point in the network
+can learn \emph{both endpoints} of the channel.  That is, no
+eavesdropper can tell that Alice is talking to Bob over an unlinkable
+channel, but eavesdroppers can still tell that Alice and Bob are
+talking to \emph{someone}.  (This definition is due to
+\textcite{pfitzmann2010terminology}.  Whether or not active attackers
+are considered depends on the writer.)
+
+The standard technique for providing unlinkability, invented by
+\textcite{chaum1981mix}, is to pass each message through one or more
+“relays,” (also known as “mixers”), layering encryption so that each
+relay only knows the preceding and next link in the chain. One relay
+is enough against most eavesdroppers, but provides no protection if
+the relay itself is subverted.  Operators of popular single-hop “proxy
+services” or “anonymous remailers” may, and indeed have, come under
+coercion to expose publishers of controversial
+content.~\cite{newman1996church, singel2007hushmail,
+  ackerman2013lavabit} Similarly, a two-hop chain is vulnerable to a
+pair of cooperating malicious relays.  In principle, a three-hop chain
+is secure unless the adversary controls a significant fraction of the
+network, and more hops only add overhead.~\cite{wright2002analysis,
+  wright2003defending}
+
+Chaum's original design was intended for email. It imposed significant
+delays at each relay, in order to conceal the transmission time of
+each message.  This delay is unacceptable for interactive applications
+(such as online chat and Web browsing), so the current generation of
+“low latency” unlinkable protocols, such as
+Tor~\cite{dingledine2004tor} and I2P~\cite{i2p.undated.i2p},
+deliberately omit it.  This opens an avenue for “intersection” attacks
+by adversaries who \emph{do} control a significant fraction of the
+network, or who can observe traffic at many points in the network;
+these are formally out of scope, but have still received a good deal
+of attention in the literature, e.g.~\cite{danezis2003statistical,
+  danezis2004continuous, danezis2005statistical, danezis2007twosided,
+  murdoch2007sampled, shmatikov2006timing, overlier2006locating}
+Defenses against these attacks are still being researched, although a
+few simple tactics have been deployed, such as “guard
+nodes”~\cite{overlier2006locating}: the attacks are most effective if
+a malicious node is directly connected to a client, so by always
+beginning one's chains with the same node for an extended period, one
+avoids having any of one's traffic be exposed to a malicious node
+(assuming that the initial choice is sound).
+
+\subsection{Website Fingerprinting}
+
+\input http.tikz
+
+The standard mathematical definition of “confidentiality” assumes that
+all messages are the same length, even though in practice, this is not
+true.  This is not a minor loophole; as recently
+demonstrated~\cite{duong2012crime,gluck2013breach}, compressing data
+before encryption (thus causing each message's length to depend
+directly on its contents) can allow an active attacker to recover the
+plaintext.  Pure eavesdroppers can also learn something from the
+length of a message.  For instance, if there is a server that will,
+for anyone, upon request, produce one of a relatively small number of
+static documents, then the eavesdropper can record all such documents'
+lengths in advance, and from then on, determine which one is being
+sent to a surveillance target by measuring the length of the
+transmission.  This describes at least part of the behavior of nearly
+all public Web servers.
+
+HTTP exhibits characteristic network behavior, illustrated in
+figure~\ref{f:packet-trace}, which is useful for traffic analysis.  As
+described in more detail in that figure, an eavesdropper at the TCP
+layer will see each party alternate between sending and receiving, and
+the aggregate TCP payload size of each server-to-client burst is a
+close approximation to the file size of the object requested.  To
+enhance parallelism, browsers open anywhere between two and ten
+simultaneous connections to the same site, allowing them to request
+several items at once (e.g.\ all the images referenced by an HTML
+page); each such connection behaves as described.
+
+Some, but not all, unlinkable channel protocols disguise the
+characteristic HTTP traffic pattern to some extent.  For instance, Tor
+multiplexes all proxied TCP connections onto a small number of
+long-lived “circuits,” hiding the simultaneous connections aspect of
+HTTP.  The alternating send and receive bursts are still visible, but
+it is harder to determine the exact size of each item.
+
+\section{Threat Modeling}
+
+\section{Analysis of URL Lists}
+
+However fingerprinting is carried out, the adversary must have a list
+of “sites of interest,” which in practice means a list of URLs for web
+\emph{pages} which will be machine-classified somehow.  Alexa
+Internet, Inc.\ publishes an ordered list of the “top 1,000,000
+websites,” updated daily, based on data collected from a “sample of
+all internet users.”~\cite{alexa.undated.topsites} Most existing
+results on site fingerprinting (there are exceptions,
+e.g.~\todo{citations}) take the first $N$ entries in this list as of
+some date (choice of $N$ depending on the paper), and test one or more
+classifiers on the base URL
+(\textsf{http://www.\textit{site.domain}/}) of each; this is usually
+described as being able to distinguish “the Alexa top $N$ sites”
+without further qualification.
+
+This practice is methodologically questionable for several reasons.
+Most important is that the page retrieved by the base URL of any given
+site is often \emph{not} representative of the “typical” page on that
+site.  For an illustrative example, \textsf{wikipedia.org} has been
+among Alexa's top ten for several years now (usually at position 6, 7,
+or 8).  If you type “\textsf{wikipedia.org}” into a browser's URL bar
+without further qualification you will be automatically taken to
+\url{https://www.wikipedia.org/}.  Compare this page to the
+English-language front page, \url{https://en.wikipedia.org/}, and both
+of them to a few actual encyclopedia articles,
+e.g. \url{https://en.wikipedia.org/wiki/Ouachita_madtom}.  In each
+case the overall page structure is radically different, and so is the
+network traffic generated.
+
+The Wikipedia example also demonstrates how Alexa's list discards
+distinctions which may be important to a realistic attacker.  Alexa
+usually assigns “site rank” to entire domains, \textsf{wikipedia.org}
+in this case.  But Wikipedia (the organization) considers itself to
+publish \emph{many} encyclopedias, one in each of the languages that
+has attracted a community of authors; each language therefore gets its
+own subdomain.  A nation-state adversary concerned with enforcing
+political orthodoxy may have no problem with traffic to Wikipedia in
+the national language, but frown upon traffic to other languages'
+encyclopedias.  Similarly, several of Alexa's top 25 sites are
+blogging and social networking services which host a range of content
+limited only by human imagination and/or the terms of service.  It is
+practically certain that any nontrivial exercise in “filtering” would
+want to block some, but not all, of the content on
+\textsf{wordpress.com}, for instance.
+
+Beyond these concerns, Alexa does not document its own methodology, so
+it is impossible to assess the accuracy of its ranking.  In
+particular, they rely heavily on data from an unspecified set of
+browser extensions which are instrumented to report site visits.
+Without knowing which extensions these are and how widely installed
+they are, we can't tell how representative their sample is.
+
+
+
+\subsection{Alexa}
+
+\subsection{Twitter global sample}
+
+\subsection{Peacefire censorship lists}
+
+\subsection{If time permits: DMoz}
+
+\subsection{If time permits: Indiana U clickstream}
+
+(access needs to be formally requested and then they mail you a hard drive)
+
+\printbibliography
+\clearpage
+\appendix
+\section{Figures}
+\FloatBarrier
+
+\input threat.tikz
+
+\end{document}
