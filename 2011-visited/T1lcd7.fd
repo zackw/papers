@@ -1,0 +1,4 @@
+\ProvidesFile{T1lcd7.fd}[LCD7 font]
+\DeclareFontFamily{T1}{lcd7}{}
+\DeclareFontShape{T1}{lcd7}{m}{n}{<-> lcd7v}{}
+\endinput

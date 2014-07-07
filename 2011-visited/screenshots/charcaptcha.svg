@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg11171"
+   version="1.1"
+   inkscape:version="0.47 r22583"
+   width="449.51575"
+   height="89.527946"
+   xml:space="preserve"
+   sodipodi:docname="charcaptcha.svg"><metadata
+     id="metadata11177"><rdf:RDF><cc:Work
+         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
+     id="defs11175" /><sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1164"
+     inkscape:window-height="1086"
+     id="namedview11173"
+     showgrid="false"
+     inkscape:zoom="1.6135561"
+     inkscape:cx="293.09628"
+     inkscape:cy="75.067387"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg11171" /><g
+     id="g11181"
+     inkscape:groupmode="layer"
+     inkscape:label="charcaptcha-raw"
+     transform="matrix(1.25,0,0,-1.25,-174.59825,792.79907)"><path
+       d="m 139.6786,562.6169 359.6126,0 0,24.77332 -359.6126,0 0,-24.77332 z"
+       style="fill:#a8b5e6;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="path11497" /><text
+       id="text11765"
+       transform="scale(1,-1)"
+       x="149.54655"
+       y="-624.93091"
+       style="font-size:9.58966923px"><tspan
+         id="tspan11767"
+         sodipodi:role="line"
+         y="-624.93091"
+         x="149.54655 157.53795 161.53365 167.92676 174.31987 179.91385 186.30696 189.50351 193.49921 200.69147 208.68286 215.07597 218.27252 222.26822 229.46046 235.85358 239.05014 244.64412 248.63982 253.43465 257.43036 264.62259 271.81485 275.01141 282.20364 286.19934 289.3959 294.98987 302.18213 308.57526 313.37009 319.76318 325.35715 329.35284 335.74597 340.5408 346.13477 349.33133 354.92532 362.11755 369.30981 379.69861 386.89087 390.08743 397.27969 403.67279 407.66849 414.86075 425.24954 428.44611"
+         style="font-size:12.78622532px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#1d1916;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Palatino;-inkscape-font-specification:Palatino-Roman">Please type the string of characters shown below, </tspan></text>
+<text
+       id="text11771"
+       transform="scale(1,-1)"
+       x="431.64267"
+       y="-624.93091"
+       style="font-size:9.58966923px"><tspan
+         id="tspan11773"
+         sodipodi:role="line"
+         y="-624.93091"
+         x="431.64267 435.63837 442.83063 449.23013"
+         style="font-size:12.78622532px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#1d1916;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Palatino;-inkscape-font-specification:Palatino-Roman">then press</tspan></text>
+<text
+       id="text11777"
+       transform="scale(1,-1)"
+       x="115.9828"
+       y="-606.55066"
+       style="font-size:9.58966923px"><tspan
+         id="tspan11779"
+         sodipodi:role="line"
+         x="149.54655 158.3371 166.32848 174.31987 183.90955 192.70007 203.08888 206.28543"
+         style="font-size:12.78622532px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#1d1916;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Palatino;-inkscape-font-specification:Palatino-Roman">RETURN. </tspan></text>
+<text
+       id="text11783"
+       transform="scale(1,-1)"
+       x="211.04572"
+       y="-606.55066"
+       style="font-size:9.58966923px"><tspan
+         id="tspan11785"
+         sodipodi:role="line"
+         y="-606.55066"
+         x="211.04572 219.83624 227.0285 235.0199 238.21646 246.20782 253.40009 260.59235 263.78891 267.78461 270.98114 278.1734 284.56653 291.75876 298.15189 301.34845 305.34415 312.53638 315.73294 326.9209 333.314 337.30969 342.90366 350.09592 353.29248 361.28387 369.27527 377.26666 383.65976 388.45459 391.65115 398.04428 405.23651 413.22791 416.42447 420.42017 427.61243 438.00122 444.39435"
+         style="font-size:12.78622532px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#1d1916;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Palatino;-inkscape-font-specification:Palatino-Roman">You don’t have to match upper and lower case.</tspan></text>
+<text
+       id="text11795"
+       transform="scale(1,-1)"
+       x="222.79208"
+       y="-568.21094"
+       style="font-size:9.58966923px"><tspan
+         id="tspan11797"
+         sodipodi:role="line"
+         y="-568.21094"
+         x="222.79208 233.18153 243.57098 253.96042 264.34988 273.93954 284.32898 294.71844 305.10788 315.49734 325.08701 335.47644 345.86591 356.25534 366.64478 376.23447 386.6239 397.01337 407.4028"
+         style="font-size:19.17933846px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;writing-mode:lr-tb;fill:#1d1916;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:'7 Segment';-inkscape-font-specification:'7 Segment'">FA4A 5A8A A-65 A9-5</tspan></text>
+</g></svg>

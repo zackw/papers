@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg9474"
+   version="1.1"
+   inkscape:version="0.47 r22583"
+   width="467"
+   height="66.616364"
+   xml:space="preserve"
+   sodipodi:docname="wordcaptcha.svg"><metadata
+     id="metadata9480"><rdf:RDF><cc:Work
+         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+     id="defs9478" /><sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1284"
+     inkscape:window-height="1093"
+     id="namedview9476"
+     showgrid="false"
+     inkscape:zoom="0.95353535"
+     inkscape:cx="134.264"
+     inkscape:cy="-117.65254"
+     inkscape:window-x="3"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="g9484" /><g
+     id="g9484"
+     inkscape:groupmode="layer"
+     inkscape:label="wordcaptcha-raw"
+     transform="matrix(1.25,0,0,-1.25,-166.5,805.11637)"><path
+       d="m 133.2,590.8 373.6,0 0,24.8 -373.6,0 0,-24.8 z"
+       style="fill:#a8b5e6;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="path9764" /><text
+       id="text10114"
+       transform="scale(1,-1)"
+       x="146.34753"
+       y="-634.80029"
+       style="font-size:9.60000038px"><tspan
+         id="tspan10116"
+         sodipodi:role="line"
+         y="-634.80029"
+         x="146.34753 154.07874 157.80354 163.93474 170.33473 175.75938 182.34625 185.54626 189.72162 196.84097 204.53505 211.14754 214.34753 220.74754 224.47234 228.74754 231.94754 236.12289 243.57249 250.34753 253.54753 264.22275 271.21027 276.26627 284.0845 289.54755 292.74756 298.17221 305.6218 312.60931 323.28452 331.14755 334.34756 341.4285 347.55972 351.28452 358.27203 368.94724 372.74756 375.94754 380.12292 387.57251 393.7037 401.54755 404.74756 412.44165 417.49762 423.62881 429.05347"
+         style="font-size:12.80000019px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#1d1916;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Palatino;-inkscape-font-specification:Palatino-Roman">Please type all the words shown below, then press RETURN.</tspan></text>
+<text
+       id="text10126"
+       transform="scale(1,-1)"
+       x="180.39999"
+       y="-599.59998"
+       style="font-size:9.60000038px"><tspan
+         id="tspan10128"
+         sodipodi:role="line"
+         y="-599.59998"
+         x="180.39999 184.8448 191.9456 203.5984 207.5984 215.5984 222.6992 231.5984 239.5984"
+         style="font-size:16px;font-style:italic;font-variant:normal;writing-mode:lr-tb;fill:#1d1916;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Palatino;-inkscape-font-specification:Palatino-Italic">low hang </tspan></text>
+<text
+       id="text10138"
+       transform="scale(1,-1)"
+       x="277.20001"
+       y="-599.59998"
+       style="font-size:9.60000038px"><tspan
+         id="tspan10140"
+         sodipodi:role="line"
+         y="-599.59998"
+         x="277.20001 288.75519 295.60001 299.60001 304.0448 308.48959 312.93439 319.59839 323.59839 330.69919 335.14401 342.24481 351.14401 357.9968"
+         style="font-size:16px;font-style:italic;font-variant:normal;writing-mode:lr-tb;fill:#1d1916;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Palatino;-inkscape-font-specification:Palatino-Italic">we life alone </tspan></text>
+<text
+       id="text10158"
+       x="427.60001"
+       y="-599.59998"
+       style="font-size:9.60000038px"
+       transform="scale(1,-1)"><tspan
+         id="tspan10160"
+         sodipodi:role="line"
+         y="-599.59998"
+         x="427.60001 432.0448 436.48959 445.38879 452.39999 456.39999 462.91519 470.01599 476.24319"
+         style="font-size:16px;font-style:italic;font-variant:normal;writing-mode:lr-tb;fill:#1d1916;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Palatino;-inkscape-font-specification:Palatino-Italic">line cost</tspan></text>
+</g></svg>

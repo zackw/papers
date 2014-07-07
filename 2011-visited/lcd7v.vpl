@@ -1,0 +1,72 @@
+(VTITLE Virtual font for lcd7)
+(FAMILY TeX-lcd7)
+(CODINGSCHEME UL7Encoding + T1Encoding)
+(DESIGNSIZE R 10.0)
+(DESIGNUNITS R 1000)
+(FONTDIMEN
+   (SPACE D 500)
+   (XHEIGHT D 400)
+   (QUAD D 1000)
+   (EXTRASPACE D 500)
+   )
+(MAPFONT D 0
+   (FONTNAME lcd7)
+   )
+(LIGTABLE
+   )
+(CHARACTER O 55 (comment hyphen)
+   (CHARWD R 528)
+   (CHARHT R 416)
+   (MAP
+      (SETCHAR O 0)
+      )
+   )
+(CHARACTER C 4
+   (CHARWD R 528)
+   (CHARHT R 688)
+   (MAP
+      (SETCHAR O 1)
+      )
+   )
+(CHARACTER C 5
+   (CHARWD R 528)
+   (CHARHT R 722)
+   (MAP
+      (SETCHAR O 2)
+      )
+   )
+(CHARACTER C 6
+   (CHARWD R 528)
+   (CHARHT R 722)
+   (MAP
+      (SETCHAR O 3)
+      )
+   )
+(CHARACTER C 8
+   (CHARWD R 528)
+   (CHARHT R 722)
+   (MAP
+      (SETCHAR O 4)
+      )
+   )
+(CHARACTER C 9
+   (CHARWD R 528)
+   (CHARHT R 722)
+   (MAP
+      (SETCHAR O 5)
+      )
+   )
+(CHARACTER C A
+   (CHARWD R 528)
+   (CHARHT R 722)
+   (MAP
+      (SETCHAR O 6)
+      )
+   )
+(CHARACTER C F
+   (CHARWD R 528)
+   (CHARHT R 722)
+   (MAP
+      (SETCHAR O 7)
+      )
+   )
