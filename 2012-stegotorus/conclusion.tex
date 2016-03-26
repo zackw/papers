@@ -1,0 +1,19 @@
+\section{Conclusion}\label{s:conclusion}
+We described StegoTorus, a new system for improving Tor's robustness
+against automated protocol analysis.  StegoTorus interposes on
+communications between the Tor client and the first Tor relay,
+implements a custom encryption protocol and provides a suite of
+steganography modules that make Tor resilient to fingerprinting
+attacks.  Our statistical evaluations demonstrate that StegoTorus
+makes Tor traffic more resilient to site fingerprinting attacks and
+and that it resembles HTTP in the dimensions of connection length,
+payload size and bandwidth use.  Our performance measurements indicate
+that our prototype system, in its HTTP steganography mode, delivers
+throughput of roughly \kBps{30}, which is about four times that of a
+\kbps{56} modem.
+
+\smallskip\noindent\textbf{Future Work:} There is much room for
+further research on expanding and strengthening our suite of
+steganography modules.  Beyond steganography modules we plan to
+explore opportunities for performance improvements and add support for
+redundant coding among steganography modules.

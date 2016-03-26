@@ -1,0 +1,70 @@
+\section{Introduction}\label{s:intro}
+
+Freedom of speech and decentralization are bedrock principles of the
+modern Internet.  John Gilmore famously said that “the Net interprets
+censorship as damage, and routes around it”~\cite{q-gilmore}.  It is
+more difficult for a central authority to control what is published on
+the Internet than on older, broadcast-based media; in 2011, the
+Internet's utility to the “Arab Spring” revolutions prompted a
+spokesman for the US Department of State to label it “the Che Guevara
+of the 21st century”~\cite{q-ross}.  Nonetheless, national governments
+can easily inspect, manipulate, and block nearly all network traffic
+that crosses their borders. Over a third of all nations impose
+“filters” on their citizens' view of the Internet~\cite{n-global}.  As
+the Internet continues to grow in scope and importance, we can expect
+that governments will only increase their efforts to control
+it~\cite{q-celine}.
+
+Tools for evading online censorship are nearly as old as the
+censorship itself~\cite{c-peacefire,c-howto-book}.  At present, one of
+the most effective circumvention tools is “Tor”~\cite{c-tor}.  Tor
+provides anonymity for its users by interposing three relays between
+each user and the sites that the user visits.  Each relay can decrypt
+just enough of each packet to learn the next hop. No observer at any
+single point in the network, not even a malicious relay, can know both
+the source and the destination of Tor traffic.
+
+Although Tor was not designed as an anticensorship tool, it works well
+in that role.  Repressive governments respond by blocking Tor
+itself. In 2010 and 2011, Iran attempted to block Tor traffic by
+scanning TLS handshakes for Diffie-Hellman parameters and/or
+certificate features that were characteristic of
+Tor~\cite{n-iran1,n-iran2}.  China employed a similar technique but
+enhanced it with active probing of the suspected Tor relay, mimicking
+the initial sequence of Tor protocol messages in
+detail~\cite{n-china-active}.  The Tor developers defeated these
+blocks with small adjustments to their software.
+
+For a few days in early 2012, Iran blocked \emph{all} outbound HTTPS
+connections to many websites~\cite{n-iran3}, including Tor's primary
+site.\footnote{\url{https://www.torproject.org/}} To evade this more
+drastic blockade, Tor deployed a program called \textit{obfsproxy}
+(for “obfuscating proxy”)~\cite{n-iran-ob}.  Obfsproxy applies an
+additional stream cipher to Tor's traffic.  This frustrates any filter
+looking for a specific plaintext pattern (such as a TLS handshake),
+but does not significantly alter packet sizes and timing.  As we will
+discuss in Section~\ref{s:detect-tor}, this means that Tor is still
+easily fingerprintable.
+
+\smallskip\noindent\textbf{Contributions:} In this paper, we present
+an elaboration on the obfsproxy concept, StegoTorus.  StegoTorus
+currently consists of:
+\begin{compactitem}
+\item A generic architecture for concealing Tor traffic within an
+  innocuous “cover protocol” (Section~\ref{s:arch}).
+\item A novel encrypted transport protocol geared specifically for the
+  needs of steganography (Section~\ref{s:chop}).
+\item Two proof-of-concept steganography modules (Section~\ref{s:steg}).
+\end{compactitem}
+We will demonstrate the ease of detecting un-camouflaged Tor traffic
+and StegoTorus' effectiveness at concealing it, even with the current
+proof-of-concept steganography (Sections~\ref{s:detect-tor}
+and~\ref{s:detect-fb}).  We will also demonstrate that StegoTorus
+imposes a reasonable amount of overhead for what it does
+(Section~\ref{s:peval}).
+
+We anticipate that censors will adapt quickly to this advance on the
+circumvention side of the arms race; more sophisticated and varied
+steganography modules are under active development.  Ultimately, an
+attacker will need to defeat \emph{all} of the steganography modules
+used by StegoTorus to block Tor traffic.

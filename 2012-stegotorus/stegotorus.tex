@@ -1,0 +1,133 @@
+\documentclass{sig-alternate}
+\setlength{\paperheight}{11in}
+\setlength{\paperwidth}{8.5in}
+% these packages must be loaded in this order, and before any other packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[final]{microtype}
+% these packages must be loaded in this order
+\usepackage[nocompress]{cite}
+\usepackage[hyphens]{url}
+\usepackage{color}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,urlcolor=blue,citecolor=dgreen,
+            pageanchor=false,pdfpagelabels=false}
+% CCS printer wants link colors disabled
+\hypersetup{hidelinks=true}
+% the order of the rest of these packages does not matter, so they're
+% sorted alphabetically
+\usepackage{authblk}
+\usepackage{booktabs}
+\usepackage[margin=10pt,font=small,labelfont=bf]{caption}
+\usepackage[font=small]{subcaption}
+\DeclareCaptionType{copyrightbox}%fix caption/sig-alternate compat issue
+\usepackage{comment}
+\usepackage{listings}
+\usepackage{paralist}
+\usepackage{siunitx}
+\usepackage{tikz}
+\usepackage[l2tabu,orthodox]{nag}
+%
+\definecolor{dgreen}{RGB}{0,127,0}
+\pgfrealjobname{stegotorus}
+\usetikzlibrary{arrows}
+\usetikzlibrary{decorations.pathmorphing}
+% siunitx 2.0 renamed all the options, feh
+% we only need the bit and byte units, not the binary prefixes
+\makeatletter
+\@ifpackagelater{siunitx}{2011/06/15}
+  {\sisetup{per-symbol=/,per-mode=symbol,group-separator={,},
+            range-units=single}
+   \DeclareSIUnit{\bit}{bit}
+   \DeclareSIUnit{\byte}{B}}
+  {\sisetup{per=slash,digitsep=comma,trapambigrange=false}
+   \newunit{\bit}{bit}
+   \newunit{\byte}{B}}
+\makeatother
+% \SI shorthands
+\newcommand{\kbps}[1]{\SI{#1}{\kilo\bit\per\second}}
+\newcommand{\Mbps}[1]{\SI{#1}{\mega\bit\per\second}}
+\newcommand{\kBps}[1]{\SI{#1}{\kilo\byte\per\second}}
+\newcommand{\msec}[1]{\SI{#1}{\milli\second}}
+%
+\hyphenation{white-list-ing ad-ver-sar-ies anon-y-mized}
+\lstset{basicstyle=\fontfamily\ttdefault\fontsize{6.5}{7}\selectfont,
+        xleftmargin=7pt,morecomment=[s]{<}{>}}
+\DeclareTextFontCommand{\textitt}
+  {\fontfamily\ttdefault\fontshape\itdefault\selectfont}
+%\renewcommand{\baselinestretch}{0.975}
+%
+\bibliographystyle{acmurl}
+%
+\makeatletter
+\def\@openbib@code{}
+\newcommand*{\BIBdecl}{%
+  % cribbed from biblatex 1.7; / moved from Breaks to BigBreaks to
+  % ensure that 'http://' is not broken after the colon
+  \Urlmuskip=0mu plus 3mu\relax
+  \mathchardef\UrlBigBreakPenalty=100\relax
+  \mathchardef\UrlBreakPenalty=200\relax
+  \def\UrlBigBreaks{\do\:\do\-\do\/}%
+  \def\UrlBreaks{%
+    \do\.\do\@\do\\\do\!\do\_\do\|\do\;\do\>\do\]\do\)\do\}%
+    \do\,\do\?\do\'\do\+\do\=\do\#\do\$\do\&\do\*\do\^\do\"}%
+}
+% Make affiliations all on one line, fix the apparent ordering
+% of commas and footnote marks, and apply ACM's font choices.
+\renewcommand\AB@affilsepx{\qquad\protect\Affilfont}
+\renewcommand\AB@authnote[1]
+    {\rlap{\lower-0.4em\hbox{\kern0.7pt\relax%
+      \fontfamily{txss}\fontsize{8}{9}\selectfont #1}}}
+\renewcommand\AB@affilnote[1]
+    {\leavevmode\lower-0.4em\hbox{\kern-0.5pt\relax%
+      \fontfamily{txss}\fontsize{7}{8}\selectfont #1}}
+\renewcommand\Authsep{,\hskip 8.5pt\relax}
+\renewcommand\Authands{,\hskip 5.5pt\relax and~}
+\renewcommand\Authfont{\aufnt}
+\renewcommand\Affilfont{\affaddr}
+\makeatother
+%
+\begin{document}
+
+% annotations for the first page of the camera-ready
+\conferenceinfo{CCS'12,} {October 16--18, 2012, Raleigh, North Carolina, USA.}
+\CopyrightYear{2012}
+\crdata{978-1-4503-1651-4/12/10}
+\clubpenalty=10000
+\widowpenalty=10000
+
+\title{StegoTorus: A Camouflage Proxy for the Tor Anonymity System}
+
+\author[1,2]{Zachary~Weinberg}
+\author[3]{  Jeffrey~Wang}
+\author[2]{Vinod~Yegneswaran}
+\author[2]{Linda~Briesemeister}
+\author[2]{Steven~Cheung}
+\author[3]{Frank~Wang}
+\author[3]{Dan~Boneh}
+
+\affil[1]{Carnegie~Mellon~University}
+\affil[2]{SRI~International}
+\affil[3]{Stanford~University}
+
+\maketitle
+
+\input{abstract}
+\input{intro}
+\input{arch}
+\input{chop}
+\input{steg}
+\input{detection-tor}
+\input{detection-fb}
+\input{eval}
+\input{relwork}
+\input{conclusion}
+\input{ack}
+
+\bibliography{stegotorus}
+
+\end{document}
+% Local Variables:
+% mode: latex
+% encoding: utf-8
+% End:

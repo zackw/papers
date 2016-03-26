@@ -1,0 +1,99 @@
+\section{Performance}\label{s:peval}
+
+All performance tests were conducted using a desktop PC in California
+with a DSL link to the Internet (\Mbps{5.6} down, \Mbps{0.7} up) as the
+client, and a virtual host in a commercial data center in New
+Jersey as the server.  During testing, the DSL link was otherwise
+idle, and round-trip latency between the two machines was \msec{85}.  To
+ensure that our results reflect the performance of StegoTorus itself
+rather than factors beyond our control (such as the instantaneous load
+on the global Tor network), we configured a private Tor network
+entirely within the server host, and sourced all of the test files and
+streams from an HTTP server also running on that host.
+
+\smallskip\noindent\textbf{Steganographic Expansion:} We performed a
+series of downloads of 1,000,000-byte files and measured the amount of
+data actually transferred over the network by a direct HTTP
+connection, Tor, StegoTorus using the chopper alone, and StegoTorus
+with the \textit{HTTP} module. The results are shown in
+Table~\ref{t:expansion}.  Tor itself has a small amount of overhead,
+and the chopper imposes a little bit more, but HTTP steganography is
+very expensive by comparison, increasing the amount of data sent
+upstream by a factor of 41, and downstream by 12.  While we have not
+spent much time on optimizing our encoding, an expansion factor of at
+least eight (one byte per bit) is typical for modern steganography
+schemes~\cite{a-stat-steg}, so we suspect that HTTP steganography
+cannot be made \emph{that} much more efficient in the downstream
+direction.
+
+\begin{table}[ht!]
+\centering\small
+\newcommand\z{\phantom{.0}}
+\begin{tabular}{lr@{\hspace{6pt}}rr@{\hspace{6pt}}r}
+\toprule
+&\multicolumn{2}{c}{\textbf{To server}}&%
+ \multicolumn{2}{c}{\textbf{From server}}\\
+&\textbf{bytes}&$\boldsymbol{\times}$&\textbf{bytes}&$\boldsymbol{\times}$\\
+\midrule
+Direct               &  23,643 &  1\z &  1,014,401 &  1\z \\
+Tor                  &  61,162 &  2.6 &  1,075,715 &  1.1 \\
+StegoTorus (chopper) &  63,061 &  2.7 &  1,084,228 &  1.1 \\
+StegoTorus (HTTP)    & 966,964 & 41\z & 11,814,610 & 12\z \\
+\bottomrule
+\end{tabular}
+\caption{Mean number of bytes transferred in each direction in order
+  to download a 1,000,000-byte file directly, over Tor, and over
+  StegoTorus with and without HTTP steganography.  The file was
+  downloaded 32 times for each test.}
+\label{t:expansion}
+\end{table}
+
+\begin{figure}[ht!]
+\centering
+\input{figures/goodput}
+\caption{Mean StegoTorus (ST) and Tor goodput for \SI{100}{\kilo\byte}
+  to \SI{1}{\mega\byte} file transfers.}\label{f:goodput}
+\end{figure}
+
+\smallskip\noindent\textbf{Goodput:} Expanding on the previous
+experiment, we conducted more downloads of files of various sizes,
+measured the time required, and computed the mean goodput (that is,
+application-layer throughput) achieved in the same configurations
+described earlier; the results are shown in Figure~\ref{f:goodput}.
+We see that the goodput of the chopper-only configuration is
+comparable to Tor, and that StegoTorus-HTTP is only able to achieve
+goodput of roughly \kBps{27}, which is still about 4 times better than
+a \kbps{56} modem.  Consistent with this, we have been able to use
+StegoTorus-HTTP as-is for casual Web browsing; subjectively speaking,
+it is noticeably slower than a direct broadband connection, but not so
+slow that waiting for page loads becomes tedious.
+
+\smallskip\noindent\textbf{Resilience:} Since StegoTorus may be used
+in locations with poor connectivity, we also investigated its
+performance as a function of network latency.  We used Linux's
+\textit{netem} mechanism~\cite{s-netem} to vary the round-trip latency
+to the StegoTorus server from \SIrange{100}{450}{\milli\second}.  For
+comparison, packets from California take approximately \msec{85} to
+reach New Jersey, \SIrange{120}{180}{\milli\second} to reach East Asia or
+Australia, and \SIrange{300}{350}{\milli\second} to reach India or Africa.
+
+We configured the server to generate continuous streams of data at
+three different rates, thus measuring steady-state behavior, and
+recorded the median bandwidth consumption over a period of 20 seconds
+at each latency setting.  The results are shown in
+Figure~\ref{f:resilience}.  Ideal behavior would be for each line to
+be perfectly horizontal, and as close to the “Tor” line as possible.
+
+Both Tor and StegoTorus in chopper-only mode are robust up to
+\msec{450} of delay, suffering no measurable performance degradation.
+The \textit{HTTP} module, however, can keep up with a \kBps{50} data
+stream only at latencies below \msec{200}.  Allowing \textit{HTTP} to
+use more parallel connections increases throughput at low latencies,
+but does not help it keep up at high latencies.  We suspect this is
+because each chopper block, which typically will only contain one or
+two Tor cells, takes a full HTTP request-response pair to transfer to
+the peer.  Thus we are only transferring one or two Tor cells per
+round-trip cycle, despite consuming far more bandwidth.  However, we
+believe that the \textit{HTTP} module can be improved to handle high
+latency at least somewhat better, and plan to make this a priority for
+future work.

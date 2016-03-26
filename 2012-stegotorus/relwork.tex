@@ -1,0 +1,132 @@
+\section{Related Work}\label{s:relwork}
+
+Here we summarize related research in the areas of blocking resistance
+and encrypted traffic analysis.
+
+\smallskip\noindent\textbf{Address Filtering Resistance:} The oldest
+technique for evading address filters is the use of open proxy
+servers, such as DynaWeb~\cite{c-dynaweb} and
+Ultrasurf~\cite{c-ultrasurf}.  However, with these services, users
+have to rely on the proxy administrator not to betray their browsing
+habits.  Proxies also have publicly advertised and relatively stable IP
+addresses, so it is easy to block them in an address filter. While Tor
+relays come and go frequently, Tor's directory service is public, and
+there is nothing to stop a perimeter filter from blocking every
+entry point it lists.  The obvious solution is to have many proxies
+whose addresses are not published; users have to find out about them
+via covert means.  K\"opsell and Hillig proposed these covert proxies
+in 2004 as an add-on to their AN.ON service~\cite{c-anon-br}.  The Tor
+Project calls them “bridge relays” and has deployed them
+extensively~\cite{s-tor-bridge,c-tor-br}.
+
+Browser-hosted proxies~\cite{c-browser-proxies} aim to make so many
+proxies available that it would be hopeless for a censor to block them
+all; there is still a global directory, but it is piggybacked on a
+cloud-storage service that is so widely used that the censor will
+hesitate to block it.  Telex~\cite{c-telex}, Decoy
+Routing~\cite{c-decoy-route}, and Cirripede~\cite{c-cirripede} take a
+different approach to address-filtering resistance: TCP streams are
+covertly “tagged” to request that a router somewhere on the path to
+the overt destination divert the traffic to a covert alternate
+destination.  Telex and Decoy Routing place the tag in the TLS
+handshake, whereas Cirripede uses the initial sequence numbers of
+several TCP connections.  All three rely on the impenetrability of TLS
+to prevent the censor from making its own connections to the overt
+destination and comparing what it gets with the observed traffic, and
+may be vulnerable to large-scale traffic analysis as Tor is.
+
+%% StegoTorus does not directly grapple with address filtering, but the
+%% “rendezvous” mechanism~\cite{c-rendezvous} aims to do so.
+
+\smallskip\noindent\textbf{Pattern and Statistical Filtering
+  Resistance:}
+%% All current proxy services employ encryption, but all
+%% current encrypted protocols contain cleartext headers and/or handshake
+%% messages that can be used by pattern filters, e.g.,Iran's briefly
+%% successful blocking of Tor by Diffie-Hellman
+%% modulus~\cite{n-iran1,n-iran2}.  This illustrates the need for
+%% protocol camouflage, making circumvention traffic look like “normal”
+%% traffic, at least as far as a perimeter filter can tell given its
+%% resource constraints.
+Infranet~\cite{c-infranet}, like StegoTorus, conceals traffic that
+would otherwise be blocked within seemingly normal HTTP traffic.  It
+works as a direct proxy for the browser, and does not provide Tor's
+anonymity guarantees; on the other hand, it can take advantage of its
+access to unencrypted network requests to reduce its bandwidth
+requirements.  Dust~\cite{c-dust} attempts to define a cryptosystem
+whose output is wholly indistinguishable from randomness; it is not a
+complete circumvention system by itself (but is under active
+development as a pluggable transport for Tor) and could theoretically
+be blocked by looking for the \emph{absence} of any cleartext.
+SkypeMorph is a pluggable transport for Tor that makes Tor packet
+shape resemble Skype~\cite{c-skypemorph}.  It is conceptually similar
+to our embed module, but lacks our generic chopper-reassembler and
+crypto framework.  NetCamo~\cite{c-netcamo} is an algorithm for
+scheduling transmissions to prevent traffic analysis; it is
+complementary to any of the above, and could also be deployed within
+existing relay servers to enhance their resistance to global
+adversaries.  Collage~\cite{c-ugc} is a scheme for steganographically
+hiding messages within postings on sites that host user-generated
+content, such as photos, music, and videos.  The sheer number of these
+sites, their widespread legitimate use, and the variety of types of
+content that can be posted make it impractical for the censor to block
+all such messages.  However, it is suitable only for small messages
+that do not need to be delivered quickly, and it may be vulnerable to
+steganographic stripping~\cite{a-strip-steg}.
+
+%StegoTorus is, of course, directly aimed at frustrating pattern and
+%statistical filtering.
+
+\smallskip\noindent\textbf{Encrypted Traffic Analysis:} There have
+been a number of studies on analyzing encrypted traffic to classify
+the application type \cite{a-classify} or the web site being visited
+in an encrypted HTTP stream
+\cite{a-enchttp-leak,a-fingerprint,a-statistical-id}. These attacks
+usually extract some set of features based on the packet sizes,
+timings, and directions (essentially all of the available information
+when encryption is used) and use machine learning techniques to do the
+classification. 
+%% Bar-Yanai et al. \cite{a-classify} use the $k$-means
+%% and $k$-nearest neighbor algorithms to distinguish between a number of
+%% application types including HTTP, SMTP, Skype, and BitTorrent. They
+%% achieve quite good accuracy because separate applications generally
+%% produce distinct network signatures. For determining the actual web
+%% site being visited using HTTP, Sun et~al.~\cite{a-statistical-id} use
+%% Jaccard's similarity coefficient with the set of HTTP object sizes,
+%% while Bissias et al. \cite{a-enchttp-leak} use cross-correlation with
+%% both packet sizes and timings. An interesting defense proposed by
+%% Wright et al. \cite{c-morph} involves ``morphing'' packet sizes so
+%% that they appear to be drawn from a different target distribution,
+%% greatly reducing the effectiveness of these types of attacks.
+Recently, some similar traffic analysis work has been done for clients
+who are using Tor. This naturally makes the task more difficult
+because Tor introduces two defenses \cite{c-tor}: combining all
+network traffic into one TCP stream to the first Tor router, and
+padding each packet to a fixed size (or a small set of
+sizes). Herrmann et~al.~\cite{a-multinomial} use a multinomial
+na\"{\i}ve Bayes classifier on the histogram of packet sizes and
+directions successfully against VPN technologies and OpenSSH, but they
+achieve under 3\% accuracy against Tor while classifying on a set of
+775 web sites. The work of Panchenko et~al.~\cite{a-finger-onion},
+however, demonstrates that these defenses are not enough. Using
+support vector machines and a carefully selected feature set, they
+were able to achieve over 50\% accuracy on the same classification
+task. This prompted the developers of Tor to introduce an ad hoc
+defense in the form of randomized pipelining \cite{c-random-pipe}
+to defeat this type of classifier. Last, Wang
+et~al.~\cite{a-active-http} present a potential application-level
+attack that involves serving malicious content and then observing a
+distinctive traffic pattern; although relevant, we are more interested
+in passive attacks that could be carried out on a large scale.
+
+%% One limitation of almost all of the work described is that the network
+%% traffic observed must be ``clean'' in the sense that the classifiers
+%% need to have a well-defined beginning and end for a sequence of
+%% packets in order to classify it. In particular, if all we can observe
+%% is an infinite (or very long) TCP stream, it is not obvious whether
+%% they could still identify web sites being visited in the stream or how
+%% costly it would be to do so. We address the simpler problem of
+%% identifying visits to Facebook over Tor to overcome this limitation;
+%% our attack is both efficient and practical in this regard and thus
+%% would be feasible for a regional firewall to implement.
+

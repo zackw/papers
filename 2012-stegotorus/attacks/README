@@ -1,0 +1,8 @@
+Tor Fingerprinting Attack
+
+flowstat: Takes a set of pcap files which should be from visiting a single web
+	  site (e.g. www.facebook.com) and creates a fingerprint for the flow
+	  as output.
+
+flowfind: Takes a fingerprint generated from flowstat and runs it across
+	  a pcap file, finding matches (also identifies Tor).
