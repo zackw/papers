@@ -1,0 +1,253 @@
+\documentclass[oneside]{zarticle}
+\addbibresource{shared.bib}
+\definecolor{todocolor}{RGB}{127,0,0}
+\def\todo#1{{\color{todocolor}\bfseries [#1]}}
+\def\needcite#1{\todo{cite: #1}}
+\hyphenation{ano-nym-ity}
+\begin{document}
+
+\title{How to Lengthen URLs}
+\author{Zachary Weinberg}
+\maketitle
+
+\begin{abstract}
+It is possible for many different URLs to refer ultimately to the same
+document.  When carrying out large-scale surveys of the World Wide Web,
+results will be distorted if URLs rather than documents are treated as
+the unit of analysis.  Unfortunately, finding a mapping from a sample
+of URLs to the \emph{canonical} URLs for the documents they refer to
+is nontrivial, due to the large number of different ways to “redirect”
+a Web browser from one URL to another.  While the most common
+scenario, redirects using HTTP response headers, is easily handled,
+the general case may require nearly all the features of a complete Web
+browser.  We present the evolution of a practical “redirect chasing”
+script, driven by experience with larger and larger samples of URLs in
+the course of a research project, and provide some analysis of the
+ecosystem of URL redirections on the modern Web.
+\end{abstract}
+
+\section{Introduction}
+
+Analysis of the World Wide Web at “global scale” relies on samples of
+documents which, one hopes, are representative of the complete Web.
+However one collects such a sample, it begins as a sample of
+\emph{URLs}, not documents.  A URL is a name for a document, or more
+precisely, a \emph{resource}, such as an HTML file, an image, a font,
+a stylesheet, a JavaScript program, or a blob of raw data.  Many
+resources may be assembled to make one document, but there is always a
+“top-level” \emph{document URL}, referring to the HTML file for the
+document, and that is the URL that people pass around, embed in
+hyperlinks, etc.
+
+Unfortunately, the mapping between document URLs and documents is not
+one-to-one.  One URL might refer to many different documents, for
+instance, translations into several different languages of the same
+text; HTTP includes a mechanism for a human user to declare what
+languages they can read, so that the server can provide documents in
+those languages if at all possible.  This is fairly uncommon, and
+usually neglected, but, below, we will describe a few cases where it
+becomes relevant.  Conversely, many URLs can refer to the same
+document, and this is extremely common.  The most visible scenario
+where this happens is when “URL shorteners” are in use.  A URL
+shortener is a Web service that accepts submissions of document URLs
+from users, and produces shorter URLs (as the name implies) that are
+easier to copy around.  For instance, the “long” URL
+\url{http://www.example.com/2014/04/01/internet-april-fools-retrospective}
+might become a shortened URL like \url{http://is.gd/B7749S}.  When the
+short URL is accessed, the shortening service responds with a
+\emph{redirection} directing the browser to the original, long URL.
+
+Shortened URLs are extremely common in some samples of the Web.  For
+instance, shortened URLs initially became popular for sharing links on
+the “microblogging” service Twitter, because it imposes a hard upper
+limit on the number of characters in each “tweet.”  This service has
+since relaxed its rules, allowing URLs to not count toward the
+limit,\footnote{Twitter does this by applying their own URL shortener
+  internally, so all URLs still count for a small number of characters
+  toward the limit, no matter how long they are.} but \todo{percentage!}
+of URLs shared on Twitter still involve a shortener.  Since there are
+many shortening services\footnote{an incomplete list may be found at
+  \url{http://longurl.org/services}} and they do not share their
+databases, a sample of Twitter that does not take shortened URLs into
+account is likely to overcount popular documents.
+
+Redirections are not only used for shortening URLs.  Their original
+purpose was to allow documents to be renamed without breaking existing
+hyperlinks to the old name, and they are still used for this today.
+Spammers may use redirection to conceal the fact that many different
+URLs point to the same document, thus foiling naïve spam filters.  If
+a company has registered its name in the DNS under many top-level
+domains, they may use redirection to map all of them to one
+“canonical” site; if this is not done, search engines may fail to give
+the site enough “credit” for its inbound links.\footnote{See for
+  instance \url{https://support.google.com/webmasters/answer/139066}.}
+
+For all these reasons, it is crucial to find out which URLs in a large
+sample are referring to the same document, so that the document will
+be counted only once in the analysis.  Unfortunately, doing so
+programmatically is difficult.  We are engaged in several large-scale
+studies of the Web as described above, and we have developed a
+“redirect chasing” script for our own use.  It began as a
+straightforward user of Python's bundled HTTP client library,
+\textsf{urllib}~\needcite{urllib}, but its complexity has
+progressively increased over the past year, and it is now built around
+a complete “headless” browser,
+\textsf{phantom.js}~\needcite{phantom.js}.  We will describe the
+challenges involved in the development of this script, and some of the
+phenomena encountered along the way.
+
+\section{URL Canonicalization}
+
+We use the word \emph{canonicalization} to describe the process of
+determining the “official” name of a document referred to by some URL.
+The fundamental challenge of canonicalization is the many different
+ways that a website maintainer may declare that one URL should be
+treated as equivalent to another.  In this section, we describe all of
+these ways and how they can, or cannot, be handled programmatically.
+
+\subsection{Syntactic Equivalence}
+
+\begin{figure}
+\begin{verbatim}
+http   :// mbogo:p4ssw0rd @ example.com : 80   /foo/bar/baz ?q=blurf #quux
+scheme     userinfo         host          port path         query    fragment
+\end{verbatim}
+\caption{The general structure of an URL.}\label{fig:url-structure}
+\end{figure}
+
+The general structure of a URL (technically, this only applies to a
+“hierarchical scheme” like \verb|http| or
+\verb|ftp|,~\needcite{rfc3986} but for our
+purposes, only such URLs are relevant) is as shown in
+\ref{fig:url-structure}.  Some of these fields are deprecated, but all
+of them can and will appear in a sufficiently large sample of URLs.
+RFC~3986~\needcite{rfc3986} and the current draft revision of the
+HTTP/1.1~RFC~\needcite{draft-ietf-httpbis-p1-messaging-26} together
+define a syntactic canonicalization algorithm for URLs, which we
+summarize as follows:
+
+\begin{itemize}
+\item \verb|%xx|-encoded characters should be decoded throughout the
+      URL except when they encode characters that are “reserved”
+      within that field.  Any surviving instances of \verb|%xx|
+      should be uppercased (e.g. \verb|%2f| becomes \verb|%2F|).
+\item The scheme and host fields are restricted to ASCII (after
+      \%-decoding) and should be lowercased.
+\item The userinfo field has no surviving legitimate uses, but is
+      often used to obscure the true hostname in phishing attacks;
+      therefore, its presence should be treated as a hard error.
+\item A port number that is empty, or specifies the default
+      IANA-assigned port for the scheme, should be removed.
+\item If the path is entirely absent, a path consisting of a single
+      \verb|/| should be added.
+\item Within the path, redundant slashes should be removed, and
+      the special path segments `\verb|.|' and `\verb|..|' should
+      be collapsed.
+\end{itemize}
+
+It is quite common for human writers to drop the trailing slash when
+referring to the “front page” of a site, and to capitalize characters
+in the hostname; other non-canonical forms are much less common.  See
+section~\ref{sec:stats} for more analysis.
+
+For the most part, one may rely on syntactic canonicalization to occur
+as a side effect of HTTP redirection processing (described below).
+However, there are exceptions.  Some HTTP client libraries preserve
+the input case of the scheme and host fields, and preserve a redundant
+port specification.  Some servers don't redirect \verb|http://site| to
+\verb|http://site/|.  \todo{look at the data and say something about
+  userinfo.}  Maybe most important of all, many URLs include non-ASCII
+characters; as there is no way to determine the intended character set
+for these characters (and assuming UTF-8 is not safe), non-ASCII
+characters must be encoded as \verb|%xx|, preserving the exact pattern
+of bytes originally encountered, even though the spec says to decode them.
+
+Writers of text intended to be read by humans will often omit
+the leading \verb|http://| when they mention a URL.  Consistent with
+this, most Web browsers will insert \verb|http://| if a URL without a
+scheme is typed into the URL bar.  However, technically speaking a URL
+of the form \verb|example.com/path| is a \emph{relative} URL, in which
+\verb|example.com| should be treated as a path component, not as a
+hostname; some HTTP client libraries will apply this interpretation
+and then fail to load the intended URL.
+
+\subsection{HTTP Redirection}
+
+The officially “correct” way to cause two URLs to refer to the same
+document is to have the server for one of them issue an HTTP
+\emph{redirection} response, pointing to the other.  The HTTP
+specification defines several different types of redirection, but for
+the purpose of determining the canonical name of a document, they can
+all be treated as equivalent.  (Theoretically, \emph{temporary}
+redirects should not change the canonical name of a document, but in
+practice site maintainers do not pay attention to the difference,
+since the behavior of browsers is identical in both cases.)  An HTTP
+redirection must contain a \verb|Location| header that specifies the
+new URL; the value of this header does not have to be a
+\emph{complete} URL, it is interpreted relative to the old one.  The
+minimal HTTP/1.1 redirection transaction looks something like this:
+
+\begin{quote}
+\begin{verbatim}
+GET /oldname HTTP/1.1
+Host: www.example.com
+Connection: close
+
+HTTP/1.1 301 Moved Permanently
+Location: /newname
+Connection: close
+Content-Length: 0
+\end{verbatim}
+\end{quote}
+
+All 3xx response codes mean that the desired resource is somewhere
+else, but not all of them can be processed automatically.  For
+instance, code 300 is “Multiple Choices” and requires user
+interaction.
+
+HTTP client libraries generally do implement automatic processing of
+HTTP redirections, but not always without bugs.  Rather more
+importantly, browsers implement redirections somewhat differently than
+the way the HTTP specification originally intended, and an HTTP client
+library that does not follow suit will misinterpret some redirections,
+leading to spurious failures.  (The most prominent such case, the
+behavior of a code 301 response to a POST request, might seem like it
+would never come up since the initial request will always be GET, but
+as we will describe in section~\ref{sec:jsredir}, POSTs can in fact
+occur.)
+
+\subsection{HTML Redirection}
+
+There are two HTML constructs that are relevant to determining the
+canonical URL for a document, but only one actually causes browsers to
+load a new page.  \verb|<meta http-equiv="refresh">| has basically the
+same effect as a HTTP 3xx response, but after a delay, which can be
+tens of seconds.  It can refer back to the current page; this was an
+early method of providing dynamic content, by causing the browser to
+reload the page automatically at intervals.
+
+\verb|<link rel="canonical">| has no effect on browsers, but informs
+search engines that this is one of a family of closely-related (not
+necessarily identical) documents whose canonical name is at the link
+target. For instance, “redirect” pages on Wikipedia are implemented
+with \verb|<link rel="canonical">| rather than HTTP redirects, because
+they want to add a note to the top of the page content saying that a
+redirection has happened.
+
+Analysts 
+
+
+\subsection{JavaScript Redirection}\label{sec:jsredir}
+
+JavaScript code can force the browser to 
+
+\section{Digression: Sites and Domains}
+
+\section{Implementation of a Reliable Canonicalizer}
+
+
+
+\section{Statistics from a Real Sample}\label{sec:stats}
+
+
+\end{document}
