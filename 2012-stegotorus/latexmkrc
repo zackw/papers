@@ -1,3 +1,3 @@
 $dvi_mode = 0;
 $pdf_mode = 1;
-@default_files = ("stegotorus");
+@default_files = ("2012-stegotorus");
