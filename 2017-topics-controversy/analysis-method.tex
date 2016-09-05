@@ -1,0 +1,21 @@
+\input diagrams/pipeline
+
+\section{Document preprocessing}\label{s:preprocessing}
+
+Having collected pages, we wish to reason about their contents.  For
+example, we wish to assign a topic to each page, and detect when this
+topic changes.  With hundreds of thousands of pages collected, this
+process must be automated as much as possible.
+
+The principal technique we use is Latent Dirichlet Allocation (LDA)
+clustering~\cite{lda_original2003}.  Our analysis pipeline
+(illustrated in Figure~\ref{f:pipeline}) includes several heuristic
+filtering steps before LDA, which remove irrelevant “boilerplate”
+and reduce the cost of model training.  These are described in this
+section, and LDA itself is described in Section~\ref{s:analysis}.
+
+\input parked-domain-detection
+\input text-processing
+\input topic-assignment
+\input survival-analysis
+\input topic-change-detection

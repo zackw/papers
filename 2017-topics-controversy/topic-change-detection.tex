@@ -1,0 +1,36 @@
+\subsection{Detection of Topic Changes}
+\label{s:topic_change}
+
+As discussed in Section~\ref{s:survival-desc}, pages can cease to be
+relevant to a censorship probe list by being taken down entirely, or
+by changing their topic to the point where they no longer contain
+sensitive material. Therefore, to evaluate the freshness of a probe
+list we need to detect topic changes.
+
+Existing algorithms for detecting \emph{any} change in a webpage
+(e.g.~\cite{Chakravarthy2006CDN}) are too sensitive for our purposes.
+Even looking for changes in the most probable topic chosen by LDA is
+too sensitive. The most probable topic assigned to the front page of a
+news website changes several times every day, as new articles appear,
+but it is still the front page of a news website.
+
+Instead, we compare the entire sets of probable topics that were
+assigned to a pair of observations.  Specifically, if $T_1$ and $T_2$
+are the topic probability vectors assigned to a pair of observations,
+let $S_1 = \{ i : T_{1i} \ge p \}$ and $S_2 = \{ i : T_{2i} \ge p \}$,
+that is, the respective sets of topic indices for which the assigned
+probabilities are greater than $p$.  Then, the page's topic is judged
+to have changed if $|S_1 \cap S_2| < m$, that is, the intersection of
+the topic sets is smaller than $m$.
+
+This algorithm has two parameters, $p$ and $m$. Its performance is
+also affected by the LDA sparsity parameter $\alpha$ and the number of
+topics $N$.  To tune these parameters, we used a manually chosen
+development set of $30$ pairs of observations whose topics were the
+same, and another set of similar size of observation pairs whose
+topics were different. We found that for $p=0.05$, $m=1$, $\alpha=10$,
+and $N=100$ the algorithm achieved perfect accuracy on the
+development set.  On a second randomly-chosen evaluation set, with $50$
+pairs of observations whose topics were the same and $50$ whose topics
+were different, the algorithm achieved 97.8\% recall and
+86\% precision.

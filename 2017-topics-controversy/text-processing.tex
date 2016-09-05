@@ -1,0 +1,140 @@
+\subsection{Boilerplate Removal}\label{s:boilerplate}
+
+Nearly all HTML documents contain “boilerplate” text which has
+little or nothing to do with the topic of the document itself, such as
+site navigation menus, copyright notices, and advertising.  It may not
+even be in the same language as the document's main
+content~\cite{SC:USENIXSec14}.  Boilerplate varies only a little from
+site to site, so it can confuse semantic analysis algorithms into
+grouping documents that are unrelated.  This problem has been
+recognized since 2002~\cite{baryossef.2002.template} and the solution
+is to strip the boilerplate from each document prior to semantic
+analysis.  Unfortunately, the most widely used algorithms for
+stripping boilerplate, such as Readability~\cite{readability.nd} and
+the similar “reader view” features in Chrome, Firefox, and Safari,
+depend on the standard semantics of HTML elements.  In a large sample
+of not necessarily well-structured documents, this is not a safe
+approach.  Some algorithms also make strong assumptions about the
+document language~\cite{evert.2008.ncleaner} or require several pages
+from the same site~\cite{SC:USENIXSec14}.
+
+We developed a hybrid of the boilerplate removal algorithms described
+in \textcite{lin2012combining} and \textcite{sun.2011.dombased}.
+These are completely language-neutral, use HTML element semantics only
+as hints, and in combination, require no manual tuning.  Their basic
+logic is that heavily marked-up text is more likely to be boilerplate.
+
+The hybrid algorithm merges subtrees of the parsed HTML into a tree of
+“blocks,” each of which represents a contiguous run of text.  Blocks
+are bigger than paragraphs but usually smaller than sections.  Each
+block is assigned a \emph{text density} score, which is the total
+number of text characters in the block, divided by the logarithm of
+the total number of markup characters in the block.  Stylistic markup
+(bold, italic, etc.)\ does not count, and invisible HTML elements
+(scripts, etc.)\ are completely discarded.  After the entire page has
+been scored, the algorithm identifies the \emph{least} dense block
+that contains the \emph{most} dense block.  This block's density score
+is the “threshold.” Every block that is less dense than the threshold
+(that is, it contains more markup and less text) is removed from the
+page.  Finally, all remaining markup is stripped, leaving only text.
+
+\subsection{Language Identification and Translation}
+
+LDA topic models detect semantic relationships between words based on
+their co-occurrence probabilities within documents.  Therefore, it is
+necessary for all documents to be in the same language.
+Multi-lingual versions of LDA exist, but they are either limited to
+two languages~\cite{duo_lignual_lda_2009}, or they require all
+documents to be available in all languages, with accurate
+labeling~\cite{polylingual_lda_2009}. Our data meets neither
+condition, so instead we mechanically translated as much text as
+possible into English.
+
+After boilerplate removal, we used CLD2~\cite{sites.2013.cld2} to
+determine the languages of each document and divide multilingual
+documents into runs of text in a single language.  We then used Google
+Translate's API~\cite{google.nd.translation-api} to translate as much
+text as possible into English.  At the time of writing, CLD2 can
+detect 83 languages with accuracy higher than 97\%, and Google
+Translate can translate 103 languages into English; neither set is a
+superset of the other.  11.5\% of all words were unrecognized or
+untranslatable; the bulk of these were nonwords (e.g.\ long strings of
+digits) and errors on CLD2's part.  In a bilingual document, for
+instance, CLD2 frequently gets each split point wrong by a couple
+words, or tags small runs of one language as “unknown.”  Only 29,234
+documents (0.8\%) were completely untranslatable.
+
+%% unclear if it is useful to include this:
+%
+%               lang             |   nwords   | pwords  |  ndocs  |  pdocs
+% -------------------------------+------------+---------+---------+---------
+% (total)                        | 2081955228 |  100.00 | 3401759 |  100.00
+% English                        | 1223721349 |   58.78 | 2953429 |   86.82
+% unrecognized or untranslatable |  240526781 |   11.55 | 1102585 |   32.41
+% Chinese (simplified)           |  119257971 |    5.73 |   87542 |    2.57
+% Spanish                        |   59304096 |    2.85 |   71161 |    2.09
+% French                         |   53252945 |    2.56 |   68926 |    2.03
+% Japanese                       |   51927122 |    2.49 |   63879 |    1.88
+% German                         |   42821690 |    2.06 |   68823 |    2.02
+% Arabic                         |   33610682 |    1.61 |   25692 |     .76
+% Russian                        |   29601285 |    1.42 |   49083 |    1.44
+% Turkish                        |   28998160 |    1.39 |   44845 |    1.32
+% Persian                        |   28704804 |    1.38 |   17318 |     .51
+% Portuguese                     |   24803146 |    1.19 |   41442 |    1.22
+% Chinese (traditional)          |   24512024 |    1.18 |   42902 |    1.26
+% Vietnamese                     |   18254181 |     .88 |   12229 |     .36
+% Italian                        |   14604692 |     .70 |   27024 |     .79
+% Hebrew                         |   10027350 |     .48 |    8616 |     .25
+% Romanian                       |    9177724 |     .44 |    9161 |     .27
+% Thai                           |    8939962 |     .43 |   14277 |     .42
+% Hungarian                      |    8603702 |     .41 |    7298 |     .21
+% Czech                          |    6728310 |     .32 |   11713 |     .34
+% Polish                         |    6161175 |     .30 |    9846 |     .29
+% Dutch                          |    5978110 |     .29 |   13401 |     .39
+% Indonesian                     |    3619081 |     .17 |   10843 |     .32
+% Greek                          |    3351285 |     .16 |   23947 |     .70
+% Korean                         |    2857089 |     .14 |   10339 |     .30
+% Danish                         |    2363724 |     .11 |   21489 |     .63
+% Swedish                        |    2239706 |     .11 |    4292 |     .13
+% Norwegian                      |    1975056 |     .09 |   14702 |     .43
+% Finnish                        |    1208399 |     .06 |    1828 |     .05
+% (other)                        |   14823627 |     .71 |   90141 |    2.61
+
+Google charges US\$20 to translate a million characters.  After
+boilerplate removal, the 4,355,234 unique pages in our database
+(including both contemporary and historical snapshots) add up to 13.3
+\emph{trillion} characters; translating each document in full would
+have cost \$260,000, which was beyond our budget.  Instead, we reduced
+each document to a “bag of words,” and then translated each word in
+isolation, which cost only \$3,700.  This required us to “segment”
+text into words, which is nontrivial in languages written
+without spaces between the words.  For Chinese we used the Stanford
+segmenter~\cite{chinese_segmenter}; Japanese,
+MeCab~\cite{mecab_jp_segmenter}; Vietnamese,
+dongdu~\cite{anh.2012.dongdu}; Thai, libthai~\cite{libthai.2001};
+Arabic and related languages, SNLP~\cite{monroe.2014.arabic}; all
+others, NLTK~\cite{bird.2009.nltk}.
+
+Because our data set is so large, we needed to truncate the translated
+word vectors to complete training in a reasonable amount of time.
+After translation, we reduced all words to morphological stems using
+the Porter stemmer~\cite{porter_stemmer_1997}. We then used
+\textit{term frequency-inverse document frequency} (tf-idf,
+\cite{robertson2004.tf.idf}) to select terms with a high degree of
+salience for each document, preserving terms whose combined
+\textit{tf-idf} constituted (at least) 90\% of the total.  After
+pruning, the median size of a word vector was 37 words.
+
+%% this could come back if we have space and people think it adds something
+%
+% Informally, \textit{tf-idf} assigns weight to each word in a
+% document proportionally to the number of times it occurs in that
+% document, but \emph{inversely} proportional to the number of
+% documents it occurs in within the entire corpus.  Thus, terms that
+% are frequent in a document but rare overall are considered more
+% salient to the topic.  In this work we used the following definition
+% of \textit{tf-idf}, $\mbox{tf-idf}(t, d, D) = \mbox{tf}(t,d) \log_2
+% {|D|}/{|\{d\in D : t\in d\}|}$, where $t$ is a term, $d$ a document,
+% $D$ the set of all documents, and $\mbox{tf}(t,d)$ the raw frequency
+% of $t$ in $d$.
+

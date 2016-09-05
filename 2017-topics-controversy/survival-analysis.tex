@@ -1,0 +1,53 @@
+\subsection{Survival Analysis}\label{s:survival-desc}
+
+\input diagrams/survival
+
+Our data on the life cycle of websites is unavoidably incomplete.
+Figure~\ref{f:survival-diagram} shows four hypothetical cases which
+illustrate the problem.  In no case do we know when a page was
+created, only when it first came to the attention of the Wayback
+Machine.  If a page survives to the present (A, C), we do not know how
+much longer it will continue to exist.  If it was abandoned (B, D), we
+only know that this happened within an interval between two
+observations.  If a page appears on a censorship blacklist (C, D), we
+know when this happened (blue dot) but we can only guess at how long
+the page was censored (blue shaded area).
+
+\emph{Survival analysis}~\cite{KM58} is a set of statistical
+techniques originally developed for predicting the expected lifespan
+of patients with terminal illnesses.  Because medical studies often
+suffer from exactly the same kinds of gaps in their data---one doesn't
+usually know how long a tumor was present before it was diagnosed, for
+instance---survival analysis is prepared to deal with them.  However,
+to use these techniques we must define what it means for a page to
+“die.”  Clearly, if the site is shut down or turns into a parked
+domain, that should qualify.  Less obviously, we also count topic
+change as “death.”  This is because, after a censored page has changed
+topic, it no longer provides the same kind of sensitive material that
+it used to, so it can no longer be considered “fresh.”  For example,
+the blog \nolinkurl{http://amazighroots.blogspot.com} was taken over
+by spammers in 2014, and its apparent topic changed from “news and
+politics” to “food.”  Probing such pages longer reveals whether the
+censor cares about that kind of sensitive material.  It may instead
+reveal how diligent the censor is about updating their blacklist, but
+this was not the original goal.
+
+Unlike medical patients, webpages may be “dead” only temporarily, due
+to server crashes, vandalism, the owners forgetting to renew the
+domain registration, and so on.  Stock survival analysis does not
+allow for this possibility.  To handle it, we calculated every
+survival curve two ways: first, assuming that revivals never happen
+(once a site “dies” it is treated as staying that way, even if we have
+evidence to the contrary) and second, allowing sites to revive even
+after an arbitrarily long hiatus.  The first approach gives an
+underestimate of survival times, the second, an overestimate.
+Figure~\ref{fig:km-base} shows, over all pages we monitored, that on
+average, the differences between both approaches are relatively small;
+and that our error ranges are small.
+
+\begin{figure}
+\centering\sffamily\input plots/km-basic.tik\relax
+\caption{Comparison of the two approaches to page revival.\\
+Shading shows confidence intervals.}
+\label{fig:km-base}
+\end{figure}

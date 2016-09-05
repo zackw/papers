@@ -1,0 +1,142 @@
+\subsection{Topic Correlations}\label{s:topic-corr}
+
+\begin{table*}
+\caption{Correlation of topics with languages and source lists.}
+\label{t:source-topic-nonuniform}
+\centering\sffamily\input plots/source-topic-nonuniformity.tik\relax
+\end{table*}
+
+To examine the correlation of topics with source lists and languages,
+we apply $\chi^2$ tests of independence to the contemporary data set.
+Overall tests strongly confirm the hypotheses that the distribution of
+documents over topics is correlated with source list and with
+language.  Coincidentally, both tests have 1365 degrees of freedom.
+For topic $\times$ source, $\chi^2=6.45\times 10^5$ ($p<0.001$), for topic
+$\times$ language, $\chi^2=1.33\times 10^6$ ($p<0.001$).  We then perform
+post-hoc $\chi^2$ tests on
+each combination of list and topic, or language and topic, using a
+$2\times 2$ contingency table of the form
+\begin{equation}\label{e:ctable}
+\def\arraystretch{1.3333}
+\begin{array}{c|c}
+\vrule width0pt height0pt depth9pt
+w_{gt} = \sum_{u \in g} \mathbf{T}_{ut} &
+w_{g\neg t} = \lvert g \rvert - \sum_{u \in g} \mathbf{T}_{ut} \\
+\hline
+w_{rt} = \sum_{u \in r} \mathbf{T}_{ut} &
+w_{r\neg t} = \lvert r \rvert - \sum_{u \in r} \mathbf{T}_{ut} \\
+\end{array}
+\end{equation}
+where $g$ is the selected list or language, $r$ is the
+\emph{reference} list or language (see below), and $\mathbf{T}_{ut}$
+is the probability that page $u$ belongs to topic $t$.  (Recall from
+Section~\ref{s:analysis} that each page is assigned a probability
+vector over all topics.)  There are a total of 2,904 such
+combinations.  After Bonferroni correction, 585 of the topic-list
+correlations and 580 of the topic-language correlations are
+significant at the usual $\alpha=0.05$ level.
+
+However, significant correlations might still be too small to be
+interesting.  Rather than show significance by itself, therefore, we
+compute the \emph{odds ratio} for each significant cell.  This
+statistic can be computed directly from the $2\times2$ contingency
+table above:
+\begin{equation}\label{e:odds-ratio}
+r_{t;g,r} = \frac{w_{gt}/w_{g\neg t}}{w_{rt}/w_{r\neg t}}
+\end{equation}
+It is one when there is no difference between the source and the
+reference, greater when the group has more pages on a topic than the
+reference does, and smaller when it has fewer.  In
+Table~\ref{t:source-topic-nonuniform}, we show the odds ratio for each
+significant comparison.  Again, this considers contemporary page
+contents only.  Blank cells are non-significant.  Shades of red
+indicate that the topic is positively correlated with the list or
+language, and shades of blue indicate that it is anti-correlated.
+
+In the left half of Table~\ref{t:source-topic-nonuniform}, we
+correlate the topics with the source lists, taking Common Crawl as the
+reference (we believe this to be the most topic-uniform of our lists;
+but see Appendix~\ref{s:lang-bias} for a counterargument).  When two
+lists have red cells for the same topic, that indicates a commonality
+between the lists.  However, when two lists have blue cells for the
+same topic, that means only that neither is correlated with that
+topic, which does not qualify as something they have in common.
+
+We can immediately see the same three clusters of source lists that
+appeared in Tables~\ref{t:list-sim-url} and~\ref{t:list-sim-host}.
+The blacklists have more in common with the potentially-censored lists
+and the controls, but when it comes to the most politically
+controversial categories (news, politics, religion, etc.) they tend to
+be concentrated on one or two specific topics, whereas the
+potentially-censored lists are spread over many such topics.  In some
+cases it is apparent that a country is censoring news related to
+\emph{itself}, but not other news.  The Syria 2015 list includes a
+surprisingly large number of software-related sites; spot checking
+indicates that this is due to indiscriminate blocking of websites
+with Israeli domain names.
+
+The blacklists also devote more attention to specific entertainment
+topics than the potentially-censored lists do.  Social media in
+particular stands out, consistent with external evidence that this is
+increasingly seen as a threat by censors~\cite{oni2011contested}.
+Blocking access to video-sharing and other entertainment sites may
+also be meant to suppress copyright infringement and/or support local
+businesses over global incumbents~\cite{khattak.2014.isp}.
+
+Pornographic topics are concentrated in the pinklists and
+underrepresented elsewhere.  All of the pinklists have some
+non-pornographic pages.  Some of these can be explained by poor
+classification of image-heavy pages, and by debatable classification
+of, for instance, “mail-order bride” sites.  However, we do see a
+genuine case of political censorship under cover of porn filtering:
+many of the pages on the Thailand 2007 list that were filed under
+Japan, Vietnam, or social media are discussing Southeast Asian
+regional politics.  This was known from previous case studies of
+Thailand~\cite{oni.thailand} and is exactly the phenomenon we designed
+our system to detect.
+
+The negative control (Pinboard) is almost perfectly anticorrelated
+with the blacklists and pinklists.  There is some overlap on software
+topics.  This is largely due to the negative control being strongly
+biased toward those topics, so any software topics at all in any of
+the blacklists will show as overlap.  Also, software-industry-focused
+news sites tend to be hostile to attempts to censor the Internet.
+
+The other controls have more in common with Common Crawl than with the
+blacklists or pinklists.  They also have more in common with the
+“probably censored” lists than the blacklists or pinklists; here we
+see that popular pages are more likely to get cited on Wikipedia or
+have someone bother to report an outage to Herdict.  The
+over-weighting of some regional news topics in this group of lists may
+also indicate biases in Common Crawl (see Appendix~\ref{s:lang-bias}).
+
+In the right half of Table~\ref{t:source-topic-nonuniform}, we
+correlate topics with the 21 most commonly used languages in our data
+set (and with “other languages”), taking English (which is far and
+away the most common) as the reference.  The same caution about paired
+red versus blue cells applies.
+
+News topics for specific countries are very strongly correlated with
+the languages spoken in those countries, and Islam correlates with
+languages spoken in countries where it is the most or second-most
+common religion.  Many of the more “commercial” topics are dominated
+by English; this may be an artifact of data collection from the USA,
+since commercial sites often change their language depending on the
+apparent location of the client.
+
+The “junk” topics at the bottom of the table collect various documents
+that we could not interpret meaningfully.  Despite our efforts to weed
+them out early, some error messages (perhaps served with the wrong
+HTTP response code, so the crawler does not detect an unsuccessful
+page load) and webpage boilerplate creep through.  Mistranslated,
+unintelligible, and empty documents are self-explanatory.  Finally,
+documents that we were unable to translate are in languages that
+Google Translate does not support, or (in the case of Japanese)
+suffered from a character encoding problem that made them
+\emph{appear} untranslatable to the automation.  The high
+concentration of error messages on the pinklists probably reflects the
+short lifetime of pages on these lists (see Section~\ref{s:survival}
+for more on this); the untranslatable documents on the pinklists may
+be an artifact of porn sites carrying far more imagery than text; the
+mistranslations on the blacklists probably indicate weak support for
+colloquial Russian and Arabic in particular.

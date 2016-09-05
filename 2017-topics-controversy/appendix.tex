@@ -1,0 +1,117 @@
+\appendix
+
+% this is here so it will be placed at the top of the next page
+  \begin{figure*}[t!]
+\centering\sffamily\input plots/language-wordcounts.tik\relax
+\caption{The proportion of each source list devoted to text in each of
+the most common 21 languages.}\label{f:language-wordcounts}
+\end{figure*}
+
+\section{Evaluation of Parked Domain Detection Algorithms}\label{s:pdd-eval}
+
+\Textcite{vissers2015parking} developed a random-forest
+classifier~\cite{Breiman2001} based on features extracted from the
+HTML and the HTTP transactions at page load time. It relies on
+structural differences between a parked domain and a normal domain,
+such as the ratio of text to markup, the ratio of internal to external
+links, and the number of nested pages (“frames”).
+\Textcite{szurdi2014long}, developed a set of regular expressions
+based on the templates used by specific domain parkers, while
+investigating the related practice of \emph{typosquatting}.
+Typosquatters place often-malicious sites at misspellings of the names
+of popular websites, e.g.\ {\UrlFont googel.com} for Google.
+
+We evaluated our classifiers on three data sets,
+“PS,” “LT,” and “Cen.”  PS is the set used by
+\Textcite{vissers2015parking} to assess their classifier.  It
+includes 3,047 non-parked domains taken from Alexa (see
+Section~\ref{s:lists}), and 3,227 parked domains operated by 15
+parkers.  LT was used by \Textcite{szurdi2014long} to evaluate
+their classifier.  It consists of 2,674 pages collected from
+typosquatted domains, and manually labeled; 996 are parked and 1,678
+not parked.  Finally, Cen consists of 100 pages randomly selected
+from our contemporary data.
+
+To train the random-forest classifier, we combined PS and LT, and then
+split the combination 80/20 for training and testing.  Neither LT nor
+Cen includes HTTP transaction information, so the features depending
+on this data were disabled.  Despite this, we reproduce
+\citeauthor{vissers2015parking}'s results on PS, which indicates
+that those features are not essential.  The regexp classifier does not
+require training, but we augmented the original battery of regular
+expressions with new rules derived from PS.
+
+\begin{table}[hb]
+  \caption{Performance of the two parked-domain detectors on three
+  data sets.}
+  \label{t:domainparking}
+  \centering\footnotesize
+  \begin{tabular}{crrr@{\hspace{18pt}}rrr}
+    Algorithm & \multicolumn{3}{c}{Random forest} &
+                \multicolumn{3}{c}{Regexps} \\
+
+    Dataset     & PS   & LT   & Cen  & PS   & LT   & Cen   \\
+    \midrule
+    Accuracy    & 97.9 & 93.1 & 89.0 & 95.0 & 89.6 & 99.0  \\
+    Precision   & 99.2 & 89.9 & 42.9 & 99.9 & 96.9 & 100.0 \\
+    Recall      & 96.9 & 92.1 & 30.0 & 90.4 & 79.1 & 90.0  \\
+    \end{tabular}
+\end{table}
+
+Table~\ref{t:domainparking} shows the performance of both classifiers
+on all three datasets. The random-forest classifier performs
+reasonably well on PS and LT, with precision and recall both 90\% or
+above, but poorly on Cen: precision drops to 42.9\% and recall to
+30.0\%. (Accuracy remains high because Cen is skewed
+toward non-parked pages.) The (improved) regular-expression
+classifier, on the other hand, performs well on all three;
+its worst score is 79.1\% recall for LT.
+
+To better understand why the random-forest classifier performs poorly
+on Cen, we constructed a larger version of it containing 7,422
+pages. Both classifiers agreed on 6,869 of these: 81 parked, 6,788 not
+parked. 447 pages were classified as parked only by the
+regular-expression classifier, and 106 pages only by the random-forest
+classifier. We manually verified a subsample of 25 pages in each
+category. In all cases, the regular-expression classifier was correct;
+where they disagreed, the random-forest classifier was invariably
+wrong. The most common cause of errors was pages using frames to load
+most of their content.  The random-forest classifier treats this as a
+strong signal that the page is parked, but this is inaccurate for Cen.
+
+\section{Language Biases of Sources}\label{s:lang-bias}
+
+Figure~\ref{f:language-wordcounts} shows, for each source list, what
+proportion of its non-boilerplate text is in each of the most commonly
+used 21 languages (plus “other,” “unrecognized,” and
+“untranslatable”).  English, unsurprisingly, dominates nearly all of
+the lists---the surprise is when it doesn't, as in the Russian
+blacklist.  We suspect this might also occur for Chinese, if we had a
+Chinese blacklist.  Where a single language dominates non-English
+text, it is also unsurprising: German for Germany, Russian for Russia,
+Arabic for Syria, Thai for Thailand.  ONI, Herdict, Wikipedia, Alexa
+and Twitter show no dominant second language, again as expected.
+
+Four lists have hardly anything \emph{but} English.  India 2012b and
+Thailand 2009 are dominated by videos posted to YouTube and similar
+sites, for which the common language for leaving comments is English;
+the videos themselves may well have featured other languages.  Most
+of these videos have since been taken down, so we could not spot-check
+them.  Pinboard, the negative control, was compiled by someone who is
+only fluent in English.  This may mean that our topic model is largely
+ignorant of \emph{innocuous} material in languages like Russian and
+Arabic, but this is harmless for now.  It will become a problem in
+the future, when we attempt to make automated judgements about whether
+pages are worth including in a continuously updated probe list.
+
+Finally, the dominance of English in the Common Crawl data is
+inexplicable and disturbing.  It may indicate a methodological error,
+either on the part of Common Crawl itself, or in our selection of a
+subsample.  One possibility is that there are too few \emph{sites} in
+our subsample, and those sites are largely Anglophone.  Another is
+that their crawler may not have started from the right “seed”
+locations within the hyperlink graph to find much material in other
+languages.  Regardlesss of the cause, though, this casts doubt on our
+assumption that this subsample is a good baseline for cross-list
+comparison.  Anything that is in other languages may seem more unusual
+than it is, by comparison.

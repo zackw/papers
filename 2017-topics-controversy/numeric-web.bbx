@@ -1,0 +1,45 @@
+\ProvidesFile{numeric-web.bbx}
+[2013/09/05 Web-centric numeric bibliography styles]
+
+\RequireBibliographyStyle{numeric}
+
+% small tweaks
+\renewbibmacro{in:}{}
+\DeclareFieldFormat{url}{\url{#1}}
+
+% We don't _print_ the links, but in the PDF, the title will be a
+% hyperlink to whichever of these is available.
+\settoggle{bbx:isbn}{false}
+\settoggle{bbx:url}{false}
+\settoggle{bbx:doi}{false}
+\settoggle{bbx:eprint}{false}
+
+\DeclareFieldFormat*{title}{\usebibmacro{string+hyperlink}{\mkbibemph{#1}}}
+\DeclareFieldFormat
+  [article,inbook,incollection,inproceedings,patent,thesis,unpublished]
+  {title}{\mkbibquote{\usebibmacro{string+hyperlink}{#1\isdot}}}
+\DeclareFieldFormat
+  [suppbook,suppcollection,suppperiodical]
+  {title}{\usebibmacro{string+hyperlink}{#1}}
+
+\newbibmacro{string+hyperlink}[1]{\ifhyperref{\make@hyper@link{#1}}{#1}}
+
+% An eprint address is preferred to an URL which is preferred to a
+% DOI.  The code below may appear to prefer the opposite order; that
+% is because there is no \iffielddef.
+\def\make@hyper@link#1{%
+  \iffieldundef{eprint}
+    {\iffieldundef{url}
+      {\iffieldundef{doi}
+        {#1}
+        {\href{http://dx.doi.org/\thefield{doi}}{#1}}}
+      {\href{\thefield{url}}{#1}}}
+    {\href{\csname blx@\strfield{eprinttype}@url\endcsname{\thefield{eprint}}}{#1}}}
+
+\def\blx@anonbib@url#1{http://freehaven.net/anonbib/cache/#1.pdf}
+\def\blx@anonbibpsgz@url#1{http://freehaven.net/anonbib/cache/#1.ps.gz}
+\def\blx@arxiv@url#1{https://arxiv.org/abs/#1}
+\def\blx@citeseer@url#1%
+  {http://citeseerx.ist.psu.edu/viewdoc/download?doi=#1&rep=rep1&type=pdf}
+
+\endinput

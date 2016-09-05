@@ -1,0 +1,44 @@
+\section{Results}\label{s:eval}
+
+With every page assigned a topic, we can now look at how topics
+correlate with the lists the pages came from, and the languages
+they're written in.  With information about when pages went offline or
+changed their topic, we can also predict the typical lifetime of
+classes of pages.
+
+%% Diagnostic: do our topics agree with CitizenLab's labels, where pages
+%% overlap?
+
+%% Diagnostic: time density of wayback-machine snapshots as a function of
+%% page age and topic (and Alexa rank?)
+
+%% For each source, survival curves.
+
+%% For each topic, survival curves.
+
+%% Topic-source correlogram.
+
+%% Source-source correlogram, using topic distribution as the vectors to
+%% correlate.
+
+%% Identify topics that are over-represented in “leak” sources, relative
+%% to Common Crawl /Alexa /Herdict(?) /Twitter(?).
+
+%% Partition Herdict into cohorts and compare it with itself.
+
+%% Go back in time from the entered-onto-blacklist event, see how long
+%% the document had that topic before it came to censors' attention.
+
+%% Model: probability that a page will get censored, conditional on
+%% topic, as a function of its age.  Competing risk: other causes of page
+%% going away.  Alexa rank as additional independent variable?
+
+
+%% How far is our closest datapoint (from the wayback machine) is from
+%% the time it entered a blacklist.
+
+%% An interesting comparison would be to compare how much ONI data vs our
+%% optimized list would cover from a known leaked censorship list.
+
+\input eval-source-topic-correlation
+\input eval-survival-analysis

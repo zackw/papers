@@ -1,0 +1,1665 @@
+% Created by tikzDevice version 0.10.1 on 2016-08-28 10:42:25
+% !TEX encoding = UTF-8 Unicode
+\begin{tikzpicture}[x=1pt,y=1pt]
+\definecolor{fillColor}{RGB}{255,255,255}
+\path[use as bounding box,fill=fillColor,fill opacity=0.00] (0,0) rectangle (476.98,216.81);
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{255,255,255}
+\definecolor{fillColor}{RGB}{255,255,255}
+
+\path[draw=drawColor,line width= 0.6pt,line join=round,line cap=round,fill=fillColor] (  0.00,  0.00) rectangle (476.98,216.81);
+\end{scope}
+\begin{scope}
+\path[clip] ( 87.13, 13.51) rectangle (393.53,212.31);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13, 13.51) rectangle (242.24, 21.32);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (242.24, 13.51) rectangle (247.61, 21.32);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (247.61, 13.51) rectangle (272.84, 21.32);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (272.84, 13.51) rectangle (281.92, 21.32);
+\definecolor{fillColor}{RGB}{252,141,98}
+
+\path[fill=fillColor] (281.92, 13.51) rectangle (284.59, 21.32);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (284.59, 13.51) rectangle (292.62, 21.32);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (292.62, 13.51) rectangle (299.55, 21.32);
+\definecolor{fillColor}{RGB}{209,104,64}
+
+\path[fill=fillColor] (299.55, 13.51) rectangle (305.45, 21.32);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (305.45, 13.51) rectangle (307.60, 21.32);
+\definecolor{fillColor}{RGB}{121,171,38}
+
+\path[fill=fillColor] (307.60, 13.51) rectangle (307.94, 21.32);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (307.94, 13.51) rectangle (308.03, 21.32);
+\definecolor{fillColor}{RGB}{86,137,0}
+
+\path[fill=fillColor] (308.03, 13.51) rectangle (309.04, 21.32);
+\definecolor{fillColor}{RGB}{231,138,195}
+
+\path[fill=fillColor] (309.04, 13.51) rectangle (320.72, 21.32);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (320.72, 13.51) rectangle (328.35, 21.32);
+\definecolor{fillColor}{RGB}{201,169,0}
+
+\path[fill=fillColor] (328.35, 13.51) rectangle (336.63, 21.32);
+\definecolor{fillColor}{RGB}{21,124,98}
+
+\path[fill=fillColor] (336.63, 13.51) rectangle (340.00, 21.32);
+\definecolor{fillColor}{RGB}{159,133,0}
+
+\path[fill=fillColor] (340.00, 13.51) rectangle (340.58, 21.32);
+\definecolor{fillColor}{RGB}{175,76,38}
+
+\path[fill=fillColor] (340.58, 13.51) rectangle (342.10, 21.32);
+\definecolor{fillColor}{RGB}{80,100,139}
+
+\path[fill=fillColor] (342.10, 13.51) rectangle (343.18, 21.32);
+\definecolor{fillColor}{RGB}{57,110,0}
+
+\path[fill=fillColor] (343.18, 13.51) rectangle (344.08, 21.32);
+\definecolor{fillColor}{RGB}{160,73,129}
+
+\path[fill=fillColor] (344.08, 13.51) rectangle (344.10, 21.32);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (344.10, 13.51) rectangle (365.83, 21.32);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (365.83, 13.51) rectangle (393.50, 21.32);
+\definecolor{fillColor}{RGB}{88,88,88}
+
+\path[fill=fillColor] (393.50, 13.51) rectangle (393.53, 21.32);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13, 22.19) rectangle (337.49, 30.00);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (337.49, 22.19) rectangle (337.92, 30.00);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (337.92, 22.19) rectangle (338.07, 30.00);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (338.07, 22.19) rectangle (343.14, 30.00);
+\definecolor{fillColor}{RGB}{252,141,98}
+
+\path[fill=fillColor] (343.14, 22.19) rectangle (343.66, 30.00);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (343.66, 22.19) rectangle (344.30, 30.00);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (344.30, 22.19) rectangle (346.59, 30.00);
+\definecolor{fillColor}{RGB}{209,104,64}
+
+\path[fill=fillColor] (346.59, 22.19) rectangle (346.94, 30.00);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (346.94, 22.19) rectangle (347.41, 30.00);
+\definecolor{fillColor}{RGB}{121,171,38}
+
+\path[fill=fillColor] (347.41, 22.19) rectangle (347.52, 30.00);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (347.52, 22.19) rectangle (347.56, 30.00);
+\definecolor{fillColor}{RGB}{86,137,0}
+
+\path[fill=fillColor] (347.56, 22.19) rectangle (348.26, 30.00);
+\definecolor{fillColor}{RGB}{231,138,195}
+
+\path[fill=fillColor] (348.26, 22.19) rectangle (348.54, 30.00);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (348.54, 22.19) rectangle (351.90, 30.00);
+\definecolor{fillColor}{RGB}{201,169,0}
+
+\path[fill=fillColor] (351.90, 22.19) rectangle (352.43, 30.00);
+\definecolor{fillColor}{RGB}{21,124,98}
+
+\path[fill=fillColor] (352.43, 22.19) rectangle (354.34, 30.00);
+\definecolor{fillColor}{RGB}{159,133,0}
+
+\path[fill=fillColor] (354.34, 22.19) rectangle (355.62, 30.00);
+\definecolor{fillColor}{RGB}{175,76,38}
+
+\path[fill=fillColor] (355.62, 22.19) rectangle (355.69, 30.00);
+\definecolor{fillColor}{RGB}{80,100,139}
+
+\path[fill=fillColor] (355.69, 22.19) rectangle (356.33, 30.00);
+\definecolor{fillColor}{RGB}{57,110,0}
+
+\path[fill=fillColor] (356.33, 22.19) rectangle (356.46, 30.00);
+\definecolor{fillColor}{RGB}{160,73,129}
+
+\path[fill=fillColor] (356.46, 22.19) rectangle (356.46, 30.00);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (356.46, 22.19) rectangle (361.19, 30.00);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (361.19, 22.19) rectangle (393.52, 30.00);
+\definecolor{fillColor}{RGB}{88,88,88}
+
+\path[fill=fillColor] (393.52, 22.19) rectangle (393.53, 30.00);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13, 30.87) rectangle (235.74, 38.68);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (235.74, 30.87) rectangle (242.45, 38.68);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (242.45, 30.87) rectangle (242.96, 38.68);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (242.96, 30.87) rectangle (266.94, 38.68);
+\definecolor{fillColor}{RGB}{252,141,98}
+
+\path[fill=fillColor] (266.94, 30.87) rectangle (271.26, 38.68);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (271.26, 30.87) rectangle (326.59, 38.68);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (326.59, 30.87) rectangle (329.14, 38.68);
+\definecolor{fillColor}{RGB}{209,104,64}
+
+\path[fill=fillColor] (329.14, 30.87) rectangle (337.42, 38.68);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (337.42, 30.87) rectangle (338.87, 38.68);
+\definecolor{fillColor}{RGB}{121,171,38}
+
+\path[fill=fillColor] (338.87, 30.87) rectangle (338.98, 38.68);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (338.98, 30.87) rectangle (339.14, 38.68);
+\definecolor{fillColor}{RGB}{86,137,0}
+
+\path[fill=fillColor] (339.14, 30.87) rectangle (339.69, 38.68);
+\definecolor{fillColor}{RGB}{231,138,195}
+
+\path[fill=fillColor] (339.69, 30.87) rectangle (339.82, 38.68);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (339.82, 30.87) rectangle (345.16, 38.68);
+\definecolor{fillColor}{RGB}{201,169,0}
+
+\path[fill=fillColor] (345.16, 30.87) rectangle (345.28, 38.68);
+\definecolor{fillColor}{RGB}{21,124,98}
+
+\path[fill=fillColor] (345.28, 30.87) rectangle (350.33, 38.68);
+\definecolor{fillColor}{RGB}{159,133,0}
+
+\path[fill=fillColor] (350.33, 30.87) rectangle (358.75, 38.68);
+\definecolor{fillColor}{RGB}{175,76,38}
+
+\path[fill=fillColor] (358.75, 30.87) rectangle (358.85, 38.68);
+\definecolor{fillColor}{RGB}{80,100,139}
+
+\path[fill=fillColor] (358.85, 30.87) rectangle (361.05, 38.68);
+\definecolor{fillColor}{RGB}{57,110,0}
+
+\path[fill=fillColor] (361.05, 30.87) rectangle (361.10, 38.68);
+\definecolor{fillColor}{RGB}{160,73,129}
+
+\path[fill=fillColor] (361.10, 30.87) rectangle (361.17, 38.68);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (361.17, 30.87) rectangle (369.10, 38.68);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (369.10, 30.87) rectangle (393.52, 38.68);
+\definecolor{fillColor}{RGB}{88,88,88}
+
+\path[fill=fillColor] (393.52, 30.87) rectangle (393.53, 38.68);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13, 39.55) rectangle (218.09, 47.37);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (218.09, 39.55) rectangle (231.71, 47.37);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (231.71, 39.55) rectangle (265.87, 47.37);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (265.87, 39.55) rectangle (279.06, 47.37);
+\definecolor{fillColor}{RGB}{252,141,98}
+
+\path[fill=fillColor] (279.06, 39.55) rectangle (282.38, 47.37);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (282.38, 39.55) rectangle (295.14, 47.37);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (295.14, 39.55) rectangle (303.77, 47.37);
+\definecolor{fillColor}{RGB}{209,104,64}
+
+\path[fill=fillColor] (303.77, 39.55) rectangle (310.51, 47.37);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (310.51, 39.55) rectangle (311.60, 47.37);
+\definecolor{fillColor}{RGB}{121,171,38}
+
+\path[fill=fillColor] (311.60, 39.55) rectangle (312.01, 47.37);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (312.01, 39.55) rectangle (312.28, 47.37);
+\definecolor{fillColor}{RGB}{86,137,0}
+
+\path[fill=fillColor] (312.28, 39.55) rectangle (315.85, 47.37);
+\definecolor{fillColor}{RGB}{231,138,195}
+
+\path[fill=fillColor] (315.85, 39.55) rectangle (324.43, 47.37);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (324.43, 39.55) rectangle (332.10, 47.37);
+\definecolor{fillColor}{RGB}{201,169,0}
+
+\path[fill=fillColor] (332.10, 39.55) rectangle (333.51, 47.37);
+\definecolor{fillColor}{RGB}{21,124,98}
+
+\path[fill=fillColor] (333.51, 39.55) rectangle (337.97, 47.37);
+\definecolor{fillColor}{RGB}{159,133,0}
+
+\path[fill=fillColor] (337.97, 39.55) rectangle (339.30, 47.37);
+\definecolor{fillColor}{RGB}{175,76,38}
+
+\path[fill=fillColor] (339.30, 39.55) rectangle (339.62, 47.37);
+\definecolor{fillColor}{RGB}{80,100,139}
+
+\path[fill=fillColor] (339.62, 39.55) rectangle (340.71, 47.37);
+\definecolor{fillColor}{RGB}{57,110,0}
+
+\path[fill=fillColor] (340.71, 39.55) rectangle (341.37, 47.37);
+\definecolor{fillColor}{RGB}{160,73,129}
+
+\path[fill=fillColor] (341.37, 39.55) rectangle (341.50, 47.37);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (341.50, 39.55) rectangle (362.89, 47.37);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (362.89, 39.55) rectangle (393.51, 47.37);
+\definecolor{fillColor}{RGB}{88,88,88}
+
+\path[fill=fillColor] (393.51, 39.55) rectangle (393.53, 47.37);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13, 48.23) rectangle (364.07, 56.05);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (364.07, 48.23) rectangle (364.10, 56.05);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (364.10, 48.23) rectangle (364.27, 56.05);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (364.27, 48.23) rectangle (364.61, 56.05);
+\definecolor{fillColor}{RGB}{252,141,98}
+
+\path[fill=fillColor] (364.61, 48.23) rectangle (364.87, 56.05);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (364.87, 48.23) rectangle (365.06, 56.05);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (365.06, 48.23) rectangle (365.84, 56.05);
+\definecolor{fillColor}{RGB}{209,104,64}
+
+\path[fill=fillColor] (365.84, 48.23) rectangle (365.85, 56.05);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (365.85, 48.23) rectangle (365.85, 56.05);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (365.85, 48.23) rectangle (365.85, 56.05);
+\definecolor{fillColor}{RGB}{86,137,0}
+
+\path[fill=fillColor] (365.85, 48.23) rectangle (365.86, 56.05);
+\definecolor{fillColor}{RGB}{231,138,195}
+
+\path[fill=fillColor] (365.86, 48.23) rectangle (365.87, 56.05);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (365.87, 48.23) rectangle (365.98, 56.05);
+\definecolor{fillColor}{RGB}{201,169,0}
+
+\path[fill=fillColor] (365.98, 48.23) rectangle (365.99, 56.05);
+\definecolor{fillColor}{RGB}{21,124,98}
+
+\path[fill=fillColor] (365.99, 48.23) rectangle (366.09, 56.05);
+\definecolor{fillColor}{RGB}{159,133,0}
+
+\path[fill=fillColor] (366.09, 48.23) rectangle (366.09, 56.05);
+\definecolor{fillColor}{RGB}{175,76,38}
+
+\path[fill=fillColor] (366.09, 48.23) rectangle (366.09, 56.05);
+\definecolor{fillColor}{RGB}{80,100,139}
+
+\path[fill=fillColor] (366.09, 48.23) rectangle (366.09, 56.05);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (366.09, 48.23) rectangle (366.23, 56.05);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (366.23, 48.23) rectangle (393.53, 56.05);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13, 56.92) rectangle (227.17, 64.73);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (227.17, 56.92) rectangle (229.70, 64.73);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (229.70, 56.92) rectangle (234.52, 64.73);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (234.52, 56.92) rectangle (258.89, 64.73);
+\definecolor{fillColor}{RGB}{252,141,98}
+
+\path[fill=fillColor] (258.89, 56.92) rectangle (259.10, 64.73);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (259.10, 56.92) rectangle (269.93, 64.73);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (269.93, 56.92) rectangle (282.73, 64.73);
+\definecolor{fillColor}{RGB}{209,104,64}
+
+\path[fill=fillColor] (282.73, 56.92) rectangle (296.27, 64.73);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (296.27, 56.92) rectangle (296.29, 64.73);
+\definecolor{fillColor}{RGB}{121,171,38}
+
+\path[fill=fillColor] (296.29, 56.92) rectangle (296.31, 64.73);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (296.31, 56.92) rectangle (296.32, 64.73);
+\definecolor{fillColor}{RGB}{86,137,0}
+
+\path[fill=fillColor] (296.32, 56.92) rectangle (296.38, 64.73);
+\definecolor{fillColor}{RGB}{231,138,195}
+
+\path[fill=fillColor] (296.38, 56.92) rectangle (303.40, 64.73);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (303.40, 56.92) rectangle (324.29, 64.73);
+\definecolor{fillColor}{RGB}{201,169,0}
+
+\path[fill=fillColor] (324.29, 56.92) rectangle (324.30, 64.73);
+\definecolor{fillColor}{RGB}{21,124,98}
+
+\path[fill=fillColor] (324.30, 56.92) rectangle (337.85, 64.73);
+\definecolor{fillColor}{RGB}{159,133,0}
+
+\path[fill=fillColor] (337.85, 56.92) rectangle (337.86, 64.73);
+\definecolor{fillColor}{RGB}{175,76,38}
+
+\path[fill=fillColor] (337.86, 56.92) rectangle (347.65, 64.73);
+\definecolor{fillColor}{RGB}{80,100,139}
+
+\path[fill=fillColor] (347.65, 56.92) rectangle (347.74, 64.73);
+\definecolor{fillColor}{RGB}{57,110,0}
+
+\path[fill=fillColor] (347.74, 56.92) rectangle (352.55, 64.73);
+\definecolor{fillColor}{RGB}{160,73,129}
+
+\path[fill=fillColor] (352.55, 56.92) rectangle (352.55, 64.73);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (352.55, 56.92) rectangle (374.80, 64.73);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (374.80, 56.92) rectangle (393.52, 64.73);
+\definecolor{fillColor}{RGB}{88,88,88}
+
+\path[fill=fillColor] (393.52, 56.92) rectangle (393.53, 64.73);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13, 65.60) rectangle (222.91, 73.41);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (222.91, 65.60) rectangle (228.81, 73.41);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (228.81, 65.60) rectangle (268.67, 73.41);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (268.67, 65.60) rectangle (275.20, 73.41);
+\definecolor{fillColor}{RGB}{252,141,98}
+
+\path[fill=fillColor] (275.20, 65.60) rectangle (275.82, 73.41);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (275.82, 65.60) rectangle (282.59, 73.41);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (282.59, 65.60) rectangle (288.68, 73.41);
+\definecolor{fillColor}{RGB}{209,104,64}
+
+\path[fill=fillColor] (288.68, 65.60) rectangle (293.45, 73.41);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (293.45, 65.60) rectangle (296.61, 73.41);
+\definecolor{fillColor}{RGB}{121,171,38}
+
+\path[fill=fillColor] (296.61, 65.60) rectangle (297.09, 73.41);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (297.09, 65.60) rectangle (297.20, 73.41);
+\definecolor{fillColor}{RGB}{86,137,0}
+
+\path[fill=fillColor] (297.20, 65.60) rectangle (298.48, 73.41);
+\definecolor{fillColor}{RGB}{231,138,195}
+
+\path[fill=fillColor] (298.48, 65.60) rectangle (316.15, 73.41);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (316.15, 65.60) rectangle (321.86, 73.41);
+\definecolor{fillColor}{RGB}{201,169,0}
+
+\path[fill=fillColor] (321.86, 65.60) rectangle (335.71, 73.41);
+\definecolor{fillColor}{RGB}{21,124,98}
+
+\path[fill=fillColor] (335.71, 65.60) rectangle (337.50, 73.41);
+\definecolor{fillColor}{RGB}{159,133,0}
+
+\path[fill=fillColor] (337.50, 65.60) rectangle (337.87, 73.41);
+\definecolor{fillColor}{RGB}{175,76,38}
+
+\path[fill=fillColor] (337.87, 65.60) rectangle (338.15, 73.41);
+\definecolor{fillColor}{RGB}{80,100,139}
+
+\path[fill=fillColor] (338.15, 65.60) rectangle (339.30, 73.41);
+\definecolor{fillColor}{RGB}{57,110,0}
+
+\path[fill=fillColor] (339.30, 65.60) rectangle (339.58, 73.41);
+\definecolor{fillColor}{RGB}{160,73,129}
+
+\path[fill=fillColor] (339.58, 65.60) rectangle (339.62, 73.41);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (339.62, 65.60) rectangle (368.00, 73.41);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (368.00, 65.60) rectangle (393.49, 73.41);
+\definecolor{fillColor}{RGB}{88,88,88}
+
+\path[fill=fillColor] (393.49, 65.60) rectangle (393.53, 73.41);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13, 74.28) rectangle (249.97, 82.09);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (249.97, 74.28) rectangle (280.11, 82.09);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (280.11, 74.28) rectangle (282.64, 82.09);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (282.64, 74.28) rectangle (302.70, 82.09);
+\definecolor{fillColor}{RGB}{252,141,98}
+
+\path[fill=fillColor] (302.70, 74.28) rectangle (304.04, 82.09);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (304.04, 74.28) rectangle (309.44, 82.09);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (309.44, 74.28) rectangle (310.24, 82.09);
+\definecolor{fillColor}{RGB}{209,104,64}
+
+\path[fill=fillColor] (310.24, 74.28) rectangle (335.87, 82.09);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (335.87, 74.28) rectangle (337.87, 82.09);
+\definecolor{fillColor}{RGB}{121,171,38}
+
+\path[fill=fillColor] (337.87, 74.28) rectangle (337.87, 82.09);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (337.87, 74.28) rectangle (337.99, 82.09);
+\definecolor{fillColor}{RGB}{86,137,0}
+
+\path[fill=fillColor] (337.99, 74.28) rectangle (338.06, 82.09);
+\definecolor{fillColor}{RGB}{231,138,195}
+
+\path[fill=fillColor] (338.06, 74.28) rectangle (345.26, 82.09);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (345.26, 74.28) rectangle (350.57, 82.09);
+\definecolor{fillColor}{RGB}{201,169,0}
+
+\path[fill=fillColor] (350.57, 74.28) rectangle (355.62, 82.09);
+\definecolor{fillColor}{RGB}{21,124,98}
+
+\path[fill=fillColor] (355.62, 74.28) rectangle (355.70, 82.09);
+\definecolor{fillColor}{RGB}{159,133,0}
+
+\path[fill=fillColor] (355.70, 74.28) rectangle (356.39, 82.09);
+\definecolor{fillColor}{RGB}{175,76,38}
+
+\path[fill=fillColor] (356.39, 74.28) rectangle (357.42, 82.09);
+\definecolor{fillColor}{RGB}{80,100,139}
+
+\path[fill=fillColor] (357.42, 74.28) rectangle (357.63, 82.09);
+\definecolor{fillColor}{RGB}{57,110,0}
+
+\path[fill=fillColor] (357.63, 74.28) rectangle (357.64, 82.09);
+\definecolor{fillColor}{RGB}{160,73,129}
+
+\path[fill=fillColor] (357.64, 74.28) rectangle (357.66, 82.09);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (357.66, 74.28) rectangle (372.30, 82.09);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (372.30, 74.28) rectangle (393.45, 82.09);
+\definecolor{fillColor}{RGB}{88,88,88}
+
+\path[fill=fillColor] (393.45, 74.28) rectangle (393.53, 82.09);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13, 82.96) rectangle (257.60, 90.77);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (257.60, 82.96) rectangle (263.01, 90.77);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (263.01, 82.96) rectangle (274.29, 90.77);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (274.29, 82.96) rectangle (282.79, 90.77);
+\definecolor{fillColor}{RGB}{252,141,98}
+
+\path[fill=fillColor] (282.79, 82.96) rectangle (283.75, 90.77);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (283.75, 82.96) rectangle (299.58, 90.77);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (299.58, 82.96) rectangle (319.07, 90.77);
+\definecolor{fillColor}{RGB}{209,104,64}
+
+\path[fill=fillColor] (319.07, 82.96) rectangle (321.47, 90.77);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (321.47, 82.96) rectangle (321.88, 90.77);
+\definecolor{fillColor}{RGB}{121,171,38}
+
+\path[fill=fillColor] (321.88, 82.96) rectangle (322.31, 90.77);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (322.31, 82.96) rectangle (322.41, 90.77);
+\definecolor{fillColor}{RGB}{86,137,0}
+
+\path[fill=fillColor] (322.41, 82.96) rectangle (324.78, 90.77);
+\definecolor{fillColor}{RGB}{231,138,195}
+
+\path[fill=fillColor] (324.78, 82.96) rectangle (327.57, 90.77);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (327.57, 82.96) rectangle (340.85, 90.77);
+\definecolor{fillColor}{RGB}{201,169,0}
+
+\path[fill=fillColor] (340.85, 82.96) rectangle (341.27, 90.77);
+\definecolor{fillColor}{RGB}{21,124,98}
+
+\path[fill=fillColor] (341.27, 82.96) rectangle (343.67, 90.77);
+\definecolor{fillColor}{RGB}{159,133,0}
+
+\path[fill=fillColor] (343.67, 82.96) rectangle (344.32, 90.77);
+\definecolor{fillColor}{RGB}{175,76,38}
+
+\path[fill=fillColor] (344.32, 82.96) rectangle (344.50, 90.77);
+\definecolor{fillColor}{RGB}{80,100,139}
+
+\path[fill=fillColor] (344.50, 82.96) rectangle (348.18, 90.77);
+\definecolor{fillColor}{RGB}{57,110,0}
+
+\path[fill=fillColor] (348.18, 82.96) rectangle (349.51, 90.77);
+\definecolor{fillColor}{RGB}{160,73,129}
+
+\path[fill=fillColor] (349.51, 82.96) rectangle (349.54, 90.77);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (349.54, 82.96) rectangle (367.28, 90.77);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (367.28, 82.96) rectangle (393.52, 90.77);
+\definecolor{fillColor}{RGB}{88,88,88}
+
+\path[fill=fillColor] (393.52, 82.96) rectangle (393.53, 90.77);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13, 91.64) rectangle (362.52, 99.45);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (362.52, 91.64) rectangle (362.69, 99.45);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (362.69, 91.64) rectangle (369.29, 99.45);
+\definecolor{fillColor}{RGB}{86,137,0}
+
+\path[fill=fillColor] (369.29, 91.64) rectangle (388.39, 99.45);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (388.39, 91.64) rectangle (388.60, 99.45);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (388.60, 91.64) rectangle (388.64, 99.45);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (388.64, 91.64) rectangle (393.53, 99.45);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13,100.32) rectangle (307.97,108.13);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (307.97,100.32) rectangle (308.28,108.13);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (308.28,100.32) rectangle (310.72,108.13);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (310.72,100.32) rectangle (383.90,108.13);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (383.90,100.32) rectangle (388.64,108.13);
+\definecolor{fillColor}{RGB}{80,100,139}
+
+\path[fill=fillColor] (388.64,100.32) rectangle (388.92,108.13);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (388.92,100.32) rectangle (389.66,108.13);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (389.66,100.32) rectangle (393.53,108.13);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13,109.00) rectangle (229.12,116.82);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (229.12,109.00) rectangle (230.23,116.82);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (230.23,109.00) rectangle (231.18,116.82);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (231.18,109.00) rectangle (231.65,116.82);
+\definecolor{fillColor}{RGB}{252,141,98}
+
+\path[fill=fillColor] (231.65,109.00) rectangle (231.77,116.82);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (231.77,109.00) rectangle (232.27,116.82);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (232.27,109.00) rectangle (233.69,116.82);
+\definecolor{fillColor}{RGB}{209,104,64}
+
+\path[fill=fillColor] (233.69,109.00) rectangle (341.06,116.82);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (341.06,109.00) rectangle (341.08,116.82);
+\definecolor{fillColor}{RGB}{121,171,38}
+
+\path[fill=fillColor] (341.08,109.00) rectangle (341.13,116.82);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (341.13,109.00) rectangle (341.14,116.82);
+\definecolor{fillColor}{RGB}{86,137,0}
+
+\path[fill=fillColor] (341.14,109.00) rectangle (341.23,116.82);
+\definecolor{fillColor}{RGB}{231,138,195}
+
+\path[fill=fillColor] (341.23,109.00) rectangle (341.47,116.82);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (341.47,109.00) rectangle (344.40,116.82);
+\definecolor{fillColor}{RGB}{201,169,0}
+
+\path[fill=fillColor] (344.40,109.00) rectangle (344.40,116.82);
+\definecolor{fillColor}{RGB}{21,124,98}
+
+\path[fill=fillColor] (344.40,109.00) rectangle (345.26,116.82);
+\definecolor{fillColor}{RGB}{159,133,0}
+
+\path[fill=fillColor] (345.26,109.00) rectangle (345.33,116.82);
+\definecolor{fillColor}{RGB}{175,76,38}
+
+\path[fill=fillColor] (345.33,109.00) rectangle (347.53,116.82);
+\definecolor{fillColor}{RGB}{80,100,139}
+
+\path[fill=fillColor] (347.53,109.00) rectangle (348.36,116.82);
+\definecolor{fillColor}{RGB}{57,110,0}
+
+\path[fill=fillColor] (348.36,109.00) rectangle (348.42,116.82);
+\definecolor{fillColor}{RGB}{160,73,129}
+
+\path[fill=fillColor] (348.42,109.00) rectangle (348.42,116.82);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (348.42,109.00) rectangle (349.28,116.82);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (349.28,109.00) rectangle (393.52,116.82);
+\definecolor{fillColor}{RGB}{88,88,88}
+
+\path[fill=fillColor] (393.52,109.00) rectangle (393.53,116.82);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13,117.68) rectangle (157.93,125.50);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (157.93,117.68) rectangle (347.20,125.50);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (347.20,117.68) rectangle (347.30,125.50);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (347.30,117.68) rectangle (347.51,125.50);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (347.51,117.68) rectangle (349.61,125.50);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (349.61,117.68) rectangle (350.26,125.50);
+\definecolor{fillColor}{RGB}{209,104,64}
+
+\path[fill=fillColor] (350.26,117.68) rectangle (350.27,125.50);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (350.27,117.68) rectangle (350.30,125.50);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (350.30,117.68) rectangle (350.30,125.50);
+\definecolor{fillColor}{RGB}{86,137,0}
+
+\path[fill=fillColor] (350.30,117.68) rectangle (350.30,125.50);
+\definecolor{fillColor}{RGB}{231,138,195}
+
+\path[fill=fillColor] (350.30,117.68) rectangle (350.38,125.50);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (350.38,117.68) rectangle (350.52,125.50);
+\definecolor{fillColor}{RGB}{21,124,98}
+
+\path[fill=fillColor] (350.52,117.68) rectangle (350.79,125.50);
+\definecolor{fillColor}{RGB}{159,133,0}
+
+\path[fill=fillColor] (350.79,117.68) rectangle (350.79,125.50);
+\definecolor{fillColor}{RGB}{80,100,139}
+
+\path[fill=fillColor] (350.79,117.68) rectangle (350.80,125.50);
+\definecolor{fillColor}{RGB}{57,110,0}
+
+\path[fill=fillColor] (350.80,117.68) rectangle (350.80,125.50);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (350.80,117.68) rectangle (351.98,125.50);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (351.98,117.68) rectangle (393.52,125.50);
+\definecolor{fillColor}{RGB}{88,88,88}
+
+\path[fill=fillColor] (393.52,117.68) rectangle (393.53,125.50);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13,126.37) rectangle (365.71,134.18);
+\definecolor{fillColor}{RGB}{209,104,64}
+
+\path[fill=fillColor] (365.71,126.37) rectangle (366.12,134.18);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (366.12,126.37) rectangle (366.21,134.18);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (366.21,126.37) rectangle (366.89,134.18);
+\definecolor{fillColor}{RGB}{160,73,129}
+
+\path[fill=fillColor] (366.89,126.37) rectangle (367.06,134.18);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (367.06,126.37) rectangle (367.30,134.18);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (367.30,126.37) rectangle (393.51,134.18);
+\definecolor{fillColor}{RGB}{88,88,88}
+
+\path[fill=fillColor] (393.51,126.37) rectangle (393.53,134.18);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13,135.05) rectangle (296.97,142.86);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (296.97,135.05) rectangle (297.08,142.86);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (297.08,135.05) rectangle (297.11,142.86);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (297.11,135.05) rectangle (303.65,142.86);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (303.65,135.05) rectangle (304.77,142.86);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (304.77,135.05) rectangle (340.17,142.86);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (340.17,135.05) rectangle (347.03,142.86);
+\definecolor{fillColor}{RGB}{159,133,0}
+
+\path[fill=fillColor] (347.03,135.05) rectangle (349.13,142.86);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (349.13,135.05) rectangle (349.47,142.86);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (349.47,135.05) rectangle (393.53,142.86);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13,143.73) rectangle (284.13,151.54);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (284.13,143.73) rectangle (287.48,151.54);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (287.48,143.73) rectangle (288.37,151.54);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (288.37,143.73) rectangle (291.10,151.54);
+\definecolor{fillColor}{RGB}{252,141,98}
+
+\path[fill=fillColor] (291.10,143.73) rectangle (319.81,151.54);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (319.81,143.73) rectangle (324.79,151.54);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (324.79,143.73) rectangle (328.84,151.54);
+\definecolor{fillColor}{RGB}{209,104,64}
+
+\path[fill=fillColor] (328.84,143.73) rectangle (329.08,151.54);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (329.08,143.73) rectangle (329.35,151.54);
+\definecolor{fillColor}{RGB}{121,171,38}
+
+\path[fill=fillColor] (329.35,143.73) rectangle (329.37,151.54);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (329.37,143.73) rectangle (329.39,151.54);
+\definecolor{fillColor}{RGB}{86,137,0}
+
+\path[fill=fillColor] (329.39,143.73) rectangle (329.56,151.54);
+\definecolor{fillColor}{RGB}{231,138,195}
+
+\path[fill=fillColor] (329.56,143.73) rectangle (329.57,151.54);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (329.57,143.73) rectangle (333.80,151.54);
+\definecolor{fillColor}{RGB}{201,169,0}
+
+\path[fill=fillColor] (333.80,143.73) rectangle (333.85,151.54);
+\definecolor{fillColor}{RGB}{21,124,98}
+
+\path[fill=fillColor] (333.85,143.73) rectangle (334.65,151.54);
+\definecolor{fillColor}{RGB}{159,133,0}
+
+\path[fill=fillColor] (334.65,143.73) rectangle (334.71,151.54);
+\definecolor{fillColor}{RGB}{175,76,38}
+
+\path[fill=fillColor] (334.71,143.73) rectangle (335.01,151.54);
+\definecolor{fillColor}{RGB}{80,100,139}
+
+\path[fill=fillColor] (335.01,143.73) rectangle (336.32,151.54);
+\definecolor{fillColor}{RGB}{57,110,0}
+
+\path[fill=fillColor] (336.32,143.73) rectangle (336.54,151.54);
+\definecolor{fillColor}{RGB}{160,73,129}
+
+\path[fill=fillColor] (336.54,143.73) rectangle (336.54,151.54);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (336.54,143.73) rectangle (339.20,151.54);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (339.20,143.73) rectangle (393.53,151.54);
+\definecolor{fillColor}{RGB}{88,88,88}
+
+\path[fill=fillColor] (393.53,143.73) rectangle (393.53,151.54);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13,152.41) rectangle (281.75,160.22);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (281.75,152.41) rectangle (282.24,160.22);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (282.24,152.41) rectangle (284.31,160.22);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (284.31,152.41) rectangle (286.71,160.22);
+\definecolor{fillColor}{RGB}{252,141,98}
+
+\path[fill=fillColor] (286.71,152.41) rectangle (287.68,160.22);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (287.68,152.41) rectangle (301.99,160.22);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (301.99,152.41) rectangle (302.87,160.22);
+\definecolor{fillColor}{RGB}{209,104,64}
+
+\path[fill=fillColor] (302.87,152.41) rectangle (302.90,160.22);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (302.90,152.41) rectangle (332.11,160.22);
+\definecolor{fillColor}{RGB}{121,171,38}
+
+\path[fill=fillColor] (332.11,152.41) rectangle (332.11,160.22);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (332.11,152.41) rectangle (332.11,160.22);
+\definecolor{fillColor}{RGB}{86,137,0}
+
+\path[fill=fillColor] (332.11,152.41) rectangle (332.14,160.22);
+\definecolor{fillColor}{RGB}{231,138,195}
+
+\path[fill=fillColor] (332.14,152.41) rectangle (332.29,160.22);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (332.29,152.41) rectangle (333.10,160.22);
+\definecolor{fillColor}{RGB}{201,169,0}
+
+\path[fill=fillColor] (333.10,152.41) rectangle (333.17,160.22);
+\definecolor{fillColor}{RGB}{21,124,98}
+
+\path[fill=fillColor] (333.17,152.41) rectangle (333.71,160.22);
+\definecolor{fillColor}{RGB}{159,133,0}
+
+\path[fill=fillColor] (333.71,152.41) rectangle (333.86,160.22);
+\definecolor{fillColor}{RGB}{80,100,139}
+
+\path[fill=fillColor] (333.86,152.41) rectangle (334.26,160.22);
+\definecolor{fillColor}{RGB}{57,110,0}
+
+\path[fill=fillColor] (334.26,152.41) rectangle (334.47,160.22);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (334.47,152.41) rectangle (335.78,160.22);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (335.78,152.41) rectangle (393.53,160.22);
+\definecolor{fillColor}{RGB}{88,88,88}
+
+\path[fill=fillColor] (393.53,152.41) rectangle (393.53,160.22);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13,161.09) rectangle (270.14,168.90);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (270.14,161.09) rectangle (319.22,168.90);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (319.22,161.09) rectangle (321.82,168.90);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (321.82,161.09) rectangle (326.78,168.90);
+\definecolor{fillColor}{RGB}{252,141,98}
+
+\path[fill=fillColor] (326.78,161.09) rectangle (327.28,168.90);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (327.28,161.09) rectangle (355.86,168.90);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (355.86,161.09) rectangle (356.93,168.90);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (356.93,161.09) rectangle (357.49,168.90);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (357.49,161.09) rectangle (357.49,168.90);
+\definecolor{fillColor}{RGB}{86,137,0}
+
+\path[fill=fillColor] (357.49,161.09) rectangle (357.49,168.90);
+\definecolor{fillColor}{RGB}{231,138,195}
+
+\path[fill=fillColor] (357.49,161.09) rectangle (357.49,168.90);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (357.49,161.09) rectangle (357.69,168.90);
+\definecolor{fillColor}{RGB}{21,124,98}
+
+\path[fill=fillColor] (357.69,161.09) rectangle (357.76,168.90);
+\definecolor{fillColor}{RGB}{159,133,0}
+
+\path[fill=fillColor] (357.76,161.09) rectangle (357.77,168.90);
+\definecolor{fillColor}{RGB}{175,76,38}
+
+\path[fill=fillColor] (357.77,161.09) rectangle (357.91,168.90);
+\definecolor{fillColor}{RGB}{57,110,0}
+
+\path[fill=fillColor] (357.91,161.09) rectangle (357.95,168.90);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (357.95,161.09) rectangle (360.73,168.90);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (360.73,161.09) rectangle (393.52,168.90);
+\definecolor{fillColor}{RGB}{88,88,88}
+
+\path[fill=fillColor] (393.52,161.09) rectangle (393.53,168.90);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13,169.77) rectangle (293.42,177.58);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (293.42,169.77) rectangle (304.59,177.58);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (304.59,169.77) rectangle (313.35,177.58);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (313.35,169.77) rectangle (321.38,177.58);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (321.38,169.77) rectangle (324.00,177.58);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (324.00,169.77) rectangle (329.34,177.58);
+\definecolor{fillColor}{RGB}{80,100,139}
+
+\path[fill=fillColor] (329.34,169.77) rectangle (329.48,177.58);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (329.48,169.77) rectangle (330.23,177.58);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (330.23,169.77) rectangle (393.53,177.58);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13,178.45) rectangle (292.89,186.27);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (292.89,178.45) rectangle (293.96,186.27);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (293.96,178.45) rectangle (294.74,186.27);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (294.74,178.45) rectangle (296.60,186.27);
+\definecolor{fillColor}{RGB}{252,141,98}
+
+\path[fill=fillColor] (296.60,178.45) rectangle (298.55,186.27);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (298.55,178.45) rectangle (300.87,186.27);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (300.87,178.45) rectangle (344.45,186.27);
+\definecolor{fillColor}{RGB}{209,104,64}
+
+\path[fill=fillColor] (344.45,178.45) rectangle (344.47,186.27);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (344.47,178.45) rectangle (344.47,186.27);
+\definecolor{fillColor}{RGB}{121,171,38}
+
+\path[fill=fillColor] (344.47,178.45) rectangle (344.53,186.27);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (344.53,178.45) rectangle (344.53,186.27);
+\definecolor{fillColor}{RGB}{86,137,0}
+
+\path[fill=fillColor] (344.53,178.45) rectangle (344.60,186.27);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (344.60,178.45) rectangle (345.53,186.27);
+\definecolor{fillColor}{RGB}{21,124,98}
+
+\path[fill=fillColor] (345.53,178.45) rectangle (345.74,186.27);
+\definecolor{fillColor}{RGB}{159,133,0}
+
+\path[fill=fillColor] (345.74,178.45) rectangle (346.33,186.27);
+\definecolor{fillColor}{RGB}{80,100,139}
+
+\path[fill=fillColor] (346.33,178.45) rectangle (348.54,186.27);
+\definecolor{fillColor}{RGB}{160,73,129}
+
+\path[fill=fillColor] (348.54,178.45) rectangle (348.54,186.27);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (348.54,178.45) rectangle (349.55,186.27);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (349.55,178.45) rectangle (393.52,186.27);
+\definecolor{fillColor}{RGB}{88,88,88}
+
+\path[fill=fillColor] (393.52,178.45) rectangle (393.53,186.27);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13,187.13) rectangle (262.10,194.95);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (262.10,187.13) rectangle (264.38,194.95);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (264.38,187.13) rectangle (265.08,194.95);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (265.08,187.13) rectangle (265.19,194.95);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (265.19,187.13) rectangle (274.21,194.95);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (274.21,187.13) rectangle (274.33,194.95);
+\definecolor{fillColor}{RGB}{121,171,38}
+
+\path[fill=fillColor] (274.33,187.13) rectangle (360.75,194.95);
+\definecolor{fillColor}{RGB}{57,110,0}
+
+\path[fill=fillColor] (360.75,187.13) rectangle (364.55,194.95);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (364.55,187.13) rectangle (364.57,194.95);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (364.57,187.13) rectangle (393.53,194.95);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13,195.82) rectangle (296.30,203.63);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (296.30,195.82) rectangle (317.11,203.63);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (317.11,195.82) rectangle (317.66,203.63);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (317.66,195.82) rectangle (320.25,203.63);
+\definecolor{fillColor}{RGB}{252,141,98}
+
+\path[fill=fillColor] (320.25,195.82) rectangle (320.37,203.63);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (320.37,195.82) rectangle (357.02,203.63);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (357.02,195.82) rectangle (357.37,203.63);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (357.37,195.82) rectangle (357.37,203.63);
+\definecolor{fillColor}{RGB}{86,137,0}
+
+\path[fill=fillColor] (357.37,195.82) rectangle (357.37,203.63);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (357.37,195.82) rectangle (357.54,203.63);
+\definecolor{fillColor}{RGB}{21,124,98}
+
+\path[fill=fillColor] (357.54,195.82) rectangle (358.00,203.63);
+\definecolor{fillColor}{RGB}{175,76,38}
+
+\path[fill=fillColor] (358.00,195.82) rectangle (358.25,203.63);
+\definecolor{fillColor}{RGB}{80,100,139}
+
+\path[fill=fillColor] (358.25,195.82) rectangle (358.29,203.63);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (358.29,195.82) rectangle (360.85,203.63);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (360.85,195.82) rectangle (393.52,203.63);
+\definecolor{fillColor}{RGB}{88,88,88}
+
+\path[fill=fillColor] (393.52,195.82) rectangle (393.53,203.63);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] ( 87.13,204.50) rectangle (321.53,212.31);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (321.53,204.50) rectangle (326.76,212.31);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (326.76,204.50) rectangle (326.78,212.31);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (326.78,204.50) rectangle (328.46,212.31);
+\definecolor{fillColor}{RGB}{252,141,98}
+
+\path[fill=fillColor] (328.46,204.50) rectangle (328.69,212.31);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (328.69,204.50) rectangle (334.92,212.31);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (334.92,204.50) rectangle (335.79,212.31);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (335.79,204.50) rectangle (335.79,212.31);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (335.79,204.50) rectangle (335.79,212.31);
+\definecolor{fillColor}{RGB}{86,137,0}
+
+\path[fill=fillColor] (335.79,204.50) rectangle (335.80,212.31);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (335.80,204.50) rectangle (336.96,212.31);
+\definecolor{fillColor}{RGB}{201,169,0}
+
+\path[fill=fillColor] (336.96,204.50) rectangle (336.96,212.31);
+\definecolor{fillColor}{RGB}{21,124,98}
+
+\path[fill=fillColor] (336.96,204.50) rectangle (336.98,212.31);
+\definecolor{fillColor}{RGB}{159,133,0}
+
+\path[fill=fillColor] (336.98,204.50) rectangle (336.98,212.31);
+\definecolor{fillColor}{RGB}{80,100,139}
+
+\path[fill=fillColor] (336.98,204.50) rectangle (336.98,212.31);
+\definecolor{fillColor}{RGB}{57,110,0}
+
+\path[fill=fillColor] (336.98,204.50) rectangle (337.17,212.31);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (337.17,204.50) rectangle (337.59,212.31);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (337.59,204.50) rectangle (393.53,212.31);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08, 14.94) {(all)};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08, 23.62) {Common Crawl 2015};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08, 32.30) {Tweets 2014};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08, 40.98) {Alexa 2014};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08, 49.66) {Pinboard 2014};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08, 58.34) {Wikipedia controv. 2015};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08, 67.02) {Herdict 2014};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08, 75.70) {Open Net Initiative 2014};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08, 84.39) {UK 2015};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08, 93.07) {Thailand 2009};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08,101.75) {Thailand 2008};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08,110.43) {Syria 2015};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08,119.11) {Russia 2014};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08,127.79) {India 2012b};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08,136.47) {India 2012a};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08,145.16) {Turkey 2015};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08,153.84) {Thailand 2007};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08,162.52) {Norway 2009};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08,171.20) {Italy 2009};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08,179.88) {Germany 2014};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08,188.56) {Finland 2009};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08,197.24) {Denmark 2008};
+
+\node[text=drawColor,anchor=base east,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 83.08,205.92) {Australia 2009};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\path[draw=drawColor,line width= 0.6pt,line join=round] ( 87.13, 11.26) --
+	( 87.13, 13.51);
+
+\path[draw=drawColor,line width= 0.6pt,line join=round] (163.73, 11.26) --
+	(163.73, 13.51);
+
+\path[draw=drawColor,line width= 0.6pt,line join=round] (240.33, 11.26) --
+	(240.33, 13.51);
+
+\path[draw=drawColor,line width= 0.6pt,line join=round] (316.93, 11.26) --
+	(316.93, 13.51);
+
+\path[draw=drawColor,line width= 0.6pt,line join=round] (393.53, 11.26) --
+	(393.53, 13.51);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base,inner sep=0pt, outer sep=0pt, scale=  0.72] at ( 87.13,  4.50) {0{\%}};
+
+\node[text=drawColor,anchor=base,inner sep=0pt, outer sep=0pt, scale=  0.72] at (163.73,  4.50) {25{\%}};
+
+\node[text=drawColor,anchor=base,inner sep=0pt, outer sep=0pt, scale=  0.72] at (240.33,  4.50) {50{\%}};
+
+\node[text=drawColor,anchor=base,inner sep=0pt, outer sep=0pt, scale=  0.72] at (316.93,  4.50) {75{\%}};
+
+\node[text=drawColor,anchor=base,inner sep=0pt, outer sep=0pt, scale=  0.72] at (393.53,  4.50) {100{\%}};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{141,160,203}
+
+\path[fill=fillColor] (407.04,204.56) rectangle (414.05,211.57);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{106,126,167}
+
+\path[fill=fillColor] (407.04,196.13) rectangle (414.05,203.14);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{80,100,139}
+
+\path[fill=fillColor] (407.04,187.70) rectangle (414.05,194.71);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{102,194,165}
+
+\path[fill=fillColor] (407.04,179.27) rectangle (414.05,186.27);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{61,155,127}
+
+\path[fill=fillColor] (407.04,170.83) rectangle (414.05,177.84);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{21,124,98}
+
+\path[fill=fillColor] (407.04,162.40) rectangle (414.05,169.41);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{166,216,84}
+
+\path[fill=fillColor] (407.04,153.97) rectangle (414.05,160.98);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{121,171,38}
+
+\path[fill=fillColor] (407.04,145.54) rectangle (414.05,152.55);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{86,137,0}
+
+\path[fill=fillColor] (407.04,137.11) rectangle (414.05,144.12);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{57,110,0}
+
+\path[fill=fillColor] (407.04,128.68) rectangle (414.05,135.69);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{252,141,98}
+
+\path[fill=fillColor] (407.04,120.25) rectangle (414.05,127.25);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{209,104,64}
+
+\path[fill=fillColor] (407.04,111.81) rectangle (414.05,118.82);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{175,76,38}
+
+\path[fill=fillColor] (407.04,103.38) rectangle (414.05,110.39);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{231,138,195}
+
+\path[fill=fillColor] (407.04, 94.95) rectangle (414.05,101.96);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{191,102,158}
+
+\path[fill=fillColor] (407.04, 86.52) rectangle (414.05, 93.53);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{160,73,129}
+
+\path[fill=fillColor] (407.04, 78.09) rectangle (414.05, 85.10);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{229,196,148}
+
+\path[fill=fillColor] (407.04, 69.66) rectangle (414.05, 76.67);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{183,152,106}
+
+\path[fill=fillColor] (407.04, 61.22) rectangle (414.05, 68.23);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{255,217,47}
+
+\path[fill=fillColor] (407.04, 52.79) rectangle (414.05, 59.80);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{201,169,0}
+
+\path[fill=fillColor] (407.04, 44.36) rectangle (414.05, 51.37);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{159,133,0}
+
+\path[fill=fillColor] (407.04, 35.93) rectangle (414.05, 42.94);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{gray}{0.70}
+
+\path[fill=fillColor] (407.04, 27.50) rectangle (414.05, 34.51);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{gray}{0.55}
+
+\path[fill=fillColor] (407.04, 19.07) rectangle (414.05, 26.08);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{fillColor}{RGB}{88,88,88}
+
+\path[fill=fillColor] (407.04, 10.64) rectangle (414.05, 17.64);
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57,205.90) {English};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57,197.46) {German};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57,189.03) {Dutch};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57,180.60) {Spanish};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57,172.17) {French};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57,163.74) {Portuguese};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57,155.31) {Russian};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57,146.87) {Finnish};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57,138.44) {Polish};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57,130.01) {Czech};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57,121.58) {Turkish};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57,113.15) {Arabic};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57,104.72) {Hebrew};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57, 96.29) {Persian};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57, 87.85) {Hindi};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57, 79.42) {Nepali};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57, 70.99) {Chinese (simp.)};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57, 62.56) {Japanese};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57, 54.13) {Thai};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57, 45.70) {Vietnamese};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57, 37.27) {Indonesian};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57, 28.83) {Other};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57, 20.40) {Unrecognized};
+\end{scope}
+\begin{scope}
+\path[clip] (  0.00,  0.00) rectangle (476.98,216.81);
+\definecolor{drawColor}{RGB}{0,0,0}
+
+\node[text=drawColor,anchor=base west,inner sep=0pt, outer sep=0pt, scale=  0.63] at (416.57, 11.97) {Untranslatable};
+\end{scope}
+\end{tikzpicture}

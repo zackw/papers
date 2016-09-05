@@ -1,0 +1,21 @@
+\subsection{Parked Domain Detection}
+\label{s:parked_domain}
+
+A \emph{parked domain} is a placeholder website, operated by a
+\emph{domain parker}, who hopes to sell the domain name eventually.
+It contains no meaningful content, only advertising banners and
+links~\cite{vissers2015parking}. Domain parkers often claim the names
+of abandoned websites, hoping to gain from visits by people looking
+for the former occupant.  The placeholder site will bear little or no
+relationship to the content of the website that used to be there.
+However, it may parrot keywords from search queries that lead to the
+site.  This confuses LDA, which cannot tell that the words are being
+repeated meaninglessly.
+
+Therefore, we identify parked domains using a dedicated, heuristic
+classifier and exclude them from topic analysis.  We tested two such
+classifiers from the literature~\cite{vissers2015parking,
+  szurdi2014long} and selected the one that performed best on our
+data; see Appendix~\ref{s:pdd-eval} for details.
+
+\input plots/parked-domains.tex

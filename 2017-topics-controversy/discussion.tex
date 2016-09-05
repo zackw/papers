@@ -1,0 +1,92 @@
+\section{Conclusions}
+\label{s:discussion}
+\label{s:conclusions}
+
+We performed a large-scale study of 758,191 unique URLs drawn from 22
+sources, developing for the purpose a system that can automatically
+retrieve and analyze this volume of text.  We compared lists of pages
+reported to be censored with multiple control lists.  We found that
+these lists are not easily compared directly, but patterns emerge when
+the pages are downloaded and analyzed for their topics.  Cross-country
+patterns of censorship are readily detectable by comparing topics;
+pornography features prominently, but so do social media, music
+(copyright infringement?), and regional news.  Survival analysis of
+web pages within each topic and each source provides convincing
+evidence that potentially controversial pages tend to have shorter
+lifetimes than less sensitive pages.  The topic of a page is a
+significant predictor of its lifespan, and appearing on certain types
+of lists is also an effective predictor, even when controlling for
+topic.
+
+\subsection{Building Better Probe Lists}
+
+From our measurements, a number of guidelines emerge on how to build
+better probe lists for automated, at-scale measurement of Internet
+censorship.  To achieve both depth and breadth of coverage, one should
+start with a topic balance across webpages of interest that is
+consistent with the web at large. If a censor is known to object to
+specific topics, these topics may deserve to be weighted more heavily;
+however, the odds of noticing censorship are proportional to the size
+of the \emph{intersection} of the probe list with the blacklist. Thus,
+when a censor attempts to block a given topic comprehensively, probe
+lists need not weight that topic heavily.
+
+Most of the blacklists are heavily weighted toward topics relevant to
+the countries they came from.  This is a point in favor of ONI's split
+list design, with one set of URLs to test everywhere and then
+additional sets to test in each country.  However, the rapid decay of
+controversial pages demonstrates that it is imperative to update probe
+lists frequently.
+
+Our crawler and topic analyzer could serve as the basis for a system
+that continually generates and refines probe lists with minimal human
+effort.  The topic model can be used to select keywords to use in
+searching the web for newly created pages on each topic, thus ensuring
+freshness and depth, while reducing manual effort.  It could also, be
+applied to identify keywords that fill gaps in the topic space, thus
+improving breadth as well.  Finally, by comparing the topic coverage
+of a list to a sample of the Web at large, situations where a list has
+too much coverage of some topic or topics can be identified, improving
+efficiency.
+
+\subsection{Modeling Refinements}
+
+This study demonstrates the power of natural language processing to
+reason about the contents of collected webpages, even using crude
+approximations such as bag-of-words document representations and
+dictionary-lookup translation.  However, context-aware translation
+would almost certainly improve our classification, considering that
+people often use metaphors and ellipses to get around keyword
+blacklists~\cite{crandall2007.conceptdoppler}.  We can also refine our
+topic model by using information which is already collected but not
+analyzed, such as words found in the URL of the site and in its
+outbound links.  And the “web page boilerplate” and “error message”
+topics demonstrate that our various preprocessing heuristics could
+still be improved.
+
+The large number of languages present in our data set poses unique
+challenges.  11.5\% of all the words were either unrecognized by CLD2,
+untranslatable by Google, or both.  This is a larger fraction of the
+data set than any single language other than English.  Some of it is
+nonwords (e.g.\ strings of symbols and numbers) but, obviously, more
+comprehensive language resources would be better.  In addition,
+segmentation tools are not available for all of the languages that are
+written without spaces between the words.  In our data set, the most
+prominent lacuna is Tibetan.
+
+If the legal obstacles can be resolved, augmenting the topic model
+with information from images might be an interesting experiment.  The
+state of the art in machine classification of images is well behind
+that for text, but is advancing rapidly.  We suspect that many of the
+presently unclassifiable pages, especially those where no text
+survives boilerplate removal, are image-centric.
+
+Finally, our statistical analysis of topic correlation with sources
+relies on the assumption that Common Crawl is topic-neutral.
+Unfortunately, Common Crawl is more strongly biased toward English
+than most of our other sources (see Appendix~\ref{s:lang-bias}) so
+this assumption is suspect.  Alternatives exist, but they have their
+own deficiencies. For example, one can uniformly sample hostnames from
+the top-level DNS zones, but this only discovers website front pages.
+Developing a better “uniform” sample of the Web may well be a
+project in itself.

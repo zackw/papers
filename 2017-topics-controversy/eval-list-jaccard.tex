@@ -1,0 +1,38 @@
+\subsection{Overlap Between Lists}
+
+\begin{table*}
+\caption{Jaccard coefficients for list similarity, by URL}
+\label{t:list-sim-url}
+\centering\sffamily\input plots/list-sim-url.tik\relax
+\end{table*}
+
+\begin{table*}
+\caption{Jaccard coefficients for list similarity, by hostname}
+\label{t:list-sim-host}
+\centering\sffamily\input plots/list-sim-host.tik\relax
+\end{table*}
+
+We begin our investigation by comparing the probe lists to each other,
+using the Jaccard index of similarity: \hbox{$J=\frac{\lvert A\cap
+  B\rvert}{\lvert A\cup B\rvert}$} for any two sets $A$ and $B$.  It
+ranges from 0 (no overlap at all) to 1 (complete overlap).
+
+Table~\ref{t:list-sim-url} shows the Jaccard indices for each pair of
+lists, comparing full URLs.  It is evident that, although there is
+some overlap (especially among the pinklists, in the upper left-hand
+corner), very few full URLs appear in more than one list.  There is
+more commonality if we look only at the hostnames, as shown in
+Table~\ref{t:list-sim-host}.  The pinklists continue clearly to be
+more similar to each other than to anything else.  The blacklists,
+interestingly, continue not to have much in common with each other.
+And, equally interestingly, all the other lists---regardless of
+sampling criteria---have more in common with each other than they do
+with most of the blacklists and pinklists.  This already suggests that
+manually curated lists such as ONI's may not be digging deeply enough
+into the “long tail” of special-interest websites.
+
+While we can see that there are patterns of similarities,
+Tables~\ref{t:list-sim-url} and~\ref{t:list-sim-host} do not reveal
+\emph{what} some lists have in common with each other.  To discover
+that, we must study the content of each page, which is the task of the
+rest of this paper.

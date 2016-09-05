@@ -1,0 +1,149 @@
+\section{Introduction}\label{s:intro}
+
+The earliest serious attempts by national governments to censor the
+Internet date to the early 1990s, just as the Internet was evolving
+into a widely-available medium of mass
+communication~\cite{subramanian.2011.survey}. Despite concerted
+efforts to defend free expression, online censorship has become more
+and more common.  Nowadays, firewalls and routers with “filtering”
+features are commonplace~\cite{gallagher.2012.budget-bb}, and these
+are applied by governments worldwide to prevent access to material
+they find objectionable~\cite{oni2008denied,aase2012whiskey}.
+
+Without access to inside information, determining \emph{what} is
+censored is a research question in itself, as well as a prerequisite
+for other investigations.  Official policy statements reveal only
+broad categories of objectionable material: “blasphemy,”
+“obscenity,” “lèse-majesté,” “sedition,”
+etc.~\cite{oni2008denied,oni.nd.profiles}.  The exact list of blocked
+sites, keywords, etc.\ is kept secret, can be changed without notice,
+and may deviate from the official policy~\cite{gill.2015.worldwide}.
+
+The experimental techniques for determining what is censored are all
+variations on \emph{probing}: attempting to access network resources
+that are suspected to be censored from a client within the country
+under investigation, and recording what happens.  The \emph{probe
+  list}, the set of resources to be probed, is a crucial element of
+the experimental design.  Previous studies have based their lists on a
+variety of data sources, such as manually-selected material known to
+be politically sensitive in particular
+countries~\cite{oni.nd.testlists}, crowdsourced reports of
+inaccessible sites~\cite{berkman.nd.herdict}, “leaks” from
+government agencies~\cite{chaabane.2014.syria}, and data extracted
+from deployed “filtering” software~\cite{knockel.2011.skype}.
+
+The central focus of this paper is evaluating the quality of existing
+probe lists, and determining how they can be improved.  We propose the
+following five criteria for a high-quality probe list:
+
+\paragraph{Breadth} A good list includes many different types of
+potentially-censored material.  Hand-compiled probe lists reflect the
+developers' interests, so they may over-investigate some types of
+potentially censored material and under-investigate others.
+Deviations from a country's official policy will only be discovered by
+a probe list that is not limited to the official policy.
+
+\paragraph{Depth} A good list includes many sites for each type of
+material, so that it will reveal how thoroughly that material is
+censored in each target country, and the boundaries of the category.
+This is especially important when one list is to be used to probe the
+policies of many different countries, because even when two countries
+declare the same official policy, the actual set of sites blocked in
+each country may be different.
+
+\paragraph{Freshness} A good list includes sites that are currently
+active, and avoids those that are abandoned.  Sophisticated censors
+devote more effort to recently published content.  China's “Great
+Firewall,” for instance, not only adds sites to its blacklist within
+hours of their becoming newsworthy, but drops them again just as
+quickly when they stop being a focus of public
+attention~\cite{zhu2013cn.velocity, aase2012whiskey,
+  crandall2007.conceptdoppler}. Thus, an outdated probe list would
+underestimate the effectiveness of censorship in China.
+
+Conversely, less sophisticated censors may be content to use
+off-the-shelf, rarely-updated blacklists of porn, gambling,
+etc.\ sites, perhaps with local additions.  A recent crackdown on
+pornography in Pakistan led to a 50\% reduction in consumption, but
+the remaining 50\% simply shifted to sites that had escaped the
+initial sweep---and the censors did not update their blacklist to
+match~\cite{nabi2013pk.anatomy}. Thus, an outdated probe list would
+overestimate the effectiveness of censorship in Pakistan.
+
+\paragraph{Efficiency} A good list can be probed in a
+short time, even over a slow, unreliable network connection.  This is
+most important when attempting to conduct fine-grained measurements,
+but a list that is too large or bandwidth-intensive might not be
+usable at all.
+
+Efficiency, unfortunately, is in direct tension with breadth and
+depth: the easiest way to make a probe list more efficient is to
+remove things from it. As we discuss in
+Section~\ref{s:collection_contemporary}, efficiency also suffers if
+one seeks to collect more detailed information from each probed site.
+
+\paragraph{Ease of maintenance} A good list requires little or no
+manual adjustment on an ongoing basis.  This is obviously in tension
+with freshness, and provides a second reason to keep lists short.  The
+OpenNet Initiative's complete probe list contains roughly 12,000 URLs,
+and has only been updated a handful of times since 2014.
+
+\subsection{Topic analysis: a way forward}
+
+Mechanical analysis of the topics of Web pages that are censored, or
+suspected to be censored, can assist both in improving probe lists to
+satisfy all five of the above criteria, and in interpreting the
+results of probes.
+
+Normally, censors' reasons for blocking pages will have to do with
+their topics.  As long as this is the case, topic analysis offers an
+explanation of why any given page is censored.  It also addresses the
+problem of cross-country comparison: when two countries have similar
+policies, blocked pages from both should exhibit strongly overlapping
+topic sets, even if the pages themselves overlap only a little.  When
+the reasons are not topic-based (for instance, Syria is reported to block
+every website with an {\UrlFont .il} (Israel) domain name, regardless
+of its content~\cite{chaabane.2014.syria}), topic analysis cannot
+provide an \emph{explanation}, but it can still detect the phenomenon:
+if the blocked pages from some location do not cluster in a small
+number of topics, then one can manually inspect them to discover what
+else they have in common.
+
+Topic analysis also provides a straightforward way to keep probe lists
+up-to-date.  Abandoned sites can be discovered by comparing the
+historical topic of a page with its current topic.  New pages can be
+discovered by identifying keywords that are relevant to sensitive
+topics, then searching the Web for new material.
+
+Finally, topic analysis can reveal whether a probe list is over- or
+under-weighting a topic.  Because of the sheer size of the Web,
+censors will only ever manage to block a subset of the pages on any
+given topic.  We can estimate the number of pages on a topic that will
+be discovered by censors as a function of the popularity of that topic
+in the Web at large, the sensitivity of the topic, and the typical
+lifespan of pages on that topic.  Probe lists can then include just as
+many pages as are necessary for reliable detection, and no more.
+
+\subsection{Contributions}
+
+In this paper, we analyze the uncensored contemporary and historical
+topics of the pages included in 22 lists, containing both sensitive
+and control material, as described in Section~\ref{s:lists}.  We model
+the survival chances of all pages as a function of their topic and
+age.  Using this information, we highlight where curated list
+development may have missed something important, and we discuss ways
+it can be done better in the future.
+
+In support of our research, we develop a number of refinements to the
+standard techniques for capturing a “snapshot” of a web page and
+determining its contents. We use a full-featured headless web browser
+to ensure fidelity to what a human would see, we filter out navigation
+boilerplate, advertising, and the like, and we can reliably detect
+parked domains.
+
+The remainder of the paper proceeds as follows. We survey previous
+efforts in Section~\ref{s:prev-work}, and describe the lists we are
+evaluating in Section~\ref{s:lists}.  Sections~\ref{s:collection},
+\ref{s:preprocessing}, and~\ref{s:analysis} present our methodology
+for data collection, preprocessing, and analysis.  Our results appear
+in Section~\ref{s:eval}, and our conclusions in Section~\ref{s:discussion}.

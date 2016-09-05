@@ -1,0 +1,138 @@
+\section{Data Collection}\label{s:collection}
+
+We collected both \emph{contemporary} and \emph{historical} snapshots
+of each page on our lists.  As the names imply, contemporary snapshots
+show the page as it currently is, whereas historical snapshots look
+back in time.  Contemporary data is sufficient to evaluate webpage
+availability and topic.  Historical data reveals pages whose topic has
+changed since they were entered onto a blacklist; it helps us discover
+the topic of pages that no longer exist; and it allows us to compute
+page availability over time, as well as topic changes over time.
+
+In this study, we are not attempting to discover whether any given
+page actually is censored anywhere.  Rather, we seek to explain
+\emph{why} a list of pages (such as the ONI probe list, or one of the
+blacklists) is more or less likely to be censored, by comparing its
+topic distribution to a reference list (such as the Common Crawl
+sample of the entire Web).  For this purpose, we need
+\emph{uncensored} snapshots of each page.  Therefore, all snapshots
+were collected by computers in commercial data centers in the USA,
+where Internet censorship conflicts with the constitutional protection
+of freedom of speech.  There have been occasional moves toward
+blocking access to “obscene” material in the USA~\cite{oni.usa}, but
+we are not aware of any filtering imposed on the commercial servers we
+use in this study.
+
+\subsection{Contemporary Data Collection}\label{s:collection_contemporary}
+
+We used an automated Web browser, PhantomJS~\cite{phantomjs.nd} to
+collect contemporary snapshots of each page.  PhantomJS is based on
+WebKit, and supports roughly the same set of features as Safari~6.0.
+Relative to “bleeding edge” browsers, the most significant missing
+features involve multimedia content (video, audio, etc.),\ which we
+would not collect anyway, for legal reasons (see below).  A controller
+program started a new instance of PhantomJS for each page load, with
+all caches, cookie jars, etc.\ erased.
+
+An automated browser offers major advantages over traditional
+“crawling” using an HTTP client that does not parse HTML or execute
+JavaScript.  An increasing number of pages rely on JavaScript to the
+point where a client that does not run scripts will see none of the
+intended content. Also, markup ambiguities and errors are handled
+exactly as a human-driven browser (Safari) would.  Downstream
+processing receives only well-structured, canonicalized HTML
+documents.  Finally, it is harder for the server to detect that it is
+being accessed by an automated process, which might cause it to send
+back different material than a human would
+receive~\cite{wang2011cloak}.
+
+This approach also has disadvantages.  The most significant is its
+cost in time and computer power.  The data-collection host could
+sustain an average page-load rate of approximately 4 pages per second,
+with the limiting factor being PhantomJS's substantial RAM
+requirements.  A well-tuned traditional crawler, by contrast, can
+sustain an average page-load rate of 2,000 pages per second with
+roughly equivalent hardware resources~\cite{ahmed2015around}. We also
+suffer from a much larger set of client bugs.  6,980 attempted page
+loads (0.92\%) caused PhantomJS to crash.  Finally, it is still
+possible for sites to distinguish PhantomJS from a “real” browser.
+Some sites block this kind of close mimic, while allowing obvious web
+crawlers access.  For instance, LinkedIn blocked us from accessing
+user profile pages and job listings.
+
+Our collector ignores \texttt{robots.txt}, because a human-driven
+browser would do the same.  Instead, we avoid disruptive effects on
+websites by randomizing the order of page loads, so that no website
+sees a large number of accesses in a short time.  Also, we do not
+traverse any outbound hyperlinks from any page, which reduces the odds
+of \emph{modifying} sites by accessing them.  For legal reasons, our
+collector does not load images and videos, nor does it record how the
+pages would be rendered. While HTML sources are safe, there exist images
+that are illegal to possess, even unintentionally, in the USA.
+
+Ideally, contemporary data collection should occur at a single point
+in time, but this is impractical, given the volume of data we are
+acquiring.  Most of our contemporary data was collected over a
+two-month period ranging from September 21 through December 3, 2015.
+For efficiency, we imported HTML directly from Common Crawl's data
+release rather than re-crawling each page ourselves.  These pages were
+collected between July 28 and August 5, 2015.  More importantly,
+Common Crawl is a traditional crawler, so these pages' contents may be
+less accurately recorded.
+
+\begin{figure*}
+\centering\sffamily\input plots/historical-snap-pattern.tik\relax
+\caption{Availability of historical snapshots for the pages on each
+  source list}
+\label{t:list-historical-snaps}
+\end{figure*}
+
+\subsection{Historical Data Collection}
+\label{s:collection_historical}
+
+Our historical snapshots were all collected by the Internet Archive's
+“Wayback Machine”~\cite{ia.nd.wayback}. The Archive began recording
+Web pages in 1996.  They offer HTTP-based APIs for retrieving all the
+dates where they have a snapshot of a particular page, and then for
+retrieving the page as they saw it on a particular date.  We used
+these APIs to retrieve snapshots at one-month intervals (whenever
+possible), running backward in time from the date of our contemporary
+snapshot to at least one year before the earliest date that the page
+appears in any of our lists.  Like Common Crawl, the Wayback Machine
+uses a traditional crawler, so there is some loss of fidelity in
+historical snapshots.
+
+{\input plots/wb-availability\relax
+%
+The Wayback Machine has snapshots for \iaAvail{} of the \totalPages{}
+pages in this study (\iaAvailPct{}\%), but these are not evenly
+distributed across all of the lists.
+Figure~\ref{t:list-historical-snaps} shows how many of the pages on
+each list have historical snapshots, and how those are distributed
+over the 10 years before our contemporary data was collected.  The
+Wayback Machine is more likely to collect popular and long-lived
+websites, and, unfortunately, this means it has less data for the
+sites on the pinklists and blacklists.  As we will discuss in
+Section~\ref{s:survival}, we have enough data to predict the lifetime
+of a page as a function of its source category, but not individual
+sources, topics or languages.
+
+“India 2012a” appears to be well-collected, but this is an artifact.
+That list consists mostly of YouTube videos; YouTube is extremely
+popular, so the Wayback Machine has good coverage of it.  Most of the
+videos have been removed from YouTube (we suspect this is a case of
+“DMCA takedown abuse,” in which a legal process intended to combat
+copyright infringement is applied to suppress controversial
+material~\cite{gratz.2015.dmca}), but YouTube's “This video is no
+longer available” error message is served as a \emph{successful} HTTP
+transaction (200 OK).  Thus, the pages appear to have survived, when
+they haven't.  Fortunately, there are only a few hundred pages
+affected by this artifact.
+
+For \iaNearLo{} of the pages (\iaNearLoPct{}\%), the Wayback Machine
+records at least one snapshot within 30 days of the earliest date when
+the page was entered onto one of our lists.  It is at this time that
+the page's topic is most likely to be relevant to its chances of being
+censored.
+%
+}%

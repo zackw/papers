@@ -1,0 +1,114 @@
+\section{Lists tested}\label{s:lists}
+
+We studied 758,191 unique URLs drawn from 22 test lists
+(shown in Table~\ref{t:list-sim-url}).  Only one was
+created to be used as a probe list~\cite{oni.nd.testlists}, but
+another 15 are (allegedly) actual blacklists used in specific
+countries, and two more have algorithmic selection criteria that
+should be positively correlated with censorship.  The remaining four
+are control groups.  One should be \emph{negatively} correlated with
+censorship, and the others are neutral.
+
+Due to the sheer size and diversity of the global Web, and the large
+number of pages that are not discoverable by traversing the link
+graph~\cite{biemann2013scalable}, any sample will inevitably miss
+something.  We cannot hope to avoid this problem, but drawing our
+sample from a wide variety of sources with diverse selection criteria
+should mitigate it.
+
+\subsection{Potentially censored}\label{s:lists-censored}
+
+Pages from these lists should be more likely than average to be
+censored somewhere.
+
+\paragraph{Blacklists and pinklists}\label{s:lists-blacklists} These
+documents purport to be (part of) actual lists of censored URLs in
+some countries.  Most are one-time snapshots; some are continuously
+updated.  They must be interpreted cautiously.  For instance, the
+leaked “BlueCoat” logs for Syria~\cite{chaabane.2014.syria} list
+only URLs that someone tried to load; there is no way of knowing
+whether other URLs are also blocked, and one must guess whether entire
+sites are blocked or just specific pages.
+
+This study includes 15 lists from 12 countries, for a total of 331,362
+URLs.  Eight of them include overwhelmingly more pornography than
+anything else; we will refer to these as \emph{pinklists} below.  (All
+eight do include some non-pornographic sites, even though six of them
+are from countries where the ostensible official policy is \emph{only}
+to block pornography.)  The other seven do not have this emphasis, and
+we will refer to them as \emph{blacklists} below.
+
+\paragraph{OpenNet Initiative}\label{s:lists-oni}
+ONI is an international research institute devoted to the study of
+Internet censorship and surveillance.  They publish a hand-curated
+probe list of 12,107 URLs discussing sensitive
+topics~\cite{oni.nd.testlists}.  The principle is that these are more
+likely to be censored than average, not that they necessarily
+\emph{are} censored somewhere. We take this list as representative of
+the probe lists used by researchers in this field.  1,227 of the URLs
+are labeled as globally relevant, the rest as relevant to one or more
+specific countries.
+
+Hand-curated lists will inevitably reflect the concerns of their
+compilers.  The ONI list, for instance, has more “freedom of expression
+and media freedom” sites on the list than anything else.
+
+\paragraph{Herdict}\label{s:lists-herdict}
+Herdict~\cite{berkman.nd.herdict} is a service which aggregates
+worldwide reports that a website is inaccessible.  A list of all the
+URLs ever reported can be downloaded from a central server; this comes
+to 76,935 URLs in total.  The browser extension for making reports is
+marketed as a censorship-reporting system, but they do not filter out
+other kinds of site outage.  This list includes a great deal of junk,
+such as hundreds of URLs referring to specific IP addresses that serve
+Google's front page.
+
+\paragraph{Controversial Wikipedia articles and their references}
+\label{s:lists-wikipedia}
+\Textcite{yasseri.2014.wikipedia} observe that controversy on
+Wikipedia can be mechanically detected by analyzing the revision
+history of each article. Specifically, if an article's history
+includes many “mutual reverts,” where pairs of editors each roll back
+the other's work, then the article is probably controversial.  (This
+is a conservative measure; as they point out, Wikipedia's edit wars
+can be much more subtle.)  They published lists of controversial
+Wikipedia articles in 13 languages.  We augmented their lists with the
+external links from each article.  This came to a total of 105,181
+URLs.
+
+\subsection{Controls}
+
+These lists were selected to reflect the Web at large.
+
+\paragraph{Pinboard}\label{s:lists-pinboard}
+We expect pages on this list to be \emph{less} likely to be censored
+than average. It is a personal bookmark list with 3,276 URLs,
+consisting mostly of articles on graphic design, Web design, and
+general computer programming, with the occasional online shopfront.
+
+\paragraph{Alexa 25K}\label{s:lists-alexa}
+Alexa Inc.\ claims that these are the 25,019 most popular websites
+worldwide; their methodology is opaque, and we suspect it over-weights
+the WEIRD (Western, Educated, Industrialized, Rich, and
+Democratic~\cite{henrich2010weird}) population.  Sensitive content is
+often only of interest to a narrow audience, and the popularity of
+major global brands gives them some protection from censorship, so
+sites on this list may also be less likely to be censored than
+average.
+
+\paragraph{Twitter}\label{s:lists-twitter}
+Another angle on popularity, we use a small (less than 0.1\%) sample
+of all the URLs shared on Twitter from March 17 through 24, 2014,
+comprising 30,487 URLs shared by 27,731 user accounts.  Twitter was
+chosen over other social networks because, at the time of the sample,
+political advocacy and organization via Twitter was fashionable.
+
+\paragraph{Common Crawl}\label{s:lists-ccrawl}
+Finally, this is the closest available approximation to an unbiased
+sample of the entire Web.  The Common Crawl Foundation continuously
+operates a large-scale Web crawl and publishes the
+results~\cite{commoncrawl}. Each crawl contains at least a billion
+pages. We sampled 177,109 pages from the September 2015 crawl
+uniformly at random.
+
+\input eval-list-jaccard

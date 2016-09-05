@@ -1,0 +1,138 @@
+\RequirePackage[2015/10/01]{latexrelease}
+\RequirePackage[l2tabu,orthodox]{nag}
+% work around bug in nag exposed by greek Babel module - this must
+% also be done before \documentclass
+\makeatletter
+\renewcommand\thenag@c{\romannumeral\c@nag@c}
+\makeatother
+%
+\documentclass[USenglish,oneside,twocolumn]{article}
+
+% These packages must be loaded in this order, as early as possible.
+% Greek is used in diagrams/pipeline.
+% We do not use German in this document, but dgruyter_NEW may barf
+% on \iflanguage{ngerman} constructs if ngerman isn't loaded.
+% The _last_ language argument to babel is the default language.
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[greek,ngerman,american]{babel}
+\usepackage[big]{dgruyter_NEW}
+
+% microtype must be loaded after all fonts.
+\usepackage{microtype}
+
+% inputenc doesn't set the space factor of Unicode close curly quote
+% correctly.
+\AtBeginDocument{%
+  \sfcode\csname\encodingdefault\string\textquotedblright\endcsname=0%
+  \sfcode\csname\encodingdefault\string\textquoteright\endcsname=0%
+}
+
+% Miscellaneous packages with no known ordering dependencies.
+\usepackage{tikz}
+\usepackage{bm}
+\usepackage{xparse}
+
+% Bibliography-related stuff.  csquotes must be loaded before
+% biblatex.
+
+\usepackage{csquotes}
+\usepackage[
+    backend=biber,
+    bibstyle=numeric-web,
+    citestyle=numeric-comp,
+    sortcites=true,
+    sorting=nyt,
+    maxcitenames=2,
+    maxbibnames=99
+]{biblatex}
+
+\renewcommand{\bibfont}{\footnotesize}
+\addbibresource{references.bib}
+
+% hyperref, doi, and bookmark must be loaded in that order, after
+% all other packages.  (dgruyter_NEW tries to load hyperref and doi
+% itself, which doesn't work correctly and has been disabled.)
+\definecolor{dblue}{RGB}{0,30,90}
+\usepackage[
+    breaklinks,
+    linktocpage,
+    bookmarksnumbered,
+    pdfborder={0 0 0},
+    colorlinks,
+    linkcolor={black},
+    citecolor={black},
+    urlcolor={dblue}
+]{hyperref}
+\usepackage{doi}
+\usepackage{bookmark}
+
+% Miscellaneous settings
+\hyphenation{ano-nym-ity}
+\DeclareUnicodeCharacter{012B}{\=\i}
+\DeclareUnicodeCharacter{014D}{\=o}
+
+% Bug fixes.
+\makeatletter
+
+% dgruyter_NEW's tweaks to hyperref, requiring @-is-letter, have been
+% cloned here.
+\let\toclevel@contribution\toclevel@chapter
+\let\toclevel@author\toclevel@chapter
+\renewcommand*{\doitext}{}
+
+% Fix \section* to add entries to the PDF outline.
+\newcounter{orig@secnumdepth}
+\let\orig@section\section
+\RenewDocumentCommand{\section}{s o m}{%
+  \IfBooleanTF{#1}% starred?
+    {\setcounter{orig@secnumdepth}{\value{secnumdepth}}% Store secnumdepth
+     \setcounter{secnumdepth}{0}}% Print only up to \chapter numbers
+    {}%
+  \IfValueTF{#2}% optional arg?
+    {\orig@section[#2]{#3}}% \section[.]{..}
+    {\orig@section{#3}}% \section{..}
+  \IfBooleanTF{#1}% starred?
+    {\setcounter{secnumdepth}{\value{orig@secnumdepth}}}% Restore secnumdepth
+    {}%
+}
+
+% Tighter definition of \paragraph (but we still want it to be a
+% section heading for cross-reference purposes)
+\RenewDocumentCommand{\paragraph}{m}{%
+  \setcounter{orig@secnumdepth}{\value{secnumdepth}}% Store secnumdepth
+  \setcounter{secnumdepth}{0}% Disable section numbering
+  \@startsection{paragraph}{4}%
+                {\z@}{\medskipamount}{-1em}%
+                {\sffamily\bfseries}{#1}%
+  \setcounter{secnumdepth}{\value{orig@secnumdepth}}% Restore secnumdepth
+}
+
+% dgruyter_NEW's definition of \@makefnmark inexplicably switches to
+% font encoding U, without changing any other font parameters, and
+% there is no U/lmr/m/n so we get errors.  This is the same thing
+% that it does, but with the \fontencoding{U} chopped out.
+\def\@makefnmark{\hbox{\@textsuperscript{\selectfont\@thefnmark}}}
+
+% biblatex's default definition of the bibliography heading uses \markboth,
+% which interferes with how dgruyter_NEW uses marks for running heads.
+\defbibheading{bibliography}[\refname]{\section*{#1}}
+
+\makeatother
+
+\begin{document}
+
+\input frontmatter
+\input introduction
+\input relwork
+\input data-sources
+\input collection-method
+\input analysis-method
+\input evaluation
+\input discussion
+\input acknowledgments
+\printbibliography
+\input appendix
+
+\end{document}

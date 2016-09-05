@@ -1,0 +1,5 @@
+@default_files = ("2017-topics-controversy.tex");
+$dvi_mode = 0;
+$pdf_mode = 1;
+$bibtex_use = 2;
+$clean_ext = "run.xml";

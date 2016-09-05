@@ -1,0 +1,100 @@
+\begin{figure}[tb!]
+\centering
+% Saveboxes are used for two cases that would be most
+% straightforwardly expressed as nested matrices, because PGF doesn't
+% support that yet.  Ampersand replacement is required to allow
+% a \matrix to appear inside the arguments of \sbox.
+\begingroup
+\newsavebox{\langidexample}%
+\sbox{\langidexample}{%
+\tikz
+\matrix [ampersand replacement=\&,
+    inner sep=0pt, outer sep=0pt,
+    column sep=.6666em, row sep=.6666em,
+    column 1/.style={nodes={align=right,anchor=east,font=\sffamily\bfseries}},
+    column 2/.style={text width=80bp,
+        nodes={align=left,anchor=west,font=\sffamily\footnotesize,
+               execute at begin node=\setlength{\baselineskip}{9pt}}}]
+{
+\node{Latin};
+\&
+\node{%
+Lorem ipsum dolor sit amet,
+consecutur adipiscing elit sed}; \\
+\node{Greek};
+\&
+\node{%
+\foreignlanguage{greek}{%
+Καλῶς μὲν γὰρ πραττόμενον
+καὶ ὀρθῶς καλὸν γίγνεται,
+μὴ ὀρθῶς δὲ αἰσχρόν}};
+\\
+};%
+}%
+\newsavebox{\clusterexample}%
+\sbox{\clusterexample}{%
+\tikz
+\matrix[ampersand replacement=\&,
+    inner sep=0pt, outer sep=0pt,
+    column sep=.6666em]
+{
+\input diagrams/doccluster.tik\relax
+\&
+\node[text width=62bp,font=\sffamily\footnotesize,yshift=.2em,
+      execute at begin node=\setlength{\baselineskip}{9pt}]{%
+substanc qualiti logic
+materi ethic virtu will
+wisdom temper natur
+determin courag};
+\\
+};%
+}%
+\begin{tikzpicture}
+\matrix [row sep=0.333em, column 1/.style={
+    text width=100bp,
+    execute at begin node=\setlength{\baselineskip}{11pt}}]{%
+\node{Original HTML page};
+&
+\input diagrams/originaldoc.tik\relax
+\\
+\node{Boilerplate removed, text extracted};
+&
+\input diagrams/extractedtext.tik\relax
+\\
+\node{Languages identified};
+&
+\node{\usebox{\langidexample}};
+\\
+\node{Translated word by word into English};
+&
+\node[text width=100bp,align=flush left,font=\sffamily\footnotesize,
+      execute at begin node=\setlength{\baselineskip}{9pt}]{%
+pain himself pain it is boring
+obtained ecological soup but
+welcome men practice and
+correctly rope become except
+not obscene};
+\\
+\node{Stemmed, reduced to a word vector, truncated using tf-idf};
+&
+\node[text width=100bp,align=flush left,font=\sffamily\footnotesize,
+      execute at begin node=\setlength{\baselineskip}{9pt}]{%
+bore correct ecolog enjoi
+except obscen obtain pain
+practic rope welcome
+};
+\\
+\node{Clustered with related documents using LDA};
+&
+\node{\usebox{\clusterexample}};
+\\
+\node{Topic assigned};
+&
+\node[font=\sffamily\large]{Stoicism!};
+\\
+};
+\end{tikzpicture}
+\endgroup
+\caption{Document processing pipeline}
+\label{f:pipeline}
+\end{figure}

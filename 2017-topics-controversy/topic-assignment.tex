@@ -1,0 +1,48 @@
+\section{Topic Analysis}\label{s:analysis}
+
+We used the MALLET implementation of
+LDA~\cite{mccallum2002mallet,lda_distributed_2009,lda_sparse_2009} to
+cluster documents into topics.
+
+We used the contemporary data for training and selecting the topic
+models.  Half of the collected documents were used for training, and
+the remainder were used for model-selection.  We trained models with
+$N\in \{100, 150, \ldots, 250\}$ topics and $\alpha\in \{0.1, 0.5, 1,
+5, 10, 100\}$ ($\alpha$ controls the sparsity of the topic
+assignment), and selected the max-likelihood model, following the
+procedure described by \textcite{WallachMSM09}.  We
+found the parameters $N=100$ and $\alpha=5$ to be optimal.
+
+After model training, two researchers reviewed the top words
+associated with each topic and labeled the topics.  A colleague not
+otherwise involved with the research scored inter-coder agreement
+between the labels, which came to 87\%.  Disagreements were resolved
+by discussion between the researchers.
+
+To capture the complexities of modern web pages (e.g., dynamically
+updated contents, mashups, etc.), rather than assigning a single
+topic to each given page, we assigned it a vector of probabilities
+over all $N$ topics.  For instance, a news website front-page
+containing article snippets about sports and politics would have
+those topics (“sports,” “news,” “politics”) assigned relatively
+high probabilities, perhaps 0.2, 0.4 and 0.35.  Other topics would
+receive probabilities very close to zero.
+
+LDA found several topics with identical labels.  This is a known
+limitation of LDA when the training dataset is skewed toward certain
+topics.  The algorithm will split those topics arbitrarily in order to
+make all of the clusters roughly the same size~\cite{Xie15Diversify}.
+We solved this problem by manually merging topics that have similar
+labels and summing their probabilities.  For instance, suppose that
+topics 26 and 61 were both labeled “news,” and that a page has
+probability $0.24$ for topic 26 and $0.56$ for topic 61.  These topics
+would be combined into a single “news” topic, and the page's weight
+for the combined topic would be $0.8$.
+
+Using this procedure, our initial set of 100 topics was reduced to 64
+merged topics, and then further grouped into nine categories.  Two
+artifical topics were added to account for documents that could not be
+processed by LDA at all.  The final set of topics and categories is
+shown in Table~\ref{t:source-topic-nonuniform} along with measures of
+the bias of lists and languages toward each topic.  We discuss the
+topic assignments further in Section~\ref{s:eval}.

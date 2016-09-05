@@ -1,0 +1,63 @@
+\section{Previous Work}\label{s:prev-work}
+
+The earliest academic study of Internet censorship we are aware of is
+a~\citeyear{richardson2002us.health} case study of porn-blocking
+“filters” used in schools and libraries in the
+USA~\cite{richardson2002us.health}.  Its authors were concerned that
+these filters might misclassify sexual health information as
+pornographic.  To check, they manually compiled a set of health- and
+porn-related keywords, expanded it to a list of 4,000 URLs by
+searching the Web without any filters active (2,500 URLs were
+health-related, 500 pornographic, and 1,000 neither) and then
+attempted to visit all of the pages with filters in place.
+
+This methodology---probing the behavior of a filter with keyword
+searches, specific URLs known to contain sensitive content, or
+both---is still standard for censorship case studies.  China has
+received the most attention~\cite{clayton2006cn.ignore,
+  park2010cn.filter, xu2011cn.where, anderson2012cn.splinternet,
+  wright2014cn.regional}. Similar studies have been published for
+Iran~\cite{aryan2013ir.first}, Pakistan~\cite{nabi2013pk.anatomy,
+  nabi2014.futile}, and Turkey~\cite{nabi2014.futile}.  The OpenNet
+Initiative (ONI) regularly surveys roughly 80 countries
+worldwide~\cite{oni.nd.profiles, oni2008denied, oni2010controlled}.
+
+The same methodology also underlies broader studies.  One line of
+research investigates inter-country variation in the censorship
+\emph{mechanism}: for instance, whether censorship mainly interferes
+with DNS lookups or subsequent TCP connections, and whether the
+end-user is informed of censorship~\cite{verkamp2012.mechanics}. In
+some cases, it has been possible to identify the specific “filter” in
+use~\cite{dalek2013.url.filtering, jones.2014.blockpages}. Another
+line aims to understand what is censored and
+why~\cite{aase2012whiskey}, how that changes over
+time~\cite{anderson2014.ripe,gill.2015.worldwide}, how the degree of
+censorship might vary within a country~\cite{wright2011.finegrain},
+and how people react to
+censorship~\cite{khattak.2014.isp,knockel.2011.skype}.
+
+Despite the central position of keyword and URL probe lists in all of
+these studies, relatively little attention has been paid to the
+contents of the lists, or how they are developed.  Far more effort has
+gone into refining the methodology of the probes
+themselves~\cite{dalek2013.url.filtering, dischinger2010.diffserv,
+  filasto2012.ooni, jones.2014.blockpages, sfakianakis2011.censmon,
+  wright2011.finegrain, verkamp2012.mechanics, burnett2015.encore}.
+A few studies have dug into “leaks” of inside information, which allow
+researchers to see what actually \emph{is} censored and perhaps why.
+Recently this has occurred for backbone filters in
+Syria~\cite{chaabane.2014.syria} and Pakistan~\cite{khattak.2014.isp},
+and the TOM-Skype chat client's internal keyword
+filter~\cite{knockel.2011.skype}.  However, all of these studies still
+took the list as a means to an end, not an object of research in
+itself.
+
+One notable exception, and the effort closest to our own research, is
+the ConceptDoppler project~\cite{crandall2007.conceptdoppler}.  The
+authors attempted to refine a keyword list, using latent semantic
+analysis to generate new keywords from a “seed set” of
+known-filtered keywords.  Their goal was to develop a system that
+could track the time evolution of a keyword blacklist in real time, so
+that it could be correlated with news events.  While their initial
+results were promising, the algorithm required a great deal of manual
+validation and adjustment, and we are not aware of any follow-up work.

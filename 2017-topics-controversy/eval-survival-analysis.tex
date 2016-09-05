@@ -1,0 +1,94 @@
+\subsection{Survival Analysis}\label{s:survival}
+
+\begin{figure*}[t!]
+\centering\sffamily\input plots/survival-odds-ratio.tik\relax
+\caption{How likely pages are to be taken down compared to Common
+  Crawl pages.  Error bars show 95\% confidence intervals.
+}
+  \label{fig:surv-oddsratio}
+\end{figure*}
+
+We modeled page survival curves using Kaplan-Meier
+estimators~\cite{KM58} with right-censoring\footnote{Survival analysis
+  jargon uses the word “censored” to describe a particular kind of
+  missing data.}  and delayed entry. When death events were only known
+to have occurred within some interval, we substituted the midpoint of
+the interval.  We compared survival curves using log-normal tests and
+Cox proportional hazard models.
+
+As mentioned in Section~\ref{s:collection_historical}, the limited
+data we have from the Wayback Machine is insufficient to compute
+Kaplan-Meier curves for each topic, or each source list.  Only 55.8\%
+of the URLs have any historical data at all, and the median number of
+historical snapshots per URL is only 3, with large gaps between
+observations.  We do have enough data to compute K-M curves for each
+group of source lists (Figure~\ref{fig:km-list}) and each category of
+topics (Figure~\ref{fig:km-topic}).  These larger-scale clusters
+correspond to the horizontal and vertical divisions of the left half
+of Table~\ref{t:source-topic-nonuniform}, plus an extra topic category
+just for HTTP errors.  It should be said, however, that the large gaps
+mean that all these curves probably overestimate survival times.
+
+\begin{figure}[htb!]
+\centering\sffamily\input plots/km-lists.tik\relax
+\caption{Kaplan-Meier curves for different lists (best viewed in color).}
+  \label{fig:km-list}
+\end{figure}
+
+\begin{figure}[htb!]
+\centering\sffamily\input plots/km-topic.tik\relax
+\caption{Kaplan-Meier curves for different categories of topic (best viewed in color).}
+  \label{fig:km-topic}
+\end{figure}
+
+From these curves, we can see that pages hosting sensitive material
+(pinklist, blacklist, and probably censored; porn, software,
+entertainment, video, news) are significantly shorter-lived than less
+sensitive webpages, with the pinklist pages faring worst.  (The
+especially short lifetime of the “error” category reflects that once
+pages start turning into error messages, the entire site is likely to
+go away.)  This in itself demonstrates the need for frequent updates
+to probe lists.
+
+To reveal how lists and topics interact in determining page lifetime,
+we use a two-variable Cox proportional hazard model:
+\begin{equation}\label{e:coxph}
+h_i(t) = h_0(t)e^{\beta_1L_i + \beta_2 T_i}
+\end{equation}
+where $L_i$ is the type of page (blacklisted, etc), $T_i$ is the topic
+category, $h_0$, $\beta_1$, and $\beta_2$ regression coefficients, and
+$h_i$ the hazard rate at time $t$.  Using this model,
+Figure~\ref{fig:surv-oddsratio} compares the odds of death of each
+type and category of page with those in the Common Crawl list.  Each
+panel of this figure compares a group of source lists to Common Crawl;
+within each panel, there is a letter indicating the odds ratio, with
+95\% confidence interval, for each group of topics.  Larger numbers on
+the y-axis indicate greater chances of a page being removed from the
+net.  When the confidence interval is large, this means either that we
+have very little data (for instance, the “not censored” list group
+has fewer than 10 sites in the “religion” and “porn” categories)
+or that the lifetimes of pages in some category vary widely (for
+instance, “popular/entertainment”).
+
+This analysis confirms that, regardless of their topic, pages listed
+on the pinklists are more likely to be removed than pages on any other
+set of lists.  Popular pages are somewhat less likely to be removed,
+but not as much as one would expect; this is probably because these
+lists include a fair number of sites that were only popular for the
+proverbial fifteen minutes.  Curiously, non-pornographic video is
+\emph{less} likely to be taken down than anything else; this may
+reflect the durability of video-sharing sites, which have to make a
+substantial infrastructure investment just to get started.
+
+Another curious result is that, while pinklisted porn has a very short
+lifetime ($\beta_1 = 0.715$, $p < 0.01$), porn in general has a
+\emph{longer} lifetime than the average ($\beta_2 = -0.123$, $p <
+0.01$) (page revival allowed in both cases).  This may reflect a
+fundamental dichotomy within the category.  Legal pornography (in the
+USA) is a large and well-funded industry, capable of maintaining
+stable websites for years on end.  However, there is also a
+substantial gray market, consisting of many small-time operations
+looking to make money fast and not so much concerned with law or
+ethics.  These sites turn over very quickly indeed, and are perhaps
+also more likely to come to the negative attention of a censorship
+bureau.
