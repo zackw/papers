@@ -1,0 +1,185 @@
+authors:
+# Coauthors, with their websites.  Alpha by last name. "no" = no website
+# I can find.
+  "Bergen, Benjamin": "http://www.cogsci.ucsd.edu/~bkbergen/"
+  "Boneh, Dan": "https://crypto.stanford.edu/~dabo/"
+  "Briesemeister, Linda": "http://www.csl.sri.com/users/linda/"
+  "Chen, Eric": no
+  "Cheung, Steven": "http://www.csl.sri.com/people/cheung/"
+  "Christin, Nicolas": "https://www.andrew.cmu.edu/user/nicolasc/"
+  "DeBruhl, Bruce": "http://users.csc.calpoly.edu/~bdebruhl/"
+  "Evans, Chris": "https://scarybeastsecurity.blogspot.com/"
+  "Huang, Lin-Shung": "https://linshunghuang.com/"
+  "Jackson, Collin": "http://www.collinjackson.com/"
+  "Jayaraman, Pavithra Ramesh": no
+  "Kim, Yu Seung": "http://mews.sv.cmu.edu/people/kim/"
+  "Lincoln, Patrick": "http://www.csl.sri.com/users/lincoln/"
+  "Mason, Ian": "http://csl.sri.com/people/mason/"
+  "Massar, Jeroen": "https://jeroen.massar.ch/"
+  "Porras, Phillip": "http://www.csl.sri.com/users/porras/"
+  "Narayan, Shweta": "http://shwetanarayan.org/"
+  "Núñez, Rafael": "http://www.cogsci.ucsd.edu/~nunez/web/"
+  "Sharif, Mahmood": "https://users.ece.cmu.edu/~mahmoods/"
+  "Sidwell, Nathan": no
+  "Simpson, William Allen": no
+  "Szurdi, Janos": "http://janos.szurdi.com/"
+  "Tague, Patrick": "http://mews.sv.cmu.edu/people/tague/"
+  "Vixie, Paul": no
+  "Wang, Frank": "https://www.frankwang.org/"
+  "Wang, Jeffrey": no
+  "Weinberg, Zachary": no # linking to self is unnecessary
+  "Yegneswaran, Vinod": "http://www.csl.sri.com/users/vinod/"
+
+pubs:
+# The publications list is divided into categories.  These categories
+# are presented in the rendered page in REVERSE order of their order
+# in the file (which is why the data structure is an array of arrays,
+# not a dictionary) Within each category, again, each paper is
+# presented in REVERSE order.  This is so new papers typically get added
+# to the end of the list.
+  - heading: "Software Engineering"
+    items:
+    - !inproceedings
+      key: weinberg.2003.maintenance
+      title: "A Maintenance Programmer's View of GCC"
+      author:
+        - Weinberg, Zachary
+      booktitle: "GCC Summit"
+      year: 2003
+      pdf: source-lost/2003-maintenance.pdf
+
+    - !inproceedings
+      key: sidwell.2004.statically
+      title: "Statically Typed Trees"
+      author:
+        - Sidwell, Nathan
+        - Weinberg, Zachary
+      booktitle: "GCC Summit"
+      year: 2004
+      pdf: source-lost/2004-statically.pdf
+
+  - heading: "Cognitive Science"
+    items:
+    - !inproceedings
+      key: narayan.2004.verbal
+      title: "Embodied Verbal Semantics: Evidence from a lexical matching task"
+      author:
+       - Narayan, Shweta
+       - Weinberg, Zachary
+       - Bergen, Benjamin
+      booktitle: "Conference of the Berkeley Linguistics Society"
+      year: 2004
+      pdf: source-lost/2004-verbal.pdf
+
+    - !inproceedings
+      key: weinberg.2006.cooperative
+      title: "Cooperative Meaning Construction in an Interactional Task"
+      author:
+       - Weinberg, Zachary
+       - Narayan, Shweta
+       - Núñez, Rafael
+      booktitle: "Conference on Conceptual Structure, Discourse, and Language"
+      year: 2006
+      pdf: source-lost/2006-cooperative.pdf
+
+  - heading: "Computer and Network Security"
+    items:
+    - !inproceedings
+      key: huang.2010.protecting
+      title: "Protecting Browsers from Cross-Origin CSS Attacks"
+      author:
+       - Huang, Lin-Shung
+       - Weinberg, Zachary
+       - Evans, Chris
+       - Jackson, Collin
+      booktitle: "Conference on Computer and Communications Security"
+      organization: ACM
+      year: 2010
+      doi: 10.1145/1866307.1866376
+      pdf: 2010-protecting/2010-protecting.pdf
+      conf_url: https://www.sigsac.org/ccs/CCS2010/
+
+    - !inproceedings
+      key: weinberg.2011.visited
+      title: "I Still Know What You Visited Last Summer: Leaking browsing
+              history via user interaction and side channel attacks"
+      author:
+       - Weinberg, Zachary
+       - Chen, Eric
+       - Jayaraman, Pavithra Ramesh
+       - Jackson, Collin
+      booktitle: "Security and Privacy Symposium"
+      organization: IEEE
+      year: 2011
+      doi: 10.1109/SP.2011.23
+      pdf: 2011-i-still-know/2011-i-still-know.pdf
+      conf_url: http://www.ieee-security.org/TC/SP2011/
+
+    - !inproceedings
+      key: debruhl.2012.stir-ing
+      title: "STIR-ing the Wireless Medium with Self-Tuned, Inference-Based,
+              Real-Time Jamming"
+      author:
+       - DeBruhl, Bruce
+       - Kim, Yu Seung
+       - Weinberg, Zachary
+       - Tague, Patrick
+      booktitle: "International Conference on Mobile Ad-hoc and Sensor Systems"
+      organization: IEEE
+      year: 2012
+      doi: 10.1109/MASS.2012.6502532
+      pdf: source-lost/2012-stir-ing.pdf
+      conf_url: http://edas.info/web/ieeemass2012/
+
+    - !inproceedings
+      key: weinberg.2012.stegotorus
+      author:
+       - Weinberg, Zachary
+       - Wang, Jeffrey
+       - Yegneswaran, Vinod
+       - Briesemeister, Linda
+       - Cheung, Steven
+       - Wang, Frank
+       - Boneh, Dan
+      booktitle: Conference on Computer and Communications Security
+      organization: ACM
+      title: "StegoTorus: A Camouflage Proxy for the Tor Anonymity System"
+      year: 2012
+      doi: 10.1145/2382196.2382211
+      pdf: 2012-stegotorus/2012-stegotorus.tex
+      slides: 2012-stegotorus/talk
+      slides_url: 2012-stegotorus-talk
+      conf_url: https://www.sigsac.org/ccs/CCS2012/
+
+    - !inproceedings
+      key: lincoln.2012.bootstrapping
+      title: "Bootstrapping Communications into an Anti-censorship System"
+      author:
+       - Lincoln, Patrick
+       - Mason, Ian
+       - Porras, Phillip
+       - Yegneswaran, Vinod
+       - Weinberg, Zachary
+       - Massar, Jeroen
+       - Simpson, William Allen
+       - Vixie, Paul
+       - Boneh, Dan
+      booktitle: "Workshop on Free and Open Communications on the Internet"
+      organization: USENIX
+      year: 2012
+      pdf: source-lost/2012-bootstrapping.pdf
+      conf_url: https://www.usenix.org/conference/foci12/
+
+    - !inproceedings
+      key: weinberg.2017.topics
+      title: "Topics of Controversy: An Empirical Analysis of
+              Web Censorship Lists"
+      author:
+       - Weinberg, Zachary
+       - Sharif, Mahmood
+       - Szurdi, Janos
+       - Christin, Nicolas
+      booktitle: "Privacy Enhancing Technologies Symposium"
+      year: 2017
+      pdf: 2017-topics/2017-topics.pdf
+      conf_url: https://petsymposium.org/2017/
