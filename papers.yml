@@ -183,3 +183,24 @@ pubs:
       year: 2017
       pdf: 2017-topics-controversy/2017-topics-controversy.pdf
       conf_url: https://petsymposium.org/2017/
+
+meta:
+# Not entirely just "metadata", but close enough, enh.
+  title: "Publications"
+  slug: "/pubs/"
+  license: by-nc-nd
+  intro: >
+    <p>Everything I’ve written and published professionally.</p>
+
+    <p>All papers are copyright the listed authors, and may be
+    redistributed according to the terms of the
+    <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/"
+    rel="license">Creative Commons Attribution-NonCommercial-NoDerivatives
+    4.0 International license</a>.</p>
+
+    <p>Permission to create derivative works will cheerfully be
+    granted upon request, but I want to know about it, and may need
+    to check with the other authors of the specific thing you’re
+    interested in.  Permission to make commercial use may also be
+    available, but will definitely need to be discussed with all
+    authors.</p>

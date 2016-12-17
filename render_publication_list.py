@@ -25,18 +25,27 @@ M = jinja2.Markup
 #
 def make_smart_html():
     A = smartypants.Attr
-    # Maximum TeX compatibility
-    SMARTY_MODE = A.q | A.b | A.B | A.D | A.e
+    # Maximum TeX compatibility:
+    # q = convert ASCII vertical quotes ('', "")
+    # B = convert TeX-style balanced quotes (`')
+    #     (historical note: older tty fonts displayed ` and ' as proper,
+    #      balanced single quotes; this got broken in the late 1990s)
+    # D = convert TeX-style dashes (-- en, --- em)
+    # e = convert ... to ellipsis
+    SMARTY_MODE = A.q | A.B | A.D | A.e
     educate = smartypants.smartypants
     escape = jinja2.Markup.escape
+
+    # This intermediate step is necessary because educate() emits
+    # numeric HTML entities.  Blech.
+    def denent(m):
+        return chr(int(m.group(1)))
     nentre = re.compile(r"&#([0-9]+);")
     def smart_html(s):
         """Convert ASCII to 'smart' quotes and then escape the string
            for use in HTML."""
-        # The intermediate step is necessary because educate() emits
-        # numeric HTML entities.  Blech.
-        return escape(nentre.sub(lambda m: chr(int(m.group(1))),
-                                 educate(str(s), SMARTY_MODE)))
+        return escape(nentre.sub(denent, educate(str(s), SMARTY_MODE)))
+
     return smart_html
 
 smart_html = make_smart_html()
@@ -186,7 +195,8 @@ class InProceedings:
             conference = M('<a href="{}">{}</a>').format(
                 self.conf_url, conference)
 
-        entry = M("<p>{}<br>{}.<br>{}.").format(title, authors, conference)
+        entry = M('<p class="bibitem">{}<br>{}.<br>{}.').format(
+            title, authors, conference)
         if self.doi:
             entry += M(
                 '<br><span class="doi">doi:'
@@ -203,6 +213,26 @@ def _load_InProceedings(data, version):
 def main():
     with open(sys.argv[1]) as inf:
         data = camel.Camel([entry_types]).make_loader(inf).get_data()
+
+    # Everything in data['meta'] should be passed through to the output
+    # as a YAML header block, _except_ 'intro'...
+    meta = data['meta'].copy()
+    intro = meta['intro']
+    del meta['intro']
+
+    sys.stdout.write("---\n")
+    sys.stdout.write(camel.Camel([]).dump(meta))
+    sys.stdout.write("---\n\n")
+
+    # ... which should be written to the file as raw HTML.
+    wr = textwrap.TextWrapper(width=78, break_long_words=False,
+                              break_on_hyphens=False)
+    for par in intro.split('\n'):
+        for line in wr.wrap(par):
+            sys.stdout.write(line)
+            sys.stdout.write("\n")
+
+    # Now emit the bibliography entries.
     for section in reversed(data["pubs"]):
         sys.stdout.write(M("<h2>{}</h2>\n").format(
             smart_html(section["heading"])))
@@ -210,4 +240,5 @@ def main():
             sys.stdout.write(paper.html_entry(data["authors"]))
             sys.stdout.write("\n")
 
-main()
+if __name__ == '__main__':
+    main()
